@@ -13,4 +13,7 @@ const (
 	XrayConfigPath string = "xray"
 	// XrayConfigFilePath Xray配置文件路径
 	XrayConfigFilePath string = "xray/config.json"
+
+	// SaltKey 加密 盐
+	SaltKey string = "well_very_funny!"
 )
