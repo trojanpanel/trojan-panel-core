@@ -10,9 +10,9 @@ const (
 	LogPath string = "logs"
 
 	// XrayConfigPath Xray配置文件夹路径
-	XrayConfigPath string = "xray"
+	XrayConfigPath string = "bin"
 	// XrayConfigFilePath Xray配置文件路径
-	XrayConfigFilePath string = "xray/config.json"
+	XrayConfigFilePath string = "bin/config.json"
 
 	// SaltKey 加密 盐
 	SaltKey string = "well_very_funny!"
