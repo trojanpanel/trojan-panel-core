@@ -1,12 +1,83 @@
 package util
 
 import (
+	"archive/zip"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/sirupsen/logrus"
+	"io"
+	"io/ioutil"
+	"net/http"
 	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
 	"xray-manage/module/constant"
 )
+
+func DownloadFile(url string, fileName string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	if err = ioutil.WriteFile(fileName, data, 0644); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Unzip 解压
+func Unzip(src string, dest string) error {
+	// 打开读取压缩文件
+	r, err := zip.OpenReader(src)
+	if err != nil {
+		return err
+	}
+	defer r.Close()
+
+	// 遍历压缩文件内的文件，写入磁盘
+	for _, f := range r.File {
+		filePath := filepath.Join(dest, f.Name)
+
+		if !strings.HasPrefix(filePath, filepath.Clean(dest)+string(os.PathSeparator)) {
+			return fmt.Errorf("%s: 非法的文件路径", filePath)
+		}
+
+		// 如果是目录，就创建目录
+		if f.FileInfo().IsDir() {
+			if err = os.MkdirAll(filePath, os.ModePerm); err != nil {
+				return err
+			}
+			continue
+		}
+
+		outFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			return err
+		}
+
+		rc, err := f.Open()
+		if err != nil {
+			return err
+		}
+
+		_, err = io.Copy(outFile, rc)
+		if err != nil {
+			return err
+		}
+
+		rc.Close()
+		outFile.Close()
+	}
+	return nil
+}
 
 // Exists 判断文件或者文件夹是否存在
 func Exists(path string) bool {
@@ -21,15 +92,7 @@ func Exists(path string) bool {
 	return true
 }
 
-func InitFile() {
-	logPath := constant.LogPath
-	if !Exists(logPath) {
-		if err := os.Mkdir(logPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建logs文件夹异常 err: %v\n", err)
-			panic(err)
-		}
-	}
-
+func InitXray() {
 	xrayConfigPath := constant.XrayConfigPath
 	if !Exists(xrayConfigPath) {
 		if err := os.Mkdir(xrayConfigPath, os.ModePerm); err != nil {
@@ -38,6 +101,42 @@ func InitFile() {
 		}
 	}
 
+	// 下载Xray执行文件
+	goarch := runtime.GOARCH
+	xrayFileName := ""
+	switch goarch {
+	case "amd64":
+		xrayFileName = constant.XrayLinuxAmd64
+	case "arm/v6":
+		xrayFileName = constant.XrayLinuxArmV6
+	case "arm/v7":
+		xrayFileName = constant.XrayLinuxArmV7
+	case "arm64":
+		xrayFileName = constant.XrayLinuxArm64
+	case "ppc64le":
+		xrayFileName = constant.XrayLinuxPpc64le
+	case "s390x":
+		xrayFileName = constant.XrayLinuxS390x
+	default:
+		err := errors.New(constant.NoSupportArchError)
+		logrus.Errorf("不支持该系统 err: %v\n", err)
+		panic(err)
+	}
+
+	xrayFilePath := fmt.Sprintf("%s/%s", constant.XrayConfigPath, xrayFileName)
+	if !Exists(xrayFilePath) {
+		if err := DownloadFile(constant.XrayBaseUrl+xrayFileName, xrayFilePath); err != nil {
+			logrus.Errorf("下载Xray文件异常 err: %v\n", err)
+			panic(err)
+		}
+	}
+
+	if err := Unzip(xrayFilePath, constant.XrayConfigPath); err != nil {
+		logrus.Errorf("解压Xray文件异常 err: %v\n", err)
+		panic(err)
+	}
+
+	// 创建默认Xray配置模板文件
 	xrayConfigFilePath := constant.XrayConfigFilePath
 	if !Exists(xrayConfigFilePath) {
 		file, err := os.Create(xrayConfigFilePath)
@@ -107,7 +206,22 @@ func InitFile() {
 			panic(err)
 		}
 	}
+}
 
+func InitFile() {
+	// 初始化日志
+	logPath := constant.LogPath
+	if !Exists(logPath) {
+		if err := os.Mkdir(logPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建logs文件夹异常 err: %v\n", err)
+			panic(err)
+		}
+	}
+
+	// 初始化Xray
+	InitXray()
+
+	// 初始化配置文件
 	configPath := constant.ConfigPath
 	if !Exists(configPath) {
 		if err := os.Mkdir(configPath, os.ModePerm); err != nil {
@@ -162,7 +276,7 @@ compress = true
 
 func usage() {
 	_, _ = fmt.Fprintf(os.Stderr, `xray manage help
-Usage: xraymanage [-host] [-password] [-port] [-database]
+Usage: xraymanage [-host] [-password] [-port] [-database] [-h]
 
 Options:
 -host            database host
@@ -170,6 +284,6 @@ Options:
 -password        database password
 -port            database port
 -database        database name
--h                help
+-h               help
 `)
 }
