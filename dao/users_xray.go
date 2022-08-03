@@ -97,3 +97,19 @@ func DeleteUsersXray(password string) error {
 	}
 	return nil
 }
+
+func DeleteUsersXrayByQuota() error {
+	buildDelete, values, err := builder.BuildDelete(mySQLConfig.Table, map[string]interface{}{
+		"quota <":  "download + upload",
+		"quota !=": -1})
+	if err != nil {
+		logrus.Errorln(err.Error())
+		return errors.New(constant.SysError)
+	}
+
+	if _, err := db.Exec(buildDelete, values...); err != nil {
+		logrus.Errorln(err.Error())
+		return errors.New(constant.SysError)
+	}
+	return nil
+}
