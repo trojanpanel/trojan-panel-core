@@ -3,6 +3,7 @@ package job
 import (
 	"github.com/sirupsen/logrus"
 	"sync"
+	"xray-manage/core/xray"
 	"xray-manage/dao"
 	"xray-manage/module"
 )
@@ -11,6 +12,7 @@ func HandlerUsersXrayDownloadAndUpload() {
 	var mutex sync.Mutex
 	tryLock := mutex.TryLock()
 	if tryLock {
+		xray.XrayStats()
 		usersXray := module.UsersXray{
 			Password: nil,
 			Download: nil,

@@ -10,7 +10,9 @@ import (
 func InitCron() {
 	location, _ := time.LoadLocation("Asia/Shanghai")
 	c := cron.New(cron.WithLocation(location))
-	c.AddFunc("@every 5s", job.HandlerUsersXrayDownloadAndUpload)
+	// 持续更新download upload字段
+	c.AddFunc("@every 8s", job.HandlerUsersXrayDownloadAndUpload)
+	// 删除 quota < download + upload
 	c.AddFunc("@every 10s", job.HandlerUsersXrayStatus)
 	c.Start()
 }
