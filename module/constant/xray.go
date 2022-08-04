@@ -8,4 +8,11 @@ const (
 	XrayLinuxArm64   = "Xray-freebsd-arm64-v8a.zip"
 	XrayLinuxPpc64le = "Xray-linux-ppc64le.zip"
 	XrayLinuxS390x   = "Xray-linux-s390x.zip"
+
+	GrpcPort = "10087"
+
+	ProtocolShadowsocks = "shadowsocks"
+	ProtocolTrojan      = "trojan"
+	ProtocolVless       = "vless"
+	ProtocolVmess       = "vmess"
 )
