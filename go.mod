@@ -16,6 +16,7 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.2.0 // indirect
+	github.com/dgryski/go-metro v0.0.0-20211217172704-adc40b04c140 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
@@ -29,7 +30,12 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
 	github.com/pires/go-proxyproto v0.6.2 // indirect
+	github.com/refraction-networking/utls v1.1.0 // indirect
+	github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 // indirect
+	github.com/seiflotfy/cuckoofilter v0.0.0-20220411075957-e3b120b3f5fb // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
+	github.com/v2fly/ss-bloomring v0.0.0-20210312155135-28617310f63e // indirect
+	github.com/xtls/go v0.0.0-20210920065950-d4af136d3672 // indirect
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 	golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
 	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
