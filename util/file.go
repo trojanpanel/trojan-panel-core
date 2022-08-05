@@ -245,9 +245,9 @@ func InitFile() {
 		}
 	}
 
-	// 初始化Xray
-	InitXray()
-
 	// 初始化全局配置文件
 	InitConfigFile()
+
+	// 初始化Xray
+	InitXray()
 }

@@ -5,15 +5,19 @@ import (
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
+	"github.com/xtls/xray-core/app/proxyman"
 	"github.com/xtls/xray-core/app/proxyman/command"
 	statscmd "github.com/xtls/xray-core/app/stats/command"
+	"github.com/xtls/xray-core/common/net"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/common/serial"
+	"github.com/xtls/xray-core/core"
 	"github.com/xtls/xray-core/proxy/shadowsocks"
 	"github.com/xtls/xray-core/proxy/trojan"
 	"github.com/xtls/xray-core/proxy/vless"
 	"github.com/xtls/xray-core/proxy/vmess"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"xray-manage/module/constant"
 	"xray-manage/module/dto"
 	"xray-manage/module/vo"
@@ -23,7 +27,7 @@ var ClientConn *grpc.ClientConn
 
 // InitGrpcClientConn 初始化gRPC
 func InitGrpcClientConn() {
-	ClientConn, _ = grpc.Dial(fmt.Sprintf("127.0.0.1:%s", constant.GrpcPort))
+	ClientConn, _ = grpc.Dial(fmt.Sprintf("127.0.0.1:%s", constant.GrpcPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
 }
 
 // CloseClientConn 关闭gRPC
@@ -57,7 +61,7 @@ func QueryStats(pattern string, reset bool) []vo.XrayStatsVo {
 }
 
 // GetUserStats 获取用户状态
-func GetUserStats(email string, reset bool, link string) *vo.XrayStatsVo {
+func GetUserStats(email string, link string, reset bool) *vo.XrayStatsVo {
 	statsServiceClient := statscmd.NewStatsServiceClient(ClientConn)
 	downLinkResponse, err := statsServiceClient.GetStats(context.Background(), &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("user>>>%s>>>traffic>>>%s", email, link),
@@ -90,6 +94,29 @@ func GetBoundStats(bound string, tag string, link string, reset bool) *vo.XraySt
 		Value: downLinkResponse.GetStat().GetValue(),
 	}
 	return &statsVo
+}
+
+// AddInboundHandler 添加入站
+func AddInboundHandler(addInboundDto dto.AddInboundDto) error {
+	handlerServiceClient := command.NewHandlerServiceClient(ClientConn)
+	addInboundResponse, err := handlerServiceClient.AddInbound(context.Background(), &command.AddInboundRequest{
+		Inbound: &core.InboundHandlerConfig{
+			Tag: addInboundDto.Tag,
+			ReceiverSettings: serial.ToTypedMessage(&proxyman.ReceiverConfig{
+				PortList: &net.PortList{Range: []*net.PortRange{net.SinglePortRange(net.Port(addInboundDto.Port))}},
+				Listen:   net.NewIPOrDomain(net.LocalHostIP),
+			}),
+		},
+	})
+	if err != nil {
+		logrus.Errorf("添加入站异常 err: %v\n", err)
+		return errors.New(constant.XrayRemoveInBoundError)
+	}
+	if addInboundResponse == nil {
+		logrus.Errorf("unexpected nil response")
+		return errors.New(constant.XrayRemoveInBoundError)
+	}
+	return nil
 }
 
 // RemoveInboundHandler 删除入站

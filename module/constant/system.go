@@ -8,8 +8,11 @@ const (
 	ConfigPath string = "config"
 	// ConfigFilePath 全局配置文件路径
 	ConfigFilePath string = "config/config.ini"
+
 	// XrayConfigFilePath Xray配置文件路径
-	XrayConfigFilePath string = "config/config.json"
+	XrayConfigFilePath string = "config/xray-config.json"
+
+	TrojanGoConfigFilePath string = "config/trojan-go-config.json"
 
 	// SaltKey 加密 盐
 	SaltKey string = "well_very_funny!"

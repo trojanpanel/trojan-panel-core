@@ -8,3 +8,8 @@ type AddUserDto struct {
 	TrojanPassword string // trojan
 	VId            string // vless & vmess
 }
+
+type AddInboundDto struct {
+	Tag  string
+	Port int
+}
