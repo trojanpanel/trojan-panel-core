@@ -2,7 +2,6 @@ package util
 
 import (
 	"archive/zip"
-	"errors"
 	"flag"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -11,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"xray-manage/module/constant"
 )
@@ -93,49 +91,6 @@ func Exists(path string) bool {
 }
 
 func InitXray() {
-	xrayConfigPath := constant.XrayConfigPath
-	if !Exists(xrayConfigPath) {
-		if err := os.Mkdir(xrayConfigPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建xray文件夹异常 err: %v\n", err)
-			panic(err)
-		}
-	}
-
-	// 下载Xray执行文件
-	goarch := runtime.GOARCH
-	xrayFileName := ""
-	switch goarch {
-	case "amd64":
-		xrayFileName = constant.XrayLinuxAmd64
-	case "arm/v6":
-		xrayFileName = constant.XrayLinuxArmV6
-	case "arm/v7":
-		xrayFileName = constant.XrayLinuxArmV7
-	case "arm64":
-		xrayFileName = constant.XrayLinuxArm64
-	case "ppc64le":
-		xrayFileName = constant.XrayLinuxPpc64le
-	case "s390x":
-		xrayFileName = constant.XrayLinuxS390x
-	default:
-		err := errors.New(constant.NoSupportArchError)
-		logrus.Errorf("不支持该系统 err: %v\n", err)
-		panic(err)
-	}
-
-	xrayFilePath := fmt.Sprintf("%s/%s", constant.XrayConfigPath, xrayFileName)
-	if !Exists(xrayFilePath) {
-		if err := DownloadFile(constant.XrayBaseUrl+xrayFileName, xrayFilePath); err != nil {
-			logrus.Errorf("下载Xray文件异常 err: %v\n", err)
-			panic(err)
-		}
-	}
-
-	if err := Unzip(xrayFilePath, constant.XrayConfigPath); err != nil {
-		logrus.Errorf("解压Xray文件异常 err: %v\n", err)
-		panic(err)
-	}
-
 	// 创建默认Xray配置模板文件
 	xrayConfigFilePath := constant.XrayConfigFilePath
 	if !Exists(xrayConfigFilePath) {
@@ -208,28 +163,7 @@ func InitXray() {
 	}
 }
 
-func InitFile() {
-	// 初始化日志
-	logPath := constant.LogPath
-	if !Exists(logPath) {
-		if err := os.Mkdir(logPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建logs文件夹异常 err: %v\n", err)
-			panic(err)
-		}
-	}
-
-	// 初始化Xray
-	InitXray()
-
-	// 初始化配置文件
-	configPath := constant.ConfigPath
-	if !Exists(configPath) {
-		if err := os.Mkdir(configPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建config文件夹异常 err: %v\n", err)
-			panic(err)
-		}
-	}
-
+func InitConfigFile() {
 	configFilePath := constant.ConfigFilePath
 	if !Exists(configFilePath) {
 		file, err := os.Create(configFilePath)
@@ -290,4 +224,30 @@ Options:
 -table			 table name
 -h               help
 `)
+}
+
+func InitFile() {
+	// 初始化日志
+	logPath := constant.LogPath
+	if !Exists(logPath) {
+		if err := os.Mkdir(logPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建logs文件夹异常 err: %v\n", err)
+			panic(err)
+		}
+	}
+
+	// 初始化全局配文件夹
+	configPath := constant.ConfigPath
+	if !Exists(configPath) {
+		if err := os.Mkdir(configPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建config文件夹异常 err: %v\n", err)
+			panic(err)
+		}
+	}
+
+	// 初始化Xray
+	InitXray()
+
+	// 初始化全局配置文件
+	InitConfigFile()
 }

@@ -6,5 +6,5 @@ type AddUserDto struct {
 	SSPassword     string // ss
 	SSMethod       string // ss
 	TrojanPassword string // trojan
-	Id             string // vless & vmess
+	VId            string // vless & vmess
 }

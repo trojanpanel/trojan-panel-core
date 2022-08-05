@@ -1,4 +1,4 @@
-package xray
+package core
 
 import (
 	"context"
@@ -13,10 +13,25 @@ import (
 	"github.com/xtls/xray-core/proxy/trojan"
 	"github.com/xtls/xray-core/proxy/vless"
 	"github.com/xtls/xray-core/proxy/vmess"
+	"google.golang.org/grpc"
 	"xray-manage/module/constant"
 	"xray-manage/module/dto"
 	"xray-manage/module/vo"
 )
+
+var ClientConn *grpc.ClientConn
+
+// InitGrpcClientConn 初始化gRPC
+func InitGrpcClientConn() {
+	ClientConn, _ = grpc.Dial(fmt.Sprintf("127.0.0.1:%s", constant.GrpcPort))
+}
+
+// CloseClientConn 关闭gRPC
+func CloseClientConn() {
+	if ClientConn != nil {
+		ClientConn.Close()
+	}
+}
 
 // QueryStats 全量查询状态
 func QueryStats(pattern string, reset bool) []vo.XrayStatsVo {
@@ -150,7 +165,7 @@ func AddUser(addUserDto dto.AddUserDto) error {
 					User: &protocol.User{
 						Email: addUserDto.Email,
 						Account: serial.ToTypedMessage(&vless.Account{
-							Id: addUserDto.Id,
+							Id: addUserDto.VId,
 						}),
 					},
 				}),
@@ -163,7 +178,7 @@ func AddUser(addUserDto dto.AddUserDto) error {
 					User: &protocol.User{
 						Email: addUserDto.Email,
 						Account: serial.ToTypedMessage(&vmess.Account{
-							Id: addUserDto.Id,
+							Id: addUserDto.VId,
 						}),
 					},
 				}),
