@@ -15,6 +15,7 @@ import (
 	"github.com/xtls/xray-core/proxy/shadowsocks"
 	"github.com/xtls/xray-core/proxy/trojan"
 	"github.com/xtls/xray-core/proxy/vless"
+	"github.com/xtls/xray-core/proxy/vless/inbound"
 	"github.com/xtls/xray-core/proxy/vmess"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -37,16 +38,16 @@ func CloseClientConn() {
 	}
 }
 
-// QueryStats 全量查询状态
-func QueryStats(pattern string, reset bool) []vo.XrayStatsVo {
+// QueryStats 全量状态
+func QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, error) {
 	statsServiceClient := statscmd.NewStatsServiceClient(ClientConn)
 	response, err := statsServiceClient.QueryStats(context.Background(), &statscmd.QueryStatsRequest{
 		Pattern: pattern,
 		Reset_:  reset,
 	})
 	if err != nil {
-		logrus.Errorf("QueryStats获取Stats异常 err: %v\n", err)
-		return nil
+		logrus.Errorf("查询全量状态异常 err: %v\n", err)
+		return nil, errors.New(constant.XrayQueryStatsError)
 	}
 
 	stats := response.GetStat()
@@ -57,64 +58,95 @@ func QueryStats(pattern string, reset bool) []vo.XrayStatsVo {
 			Value: stat.GetValue(),
 		})
 	}
-	return xrayStatsVos
+	return xrayStatsVos, nil
 }
 
-// GetUserStats 获取用户状态
-func GetUserStats(email string, link string, reset bool) *vo.XrayStatsVo {
+// GetUserStats 查询用户状态
+func GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error) {
 	statsServiceClient := statscmd.NewStatsServiceClient(ClientConn)
 	downLinkResponse, err := statsServiceClient.GetStats(context.Background(), &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("user>>>%s>>>traffic>>>%s", email, link),
 		Reset_: reset,
 	})
 	if err != nil {
-		logrus.Errorf("GetUserStats获取Stats异常 err: %v\n", err)
-		return nil
+		logrus.Errorf("查询用户状态异常 err: %v\n", err)
+		return nil, errors.New(constant.XrayGetUserStatsError)
 	}
 	statsVo := vo.XrayStatsVo{
 		Name:  email,
 		Value: downLinkResponse.GetStat().GetValue(),
 	}
-	return &statsVo
+	return &statsVo, nil
 }
 
-// GetBoundStats 获取入站状态
-func GetBoundStats(bound string, tag string, link string, reset bool) *vo.XrayStatsVo {
+// GetBoundStats 查询入站状态
+func GetBoundStats(bound string, tag string, link string, reset bool) (*vo.XrayStatsVo, error) {
 	statsServiceClient := statscmd.NewStatsServiceClient(ClientConn)
 	downLinkResponse, err := statsServiceClient.GetStats(context.Background(), &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("%s>>>%s>>>traffic>>>%s", bound, tag, link),
 		Reset_: reset,
 	})
 	if err != nil {
-		logrus.Errorf("GetUserStats获取Stats异常 err: %v\n", err)
-		return nil
+		logrus.Errorf("查询入站状态异常 err: %v\n", err)
+		return nil, errors.New(constant.XrayGetBoundStatsError)
 	}
 	statsVo := vo.XrayStatsVo{
 		Name:  tag,
 		Value: downLinkResponse.GetStat().GetValue(),
 	}
-	return &statsVo
+	return &statsVo, nil
 }
 
 // AddInboundHandler 添加入站
-func AddInboundHandler(addInboundDto dto.AddInboundDto) error {
+func AddInboundHandler(addBoundDto dto.AddBoundDto) error {
 	handlerServiceClient := command.NewHandlerServiceClient(ClientConn)
 	addInboundResponse, err := handlerServiceClient.AddInbound(context.Background(), &command.AddInboundRequest{
 		Inbound: &core.InboundHandlerConfig{
-			Tag: addInboundDto.Tag,
+			Tag: addBoundDto.Tag,
 			ReceiverSettings: serial.ToTypedMessage(&proxyman.ReceiverConfig{
-				PortList: &net.PortList{Range: []*net.PortRange{net.SinglePortRange(net.Port(addInboundDto.Port))}},
+				PortList: &net.PortList{Range: []*net.PortRange{net.SinglePortRange(net.Port(addBoundDto.Port))}},
 				Listen:   net.NewIPOrDomain(net.LocalHostIP),
+			}),
+			ProxySettings: serial.ToTypedMessage(&inbound.Config{
+				Clients: []*protocol.User{
+					{
+						Level: 0,
+						Account: serial.ToTypedMessage(&vmess.Account{
+							Id: "0cdf8a45-303d-4fed-9780-29aa7f54175e",
+							SecuritySettings: &protocol.SecurityConfig{
+								Type: protocol.SecurityType_AES128_GCM,
+							},
+						}),
+					},
+				},
 			}),
 		},
 	})
 	if err != nil {
 		logrus.Errorf("添加入站异常 err: %v\n", err)
-		return errors.New(constant.XrayRemoveInBoundError)
+		return errors.New(constant.XrayAddInBoundError)
 	}
 	if addInboundResponse == nil {
 		logrus.Errorf("unexpected nil response")
-		return errors.New(constant.XrayRemoveInBoundError)
+		return errors.New(constant.XrayAddInBoundError)
+	}
+	return nil
+}
+
+func AddOutboundHandler(addBoundDto dto.AddBoundDto) error {
+	handlerServiceClient := command.NewHandlerServiceClient(ClientConn)
+	addInboundResponse, err := handlerServiceClient.AddOutbound(context.Background(), &command.AddOutboundRequest{
+		Outbound: &core.OutboundHandlerConfig{
+			Tag:            addBoundDto.Tag,
+			SenderSettings: serial.ToTypedMessage(&proxyman.SenderConfig{}),
+		}})
+	if err != nil {
+		logrus.Errorf("添加出站异常 err: %v\n", err)
+		return errors.New(constant.XrayAddOutBoundError)
+	}
+	if addInboundResponse == nil {
+		logrus.Errorf("unexpected nil response")
+		return errors.New(constant.XrayAddOutBoundError)
 	}
 	return nil
 }

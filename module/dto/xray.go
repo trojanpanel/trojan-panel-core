@@ -9,7 +9,8 @@ type AddUserDto struct {
 	VId            string // vless & vmess
 }
 
-type AddInboundDto struct {
-	Tag  string
-	Port int
+type AddBoundDto struct {
+	Tag          string
+	Port         int
+	ProtocolName string
 }
