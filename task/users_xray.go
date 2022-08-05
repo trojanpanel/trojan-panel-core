@@ -24,7 +24,7 @@ func HandlerUsersXrayDownloadAndUpload() {
 	defer mutex.Unlock()
 }
 
-func HandlerUsersXrayStatus() {
+func HandlerUsersXray() {
 	var mutex sync.Mutex
 	if mutex.TryLock() {
 		if err := dao.DeleteUsersByQuota(); err != nil {

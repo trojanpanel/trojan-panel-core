@@ -24,26 +24,24 @@ import (
 	"trojan-panel-core/module/vo"
 )
 
-type XrayService struct {
-}
-
-var ClientConn *grpc.ClientConn
+var clientConn *grpc.ClientConn
 
 // InitGrpcClientConn 初始化gRPC
 func InitGrpcClientConn() {
-	ClientConn, _ = grpc.Dial(fmt.Sprintf("127.0.0.1:%s", constant.GrpcPort), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	clientConn, _ = grpc.Dial(fmt.Sprintf("127.0.0.1:%s", constant.XrayGrpcPort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
 }
 
 // CloseClientConn 关闭gRPC
 func CloseClientConn() {
-	if ClientConn != nil {
-		ClientConn.Close()
+	if clientConn != nil {
+		clientConn.Close()
 	}
 }
 
 // QueryStats 全量状态
-func (xray *XrayService) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, error) {
-	statsServiceClient := statscmd.NewStatsServiceClient(ClientConn)
+func QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, error) {
+	statsServiceClient := statscmd.NewStatsServiceClient(clientConn)
 	response, err := statsServiceClient.QueryStats(context.Background(), &statscmd.QueryStatsRequest{
 		Pattern: pattern,
 		Reset_:  reset,
@@ -65,8 +63,8 @@ func (xray *XrayService) QueryStats(pattern string, reset bool) ([]vo.XrayStatsV
 }
 
 // GetUserStats 查询用户状态
-func (xray *XrayService) GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error) {
-	statsServiceClient := statscmd.NewStatsServiceClient(ClientConn)
+func GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error) {
+	statsServiceClient := statscmd.NewStatsServiceClient(clientConn)
 	downLinkResponse, err := statsServiceClient.GetStats(context.Background(), &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("user>>>%s>>>traffic>>>%s", email, link),
 		Reset_: reset,
@@ -83,8 +81,8 @@ func (xray *XrayService) GetUserStats(email string, link string, reset bool) (*v
 }
 
 // GetBoundStats 查询入站状态
-func (xray *XrayService) GetBoundStats(bound string, tag string, link string, reset bool) (*vo.XrayStatsVo, error) {
-	statsServiceClient := statscmd.NewStatsServiceClient(ClientConn)
+func GetBoundStats(bound string, tag string, link string, reset bool) (*vo.XrayStatsVo, error) {
+	statsServiceClient := statscmd.NewStatsServiceClient(clientConn)
 	downLinkResponse, err := statsServiceClient.GetStats(context.Background(), &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("%s>>>%s>>>traffic>>>%s", bound, tag, link),
 		Reset_: reset,
@@ -101,8 +99,8 @@ func (xray *XrayService) GetBoundStats(bound string, tag string, link string, re
 }
 
 // AddInboundHandler 添加入站
-func (xray *XrayService) AddInboundHandler(addBoundDto dto.AddBoundDto) error {
-	handlerServiceClient := command.NewHandlerServiceClient(ClientConn)
+func AddInboundHandler(addBoundDto dto.AddBoundDto) error {
+	handlerServiceClient := command.NewHandlerServiceClient(clientConn)
 	addInboundResponse, err := handlerServiceClient.AddInbound(context.Background(), &command.AddInboundRequest{
 		Inbound: &core.InboundHandlerConfig{
 			Tag: addBoundDto.Tag,
@@ -136,8 +134,8 @@ func (xray *XrayService) AddInboundHandler(addBoundDto dto.AddBoundDto) error {
 	return nil
 }
 
-func (xray *XrayService) AddOutboundHandler(addBoundDto dto.AddBoundDto) error {
-	handlerServiceClient := command.NewHandlerServiceClient(ClientConn)
+func AddOutboundHandler(addBoundDto dto.AddBoundDto) error {
+	handlerServiceClient := command.NewHandlerServiceClient(clientConn)
 	addInboundResponse, err := handlerServiceClient.AddOutbound(context.Background(), &command.AddOutboundRequest{
 		Outbound: &core.OutboundHandlerConfig{
 			Tag:            addBoundDto.Tag,
@@ -155,8 +153,8 @@ func (xray *XrayService) AddOutboundHandler(addBoundDto dto.AddBoundDto) error {
 }
 
 // RemoveInboundHandler 删除入站
-func (xray *XrayService) RemoveInboundHandler(tag string) error {
-	handlerServiceClient := command.NewHandlerServiceClient(ClientConn)
+func RemoveInboundHandler(tag string) error {
+	handlerServiceClient := command.NewHandlerServiceClient(clientConn)
 	removeInboundResponse, err := handlerServiceClient.RemoveInbound(context.Background(), &command.RemoveInboundRequest{
 		Tag: tag,
 	})
@@ -172,8 +170,8 @@ func (xray *XrayService) RemoveInboundHandler(tag string) error {
 }
 
 // RemoveOutboundHandler 删除出站
-func (xray *XrayService) RemoveOutboundHandler(tag string) error {
-	handlerServiceClient := command.NewHandlerServiceClient(ClientConn)
+func RemoveOutboundHandler(tag string) error {
+	handlerServiceClient := command.NewHandlerServiceClient(clientConn)
 	removeOutboundResponse, err := handlerServiceClient.RemoveOutbound(context.Background(), &command.RemoveOutboundRequest{
 		Tag: tag,
 	})
@@ -189,8 +187,8 @@ func (xray *XrayService) RemoveOutboundHandler(tag string) error {
 }
 
 // AddUser 添加用户
-func (xray *XrayService) AddUser(addUserDto dto.AddUserDto) error {
-	hsClient := command.NewHandlerServiceClient(ClientConn)
+func AddUser(addUserDto dto.AddUserDto) error {
+	hsClient := command.NewHandlerServiceClient(clientConn)
 	var resp *command.AlterInboundResponse
 	switch addUserDto.Tag {
 	case constant.ProtocolShadowsocks:
@@ -254,8 +252,8 @@ func (xray *XrayService) AddUser(addUserDto dto.AddUserDto) error {
 }
 
 // RemoveUser 删除用户
-func (xray *XrayService) RemoveUser(tag string, email string) error {
-	hsClient := command.NewHandlerServiceClient(ClientConn)
+func RemoveUser(tag string, email string) error {
+	hsClient := command.NewHandlerServiceClient(clientConn)
 	resp, err := hsClient.AlterInbound(context.Background(), &command.AlterInboundRequest{
 		Tag:       tag,
 		Operation: serial.ToTypedMessage(&command.RemoveUserOperation{Email: email}),

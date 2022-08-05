@@ -9,8 +9,6 @@ const (
 	XrayLinuxPpc64le = "Xray-linux-ppc64le.zip"
 	XrayLinuxS390x   = "Xray-linux-s390x.zip"
 
-	GrpcPort = "10087"
-
 	ProtocolShadowsocks = "shadowsocks"
 	ProtocolTrojan      = "trojan"
 	ProtocolVless       = "vless"
