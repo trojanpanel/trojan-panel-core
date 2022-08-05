@@ -5,6 +5,7 @@ import (
 	"xray-manage/core"
 	"xray-manage/dao"
 	"xray-manage/middleware"
+	"xray-manage/pkg/xray"
 	"xray-manage/util"
 )
 
@@ -18,6 +19,6 @@ func init() {
 	core.InitConfig()
 	middleware.InitLog()
 	dao.InitMySQL()
-	core.InitGrpcClientConn()
+	xray.InitGrpcClientConn()
 	middleware.InitCron()
 }
