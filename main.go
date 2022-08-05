@@ -2,11 +2,11 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"xray-manage/core"
-	"xray-manage/dao"
-	"xray-manage/middleware"
-	"xray-manage/pkg/xray"
-	"xray-manage/util"
+	"trojan-panel-core/core"
+	"trojan-panel-core/dao"
+	"trojan-panel-core/middleware"
+	"trojan-panel-core/pkg/xray"
+	"trojan-panel-core/util"
 )
 
 func main() {

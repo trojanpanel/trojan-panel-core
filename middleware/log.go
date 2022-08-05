@@ -5,7 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"time"
-	"xray-manage/core"
+	"trojan-panel-core/core"
 )
 
 // InitLog 日志初始化

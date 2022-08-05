@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/robfig/cron/v3"
 	"time"
-	"xray-manage/task"
+	"trojan-panel-core/task"
 )
 
 // InitCron 初始化定时任务

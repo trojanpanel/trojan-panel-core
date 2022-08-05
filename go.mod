@@ -1,4 +1,4 @@
-module xray-manage
+module trojan-panel-core
 
 go 1.18
 

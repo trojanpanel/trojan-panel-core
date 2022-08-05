@@ -7,7 +7,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"github.com/sirupsen/logrus"
-	"xray-manage/module/constant"
+	"trojan-panel-core/module/constant"
 )
 
 var aesKey = []byte(constant.SaltKey)

@@ -3,7 +3,7 @@ package core
 import (
 	"github.com/sirupsen/logrus"
 	"gopkg.in/ini.v1"
-	"xray-manage/module/constant"
+	"trojan-panel-core/module/constant"
 )
 
 var Config = new(AppConfig)
@@ -23,12 +23,14 @@ type AppConfig struct {
 
 // MySQLConfig MySQL
 type MySQLConfig struct {
-	Host     string `ini:"host"`
-	User     string `ini:"user"`
-	Password string `ini:"password"`
-	Port     int    `ini:"port"`
-	Database string `ini:"database"`
-	Table    string `ini:"table"`
+	Host          string `ini:"host"`
+	User          string `ini:"user"`
+	Password      string `ini:"password"`
+	Port          int    `ini:"port"`
+	Database      string `ini:"database"`
+	TableXray     string `ini:"table_xray"`
+	TableTrojanGo string `ini:"table_trojan_go"`
+	TableHysteria string `ini:"table_hysteria"`
 }
 
 // LogConfig log

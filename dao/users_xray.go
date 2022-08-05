@@ -6,11 +6,11 @@ import (
 	"github.com/didi/gendry/builder"
 	"github.com/didi/gendry/scanner"
 	"github.com/sirupsen/logrus"
-	"xray-manage/core"
-	"xray-manage/module"
-	"xray-manage/module/constant"
-	"xray-manage/module/vo"
-	"xray-manage/util"
+	"trojan-panel-core/core"
+	"trojan-panel-core/module"
+	"trojan-panel-core/module/constant"
+	"trojan-panel-core/module/vo"
+	"trojan-panel-core/util"
 )
 
 var mySQLConfig = core.Config.MySQLConfig

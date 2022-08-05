@@ -19,9 +19,9 @@ import (
 	"github.com/xtls/xray-core/proxy/vmess"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"xray-manage/module/constant"
-	"xray-manage/module/dto"
-	"xray-manage/module/vo"
+	"trojan-panel-core/module/constant"
+	"trojan-panel-core/module/dto"
+	"trojan-panel-core/module/vo"
 )
 
 type XrayService struct {

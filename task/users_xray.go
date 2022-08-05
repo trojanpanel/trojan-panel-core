@@ -3,8 +3,8 @@ package task
 import (
 	"github.com/sirupsen/logrus"
 	"sync"
-	"xray-manage/dao"
-	"xray-manage/module"
+	"trojan-panel-core/dao"
+	"trojan-panel-core/module"
 )
 
 func HandlerUsersXrayDownloadAndUpload() {
