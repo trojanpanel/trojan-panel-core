@@ -24,6 +24,9 @@ import (
 	"xray-manage/module/vo"
 )
 
+type XrayService struct {
+}
+
 var ClientConn *grpc.ClientConn
 
 // InitGrpcClientConn 初始化gRPC
@@ -39,7 +42,7 @@ func CloseClientConn() {
 }
 
 // QueryStats 全量状态
-func QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, error) {
+func (xray *XrayService) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, error) {
 	statsServiceClient := statscmd.NewStatsServiceClient(ClientConn)
 	response, err := statsServiceClient.QueryStats(context.Background(), &statscmd.QueryStatsRequest{
 		Pattern: pattern,
@@ -62,7 +65,7 @@ func QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, error) {
 }
 
 // GetUserStats 查询用户状态
-func GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error) {
+func (xray *XrayService) GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error) {
 	statsServiceClient := statscmd.NewStatsServiceClient(ClientConn)
 	downLinkResponse, err := statsServiceClient.GetStats(context.Background(), &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("user>>>%s>>>traffic>>>%s", email, link),
@@ -80,7 +83,7 @@ func GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error
 }
 
 // GetBoundStats 查询入站状态
-func GetBoundStats(bound string, tag string, link string, reset bool) (*vo.XrayStatsVo, error) {
+func (xray *XrayService) GetBoundStats(bound string, tag string, link string, reset bool) (*vo.XrayStatsVo, error) {
 	statsServiceClient := statscmd.NewStatsServiceClient(ClientConn)
 	downLinkResponse, err := statsServiceClient.GetStats(context.Background(), &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("%s>>>%s>>>traffic>>>%s", bound, tag, link),
@@ -98,7 +101,7 @@ func GetBoundStats(bound string, tag string, link string, reset bool) (*vo.XrayS
 }
 
 // AddInboundHandler 添加入站
-func AddInboundHandler(addBoundDto dto.AddBoundDto) error {
+func (xray *XrayService) AddInboundHandler(addBoundDto dto.AddBoundDto) error {
 	handlerServiceClient := command.NewHandlerServiceClient(ClientConn)
 	addInboundResponse, err := handlerServiceClient.AddInbound(context.Background(), &command.AddInboundRequest{
 		Inbound: &core.InboundHandlerConfig{
@@ -133,7 +136,7 @@ func AddInboundHandler(addBoundDto dto.AddBoundDto) error {
 	return nil
 }
 
-func AddOutboundHandler(addBoundDto dto.AddBoundDto) error {
+func (xray *XrayService) AddOutboundHandler(addBoundDto dto.AddBoundDto) error {
 	handlerServiceClient := command.NewHandlerServiceClient(ClientConn)
 	addInboundResponse, err := handlerServiceClient.AddOutbound(context.Background(), &command.AddOutboundRequest{
 		Outbound: &core.OutboundHandlerConfig{
@@ -152,7 +155,7 @@ func AddOutboundHandler(addBoundDto dto.AddBoundDto) error {
 }
 
 // RemoveInboundHandler 删除入站
-func RemoveInboundHandler(tag string) error {
+func (xray *XrayService) RemoveInboundHandler(tag string) error {
 	handlerServiceClient := command.NewHandlerServiceClient(ClientConn)
 	removeInboundResponse, err := handlerServiceClient.RemoveInbound(context.Background(), &command.RemoveInboundRequest{
 		Tag: tag,
@@ -169,7 +172,7 @@ func RemoveInboundHandler(tag string) error {
 }
 
 // RemoveOutboundHandler 删除出站
-func RemoveOutboundHandler(tag string) error {
+func (xray *XrayService) RemoveOutboundHandler(tag string) error {
 	handlerServiceClient := command.NewHandlerServiceClient(ClientConn)
 	removeOutboundResponse, err := handlerServiceClient.RemoveOutbound(context.Background(), &command.RemoveOutboundRequest{
 		Tag: tag,
@@ -186,7 +189,7 @@ func RemoveOutboundHandler(tag string) error {
 }
 
 // AddUser 添加用户
-func AddUser(addUserDto dto.AddUserDto) error {
+func (xray *XrayService) AddUser(addUserDto dto.AddUserDto) error {
 	hsClient := command.NewHandlerServiceClient(ClientConn)
 	var resp *command.AlterInboundResponse
 	switch addUserDto.Tag {
@@ -251,7 +254,7 @@ func AddUser(addUserDto dto.AddUserDto) error {
 }
 
 // RemoveUser 删除用户
-func RemoveUser(tag string, email string) error {
+func (xray *XrayService) RemoveUser(tag string, email string) error {
 	hsClient := command.NewHandlerServiceClient(ClientConn)
 	resp, err := hsClient.AlterInbound(context.Background(), &command.AlterInboundRequest{
 		Tag:       tag,
