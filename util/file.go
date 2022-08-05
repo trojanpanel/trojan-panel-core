@@ -164,6 +164,15 @@ func InitXray() {
 }
 
 func InitConfigFile() {
+	// 初始化全局配文件夹
+	configPath := constant.ConfigPath
+	if !Exists(configPath) {
+		if err := os.Mkdir(configPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建config文件夹异常 err: %v\n", err)
+			panic(err)
+		}
+	}
+
 	configFilePath := constant.ConfigFilePath
 	if !Exists(configFilePath) {
 		file, err := os.Create(configFilePath)
@@ -174,23 +183,19 @@ func InitConfigFile() {
 		defer file.Close()
 
 		var (
-			host          string
-			user          string
-			password      string
-			port          string
-			database      string
-			tableXray     string
-			tableTrojanGo string
-			tableHysteria string
+			host     string
+			user     string
+			password string
+			port     string
+			database string
+			table    string
 		)
 		flag.StringVar(&host, "host", "localhost", "数据库地址")
 		flag.StringVar(&user, "user", "root", "数据库用户名")
 		flag.StringVar(&password, "password", "123456", "数据库密码")
 		flag.StringVar(&port, "port", "3306", "数据库端口")
 		flag.StringVar(&database, "database", "trojan_panel_db", "数据库名称")
-		flag.StringVar(&tableXray, "tableXray", "users_xray", "Xray表名称")
-		flag.StringVar(&tableTrojanGo, "tableTrojanGo", "users_trojan_go", "TrojanGo表名称")
-		flag.StringVar(&tableHysteria, "tableHysteria", "users_hysteria", "Hysteria表名称")
+		flag.StringVar(&table, "table", "users", "表名称")
 		flag.Parse()
 		_, err = file.WriteString(fmt.Sprintf(
 			`[mysql]
@@ -199,16 +204,14 @@ user=%s
 password=%s
 port=%s
 database=%s
-table_xray=%s
-table_trojan_go=%s
-table_hysteria=%s
+table=%s
 [log]
 filename=logs/trojan-panel-core.log
 max_size=1
 max_backups=5
 max_age=30
 compress=true
-`, host, user, password, port, database, tableXray, tableTrojanGo, tableHysteria))
+`, host, user, password, port, database, table))
 		if err != nil {
 			logrus.Errorf("config.ini文件写入异常 err: %v\n", err)
 			panic(err)
@@ -227,9 +230,7 @@ Options:
 -password        database password
 -port            database port
 -database        database name
--tableXray		 Xray table name
--tableTrojanGo	 TrojanGo table name
--tableHysteria	 Hysteria table name
+-table		 	 table name
 -h               help
 `)
 }
@@ -244,18 +245,6 @@ func InitFile() {
 		}
 	}
 
-	// 初始化全局配文件夹
-	configPath := constant.ConfigPath
-	if !Exists(configPath) {
-		if err := os.Mkdir(configPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建config文件夹异常 err: %v\n", err)
-			panic(err)
-		}
-	}
-
 	// 初始化全局配置文件
 	InitConfigFile()
-
-	// 初始化Xray
-	InitXray()
 }

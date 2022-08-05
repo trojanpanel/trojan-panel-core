@@ -9,17 +9,16 @@ import (
 	"trojan-panel-core/core"
 	"trojan-panel-core/module"
 	"trojan-panel-core/module/constant"
-	"trojan-panel-core/module/vo"
 	"trojan-panel-core/util"
 )
 
 var mySQLConfig = core.Config.MySQLConfig
 
-func SelectUsersXrayList() ([]vo.UsersXrayVo, error) {
+func SelectUsersXrayPasswords() ([]string, error) {
 	var usersXrays []module.UsersXray
 
 	buildSelect, values, err := builder.NamedQuery(
-		fmt.Sprintf("select id, `username`, `password`, download, upload from %s", mySQLConfig.Table), nil)
+		fmt.Sprintf("select `password` from %s", mySQLConfig.Table), nil)
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
@@ -36,18 +35,15 @@ func SelectUsersXrayList() ([]vo.UsersXrayVo, error) {
 		return nil, errors.New(constant.SysError)
 	}
 
-	var usersXrayVos []vo.UsersXrayVo
+	var passwords []string
 	for _, item := range usersXrays {
 		passwordDecode, err := util.AesDecode(*item.Password)
 		if err != nil {
 			return nil, err
 		}
-		usersXrayVos = append(usersXrayVos, vo.UsersXrayVo{
-			Username: *item.Username,
-			Password: passwordDecode,
-		})
+		passwords = append(passwords, passwordDecode)
 	}
-	return usersXrayVos, nil
+	return passwords, nil
 }
 
 func UpdateUsersXray(usersXray *module.UsersXray) error {
@@ -80,6 +76,7 @@ func UpdateUsersXray(usersXray *module.UsersXray) error {
 	return nil
 }
 
+// DeleteUsersXray 根据密码删除用户，用于封禁用户的情况
 func DeleteUsersXray(password string) error {
 	passwordEncode, err := util.AesEncode(password)
 	if err != nil {
@@ -98,10 +95,11 @@ func DeleteUsersXray(password string) error {
 	return nil
 }
 
+// DeleteUsersXrayByQuota 删除总流量大于配额的情况
 func DeleteUsersXrayByQuota() error {
 	buildDelete, values, err := builder.BuildDelete(mySQLConfig.Table, map[string]interface{}{
 		"quota <":  "download + upload",
-		"quota !=": -1})
+		"quota >=": 0})
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return errors.New(constant.SysError)
