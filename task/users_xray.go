@@ -17,7 +17,7 @@ func HandlerUsersXrayDownloadAndUpload() {
 			Download: nil,
 			Upload:   nil,
 		}
-		if err := dao.UpdateUsersXray(&usersXray); err != nil {
+		if err := dao.UpdateUser(&usersXray); err != nil {
 			logrus.Errorf("更新用户流量失败 err: %v\n", err)
 		}
 	}
@@ -27,7 +27,7 @@ func HandlerUsersXrayDownloadAndUpload() {
 func HandlerUsersXrayStatus() {
 	var mutex sync.Mutex
 	if mutex.TryLock() {
-		if err := dao.DeleteUsersXrayByQuota(); err != nil {
+		if err := dao.DeleteUsersByQuota(); err != nil {
 			logrus.Errorf("删除流量不足用户失败 err: %v\n", err)
 		}
 	}

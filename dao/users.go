@@ -14,7 +14,8 @@ import (
 
 var mySQLConfig = core.Config.MySQLConfig
 
-func SelectUsersXrayPasswords() ([]string, error) {
+// SelectUserPasswords 查询所有用户
+func SelectUserPasswords() ([]string, error) {
 	var usersXrays []module.UsersXray
 
 	buildSelect, values, err := builder.NamedQuery(
@@ -46,7 +47,8 @@ func SelectUsersXrayPasswords() ([]string, error) {
 	return passwords, nil
 }
 
-func UpdateUsersXray(usersXray *module.UsersXray) error {
+// UpdateUser 更新用户的download和upload字段值
+func UpdateUser(usersXray *module.UsersXray) error {
 	passwordEncode, err := util.AesEncode(*usersXray.Password)
 	if err != nil {
 		return err
@@ -76,8 +78,8 @@ func UpdateUsersXray(usersXray *module.UsersXray) error {
 	return nil
 }
 
-// DeleteUsersXray 根据密码删除用户，用于封禁用户的情况
-func DeleteUsersXray(password string) error {
+// DeleteUser 根据密码删除用户，用于封禁用户的情况
+func DeleteUser(password string) error {
 	passwordEncode, err := util.AesEncode(password)
 	if err != nil {
 		return err
@@ -95,8 +97,8 @@ func DeleteUsersXray(password string) error {
 	return nil
 }
 
-// DeleteUsersXrayByQuota 删除总流量大于配额的情况
-func DeleteUsersXrayByQuota() error {
+// DeleteUsersByQuota 删除总流量大于配额的情况
+func DeleteUsersByQuota() error {
 	buildDelete, values, err := builder.BuildDelete(mySQLConfig.Table, map[string]interface{}{
 		"quota <":  "download + upload",
 		"quota >=": 0})
