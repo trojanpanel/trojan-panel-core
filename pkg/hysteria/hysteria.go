@@ -4,8 +4,13 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"trojan-panel-core/module/constant"
+	"trojan-panel-core/pkg/hysteria/start"
 	"trojan-panel-core/util"
 )
+
+func StartHysteria() {
+	start.HysteriaMain()
+}
 
 // 初始化Hysteria
 func init() {

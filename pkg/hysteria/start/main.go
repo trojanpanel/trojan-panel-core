@@ -1,4 +1,4 @@
-package main
+package start
 
 import (
 	"fmt"
@@ -176,6 +176,6 @@ func init() {
 	viper.AutomaticEnv()
 }
 
-func main() {
+func HysteriaMain() {
 	cobra.CheckErr(rootCmd.Execute())
 }
