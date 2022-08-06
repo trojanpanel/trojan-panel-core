@@ -6,6 +6,7 @@ import (
 	"trojan-panel-core/dao"
 )
 
+// HandlerUsersDownloadAndUpload 更新download upload字段
 func HandlerUsersDownloadAndUpload() {
 	var mutex sync.Mutex
 	defer mutex.Unlock()
@@ -14,6 +15,7 @@ func HandlerUsersDownloadAndUpload() {
 	}
 }
 
+// HandlerUsers 删除quota < download + upload
 func HandlerUsers() {
 	var mutex sync.Mutex
 	defer mutex.Unlock()
