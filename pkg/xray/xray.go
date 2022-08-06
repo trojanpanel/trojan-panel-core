@@ -1,10 +1,10 @@
 package xray
 
 import (
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/xtls/xray-core/common/cmdarg"
 	"os"
+	"strings"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/pkg/xray/start"
 	"trojan-panel-core/util"
@@ -22,8 +22,7 @@ func StopXray() error {
 	return nil
 }
 
-// 初始化Xray
-func init() {
+func XrayConfig() {
 	// 创建默认Xray配置模板文件
 	xrayConfigFilePath := constant.XrayConfigFilePath
 	if !util.Exists(xrayConfigFilePath) {
@@ -34,7 +33,7 @@ func init() {
 		}
 		defer file.Close()
 
-		_, err = file.WriteString(fmt.Sprintf(`{
+		xrayConfigContent := `{
   "stats": {},
   "api": {
     "services": [
@@ -62,7 +61,7 @@ func init() {
     {
       "tag": "api",
       "listen": "127.0.0.1",
-      "port": %s,
+      "port": ${inbounds_api_port},
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -88,7 +87,9 @@ func init() {
     ]
   }
 }
-`, constant.GrpcPortXray))
+`
+		xrayConfigContent = strings.ReplaceAll(xrayConfigContent, "${inbounds_api_port}", constant.GrpcPortXray)
+		_, err = file.WriteString(xrayConfigContent)
 		if err != nil {
 			logrus.Errorf("xray config.json文件写入异常 err: %v\n", err)
 			panic(err)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 	"trojan-panel-core/module/dto"
+	"trojan-panel-core/pkg/trojango"
 	"trojan-panel-core/pkg/xray"
 )
 
@@ -28,4 +29,8 @@ func TestQueryStats(t *testing.T) {
 		fmt.Println(err)
 	}
 	fmt.Println(stats)
+}
+
+func TestStartTrojanGo(t *testing.T) {
+	trojango.StartTrojanGo()
 }
