@@ -1,5 +1,9 @@
 # Trojan Panel Core
 
+Trojan Panel核心
+
+# 支持的节点类型
+
 ## Xray
 
 只会读取/写入password、quota、download、upload。password需要进行base64编码，quota、upload、download单位是byte
@@ -13,3 +17,18 @@
 ## Trojan Go
 
 ## Hysteria
+
+# 编译命令
+
+[compile.bat](./compile.bat)
+
+# Community
+
+- Telegram Channel: [Trojan Panel](https://t.me/TrojanPanel)
+- Telegram Group: [Trojan Panel交流群](https://t.me/TrojanPanelGroup)
+
+# Thanks
+
+- [trojan-gfw](https://github.com/trojan-gfw/trojan)
+- [trojan-go](https://github.com/p4gefau1t/trojan-go)
+- [hysteria](https://github.com/HyNetwork/hysteria)
