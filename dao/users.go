@@ -2,24 +2,21 @@ package dao
 
 import (
 	"errors"
-	"fmt"
 	"github.com/didi/gendry/builder"
 	"github.com/didi/gendry/scanner"
 	"github.com/sirupsen/logrus"
 	"trojan-panel-core/core"
-	"trojan-panel-core/module"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/util"
 )
 
 var mySQLConfig = core.Config.MySQLConfig
 
-// SelectUserPasswords 查询所有用户
-func SelectUserPasswords() ([]string, error) {
-	var usersXrays []module.UsersXray
+// SelectUsersPassword 查询所有用户 用于api全量更新用户
+func SelectUsersPassword() ([]string, error) {
+	var passwords []string
 
-	buildSelect, values, err := builder.NamedQuery(
-		fmt.Sprintf("select `password` from %s", mySQLConfig.Table), nil)
+	buildSelect, values, err := builder.BuildSelect(mySQLConfig.Table, nil, []string{"`password`"})
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
@@ -31,55 +28,41 @@ func SelectUserPasswords() ([]string, error) {
 	}
 	defer rows.Close()
 
-	if err := scanner.Scan(rows, &usersXrays); err != nil {
+	if err := scanner.Scan(rows, &passwords); err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
-	}
-
-	var passwords []string
-	for _, item := range usersXrays {
-		passwordDecode, err := util.AesDecode(*item.Password)
-		if err != nil {
-			return nil, err
-		}
-		passwords = append(passwords, passwordDecode)
 	}
 	return passwords, nil
 }
 
-// UpdateUser 更新用户的download和upload字段值
-func UpdateUser(usersXray *module.UsersXray) error {
-	passwordEncode, err := util.AesEncode(*usersXray.Password)
+// UpdateUserDownloadAndUpload 更新用户的download和upload字段
+func UpdateUserDownloadAndUpload(password string, download int, upload int) error {
+	passwordEncode, err := util.AesEncode(password)
 	if err != nil {
 		return err
 	}
 	where := map[string]interface{}{"password": passwordEncode}
-	update := map[string]interface{}{}
-	if usersXray.Download != nil {
-		update["download"] = *usersXray.Download
-	}
-	if usersXray.Upload != nil {
-		update["upload"] = *usersXray.Upload
+	update := map[string]interface{}{
+		"download": download,
+		"upload":   upload,
 	}
 
-	if len(update) > 0 {
-		buildUpdate, values, err := builder.BuildUpdate(mySQLConfig.Table, where, update)
-		if err != nil {
-			logrus.Errorln(err.Error())
-			return errors.New(constant.SysError)
-		}
+	buildUpdate, values, err := builder.BuildUpdate(mySQLConfig.Table, where, update)
+	if err != nil {
+		logrus.Errorln(err.Error())
+		return errors.New(constant.SysError)
+	}
 
-		_, err = db.Exec(buildUpdate, values...)
-		if err != nil {
-			logrus.Errorln(err.Error())
-			return errors.New(constant.SysError)
-		}
+	_, err = db.Exec(buildUpdate, values...)
+	if err != nil {
+		logrus.Errorln(err.Error())
+		return errors.New(constant.SysError)
 	}
 	return nil
 }
 
-// DeleteUser 根据密码删除用户，用于封禁用户的情况
-func DeleteUser(password string) error {
+// DeleteUserByPassword 根据密码删除用户，用于封禁用户的情况
+func DeleteUserByPassword(password string) error {
 	passwordEncode, err := util.AesEncode(password)
 	if err != nil {
 		return err
@@ -100,7 +83,7 @@ func DeleteUser(password string) error {
 // DeleteUsersByQuota 删除总流量大于配额的情况
 func DeleteUsersByQuota() error {
 	buildDelete, values, err := builder.BuildDelete(mySQLConfig.Table, map[string]interface{}{
-		"quota <":  "download + upload",
+		"quota <=": "download + upload",
 		"quota >=": 0})
 	if err != nil {
 		logrus.Errorln(err.Error())
