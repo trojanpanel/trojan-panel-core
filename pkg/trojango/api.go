@@ -125,6 +125,7 @@ func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
 	if !resp.Success {
 		logrus.Errorf("trojan go set user fail err: %v\n", err)
 		// 重试
+		return errors.New(constant.GrpcError)
 	}
 	return nil
 }

@@ -13,6 +13,6 @@ func InitCron() {
 	// 持续更新download upload字段
 	c.AddFunc("@every 10s", task.HandlerUsersDownloadAndUpload)
 	// 删除quota < download + upload
-	c.AddFunc("@every 10s", task.HandlerUsers)
+	c.AddFunc("@every 15s", task.HandlerUsers)
 	c.Start()
 }
