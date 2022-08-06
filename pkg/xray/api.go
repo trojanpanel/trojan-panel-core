@@ -28,7 +28,7 @@ var clientConn *grpc.ClientConn
 
 // InitGrpcClientConn 初始化gRPC
 func InitGrpcClientConn() {
-	clientConn, _ = grpc.Dial(fmt.Sprintf("127.0.0.1:%s", constant.XrayGrpcPort),
+	clientConn, _ = grpc.Dial(fmt.Sprintf("127.0.0.1:%s", constant.GrpcPortXray),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 }
 
