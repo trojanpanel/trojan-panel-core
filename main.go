@@ -5,7 +5,6 @@ import (
 	"trojan-panel-core/core"
 	"trojan-panel-core/dao"
 	"trojan-panel-core/middleware"
-	"trojan-panel-core/pkg/xray"
 	"trojan-panel-core/util"
 )
 
@@ -19,6 +18,5 @@ func init() {
 	core.InitConfig()
 	middleware.InitLog()
 	dao.InitMySQL()
-	xray.InitGrpcClientConn()
 	middleware.InitCron()
 }

@@ -60,6 +60,10 @@ var (
 	}()
 )
 
+func SetConfigFiles(arg cmdarg.Arg) {
+	configFiles = arg
+}
+
 func executeRun(cmd *base.Command, args []string) {
 	printVersion()
 	server, err := startXray()

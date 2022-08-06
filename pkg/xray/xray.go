@@ -2,6 +2,7 @@ package xray
 
 import (
 	"github.com/sirupsen/logrus"
+	"github.com/xtls/xray-core/common/cmdarg"
 	"os"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/pkg/xray/start"
@@ -10,7 +11,7 @@ import (
 
 // StartXray 启动Xray
 func StartXray() {
-	os.Args = []string{}
+	start.SetConfigFiles(cmdarg.Arg{constant.XrayConfigFilePath})
 	start.XrayMain()
 }
 
@@ -22,7 +23,7 @@ func StopXray() error {
 // 初始化Xray
 func init() {
 	// 创建默认Xray配置模板文件
-	xrayConfigFilePath := constant.XrayFilePath
+	xrayConfigFilePath := constant.XrayConfigFilePath
 	if !util.Exists(xrayConfigFilePath) {
 		file, err := os.Create(xrayConfigFilePath)
 		if err != nil {

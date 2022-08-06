@@ -9,9 +9,9 @@ const (
 	// ConfigFilePath 全局配置文件路径
 	ConfigFilePath string = "config/config.ini"
 
-	XrayFilePath     string = "config/xray-config.json"
-	TrojanGoFilePath string = "config/trojan-go-config.json"
-	HysteriaFilePath string = "config/hysteria-config.json"
+	XrayConfigFilePath     string = "config/xray-config.json"
+	TrojanGoConfigFilePath string = "config/trojan-go-config.json"
+	HysteriaConfigFilePath string = "config/hysteria-config.json"
 
 	// SaltKey 加密 盐
 	SaltKey string = "well_very_funny!"
