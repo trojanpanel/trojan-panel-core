@@ -94,7 +94,7 @@ func InitConfigFile() {
 	// 初始化全局配文件夹
 	configPath := constant.ConfigPath
 	if !Exists(configPath) {
-		if err := os.Mkdir(configPath, os.ModePerm); err != nil {
+		if err := os.MkdirAll(configPath, os.ModePerm); err != nil {
 			logrus.Errorf("创建config文件夹异常 err: %v\n", err)
 			panic(err)
 		}
@@ -166,7 +166,7 @@ func InitFile() {
 	// 初始化日志
 	logPath := constant.LogPath
 	if !Exists(logPath) {
-		if err := os.Mkdir(logPath, os.ModePerm); err != nil {
+		if err := os.MkdirAll(logPath, os.ModePerm); err != nil {
 			logrus.Errorf("创建logs文件夹异常 err: %v\n", err)
 			panic(err)
 		}
