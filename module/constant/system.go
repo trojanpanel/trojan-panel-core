@@ -19,7 +19,7 @@ const (
 	// SaltKey 加密 盐
 	SaltKey string = "well_very_funny!"
 
-	GrpcPortXray     = "60087"
-	GrpcPortTrojanGo = "60088"
-	GrpcPortHysteria = "60089"
+	GrpcPortXray     string = "60087"
+	GrpcPortTrojanGo string = "60088"
+	GrpcPortHysteria string = "60089"
 )

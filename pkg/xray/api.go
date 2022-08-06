@@ -24,31 +24,38 @@ import (
 	"trojan-panel-core/module/vo"
 )
 
-var clientConn *grpc.ClientConn
-
-// InitGrpcClientConn 初始化gRPC
-func InitGrpcClientConn() {
-	clientConn, _ = grpc.Dial(fmt.Sprintf("127.0.0.1:%s", constant.GrpcPortXray),
-		grpc.WithTransportCredentials(insecure.NewCredentials()))
+type xrayApi struct {
 }
 
-// CloseClientConn 关闭gRPC
-func CloseClientConn() {
-	if clientConn != nil {
-		clientConn.Close()
+func XrayApi() *xrayApi {
+	return &xrayApi{}
+}
+
+func apiClient() (*grpc.ClientConn, error) {
+	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%s", constant.GrpcPortXray),
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		logrus.Errorf("Xray gRPC初始化失败 err: %v\n", err)
+		return nil, errors.New(constant.GrpcError)
 	}
+	return conn, nil
 }
 
 // QueryStats 全量状态
 func QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, error) {
-	statsServiceClient := statscmd.NewStatsServiceClient(clientConn)
+	conn, err := apiClient()
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	statsServiceClient := statscmd.NewStatsServiceClient(conn)
 	response, err := statsServiceClient.QueryStats(context.Background(), &statscmd.QueryStatsRequest{
 		Pattern: pattern,
 		Reset_:  reset,
 	})
 	if err != nil {
-		logrus.Errorf("查询全量状态异常 err: %v\n", err)
-		return nil, errors.New(constant.XrayQueryStatsError)
+		logrus.Errorf("xray query stats err: %v\n", err)
+		return nil, errors.New(constant.GrpcError)
 	}
 
 	stats := response.GetStat()
@@ -64,14 +71,19 @@ func QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, error) {
 
 // GetUserStats 查询用户状态
 func GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error) {
-	statsServiceClient := statscmd.NewStatsServiceClient(clientConn)
+	conn, err := apiClient()
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	statsServiceClient := statscmd.NewStatsServiceClient(conn)
 	downLinkResponse, err := statsServiceClient.GetStats(context.Background(), &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("user>>>%s>>>traffic>>>%s", email, link),
 		Reset_: reset,
 	})
 	if err != nil {
-		logrus.Errorf("查询用户状态异常 err: %v\n", err)
-		return nil, errors.New(constant.XrayGetUserStatsError)
+		logrus.Errorf("xray get user stats err: %v\n", err)
+		return nil, errors.New(constant.GrpcError)
 	}
 	statsVo := vo.XrayStatsVo{
 		Name:  email,
@@ -82,14 +94,19 @@ func GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error
 
 // GetBoundStats 查询入/出站状态
 func GetBoundStats(bound string, tag string, link string, reset bool) (*vo.XrayStatsVo, error) {
-	statsServiceClient := statscmd.NewStatsServiceClient(clientConn)
+	conn, err := apiClient()
+	if err != nil {
+		return nil, nil
+	}
+	defer conn.Close()
+	statsServiceClient := statscmd.NewStatsServiceClient(conn)
 	downLinkResponse, err := statsServiceClient.GetStats(context.Background(), &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("%s>>>%s>>>traffic>>>%s", bound, tag, link),
 		Reset_: reset,
 	})
 	if err != nil {
-		logrus.Errorf("查询入站状态异常 err: %v\n", err)
-		return nil, errors.New(constant.XrayGetBoundStatsError)
+		logrus.Errorf("xray get bound stats err: %v\n", err)
+		return nil, errors.New(constant.GrpcError)
 	}
 	statsVo := vo.XrayStatsVo{
 		Name:  tag,
@@ -100,7 +117,12 @@ func GetBoundStats(bound string, tag string, link string, reset bool) (*vo.XrayS
 
 // AddInboundHandler 添加入站
 func AddInboundHandler(addBoundDto dto.AddBoundDto) error {
-	handlerServiceClient := command.NewHandlerServiceClient(clientConn)
+	conn, err := apiClient()
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	handlerServiceClient := command.NewHandlerServiceClient(conn)
 	addInboundResponse, err := handlerServiceClient.AddInbound(context.Background(), &command.AddInboundRequest{
 		Inbound: &core.InboundHandlerConfig{
 			Tag: addBoundDto.Tag,
@@ -124,71 +146,91 @@ func AddInboundHandler(addBoundDto dto.AddBoundDto) error {
 		},
 	})
 	if err != nil {
-		logrus.Errorf("添加入站异常 err: %v\n", err)
-		return errors.New(constant.XrayAddInBoundError)
+		logrus.Errorf("xray add inbound err: %v\n", err)
+		return errors.New(constant.GrpcError)
 	}
 	if addInboundResponse == nil {
-		logrus.Errorf("unexpected nil response")
-		return errors.New(constant.XrayAddInBoundError)
+		logrus.Errorf("xray add inbound unexpected nil response")
+		return errors.New(constant.GrpcError)
 	}
 	return nil
 }
 
 func AddOutboundHandler(addBoundDto dto.AddBoundDto) error {
-	handlerServiceClient := command.NewHandlerServiceClient(clientConn)
+	conn, err := apiClient()
+	if err != nil {
+		return nil
+	}
+	defer conn.Close()
+	handlerServiceClient := command.NewHandlerServiceClient(conn)
 	addInboundResponse, err := handlerServiceClient.AddOutbound(context.Background(), &command.AddOutboundRequest{
 		Outbound: &core.OutboundHandlerConfig{
 			Tag:            addBoundDto.Tag,
 			SenderSettings: serial.ToTypedMessage(&proxyman.SenderConfig{}),
 		}})
 	if err != nil {
-		logrus.Errorf("添加出站异常 err: %v\n", err)
-		return errors.New(constant.XrayAddOutBoundError)
+		logrus.Errorf("xray add outbound err: %v\n", err)
+		return errors.New(constant.GrpcError)
 	}
 	if addInboundResponse == nil {
-		logrus.Errorf("unexpected nil response")
-		return errors.New(constant.XrayAddOutBoundError)
+		logrus.Errorf("xray add outbound unexpected nil response")
+		return errors.New(constant.GrpcError)
 	}
 	return nil
 }
 
 // RemoveInboundHandler 删除入站
 func RemoveInboundHandler(tag string) error {
-	handlerServiceClient := command.NewHandlerServiceClient(clientConn)
+	conn, err := apiClient()
+	if err != nil {
+		return nil
+	}
+	defer conn.Close()
+	handlerServiceClient := command.NewHandlerServiceClient(conn)
 	removeInboundResponse, err := handlerServiceClient.RemoveInbound(context.Background(), &command.RemoveInboundRequest{
 		Tag: tag,
 	})
 	if err != nil {
-		logrus.Errorf("删除入站异常 err: %v\n", err)
-		return errors.New(constant.XrayRemoveInBoundError)
+		logrus.Errorf("xray remove inbound err: %v\n", err)
+		return errors.New(constant.GrpcError)
 	}
 	if removeInboundResponse == nil {
-		logrus.Errorf("unexpected nil response")
-		return errors.New(constant.XrayRemoveInBoundError)
+		logrus.Errorf("xray remove inbound unexpected nil response")
+		return errors.New(constant.GrpcError)
 	}
 	return nil
 }
 
 // RemoveOutboundHandler 删除出站
 func RemoveOutboundHandler(tag string) error {
-	handlerServiceClient := command.NewHandlerServiceClient(clientConn)
+	conn, err := apiClient()
+	if err != nil {
+		return nil
+	}
+	defer conn.Close()
+	handlerServiceClient := command.NewHandlerServiceClient(conn)
 	removeOutboundResponse, err := handlerServiceClient.RemoveOutbound(context.Background(), &command.RemoveOutboundRequest{
 		Tag: tag,
 	})
 	if err != nil {
-		logrus.Errorf("删除出站异常 err: %v\n", err)
-		return errors.New(constant.XrayRemoveOutBoundError)
+		logrus.Errorf("xray remove outbound err: %v\n", err)
+		return errors.New(constant.GrpcError)
 	}
 	if removeOutboundResponse == nil {
-		logrus.Errorf("unexpected nil response")
-		return errors.New(constant.XrayRemoveOutBoundError)
+		logrus.Errorf("xray remove outbound unexpected nil response")
+		return errors.New(constant.GrpcError)
 	}
 	return nil
 }
 
 // AddUser 添加用户
 func AddUser(addUserDto dto.AddUserDto) error {
-	hsClient := command.NewHandlerServiceClient(clientConn)
+	conn, err := apiClient()
+	if err != nil {
+		return nil
+	}
+	defer conn.Close()
+	hsClient := command.NewHandlerServiceClient(conn)
 	var resp *command.AlterInboundResponse
 	switch addUserDto.Tag {
 	case constant.ProtocolShadowsocks:
@@ -245,26 +287,31 @@ func AddUser(addUserDto dto.AddUserDto) error {
 		})
 	}
 	if resp == nil {
-		logrus.Errorf("nil response")
-		return errors.New(constant.XrayAddUserError)
+		logrus.Errorf("xray add user unexpected nil response")
+		return errors.New(constant.GrpcError)
 	}
 	return nil
 }
 
 // RemoveUser 删除用户
 func RemoveUser(tag string, email string) error {
-	hsClient := command.NewHandlerServiceClient(clientConn)
+	conn, err := apiClient()
+	if err != nil {
+		return nil
+	}
+	defer conn.Close()
+	hsClient := command.NewHandlerServiceClient(conn)
 	resp, err := hsClient.AlterInbound(context.Background(), &command.AlterInboundRequest{
 		Tag:       tag,
 		Operation: serial.ToTypedMessage(&command.RemoveUserOperation{Email: email}),
 	})
 	if err != nil {
-		logrus.Errorf("删除用户异常 err: %v\n", err)
-		return errors.New(constant.XrayRemoveUserError)
+		logrus.Errorf("xray remove user err: %v\n", err)
+		return errors.New(constant.GrpcError)
 	}
 	if resp == nil {
-		logrus.Errorf("nil response")
-		return errors.New(constant.XrayRemoveUserError)
+		logrus.Errorf("xray remove user nil response")
+		return errors.New(constant.GrpcError)
 	}
 	return nil
 }
