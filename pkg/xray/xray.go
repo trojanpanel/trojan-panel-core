@@ -10,6 +10,7 @@ import (
 
 // StartXray 启动Xray
 func StartXray() {
+	os.Args = []string{}
 	start.XrayMain()
 }
 
@@ -20,14 +21,6 @@ func StopXray() error {
 
 // 初始化Xray
 func init() {
-	xaryPath := constant.XrayPath
-	if !util.Exists(xaryPath) {
-		if err := os.MkdirAll(xaryPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建xray文件夹异常 err: %v\n", err)
-			panic(err)
-		}
-	}
-
 	// 创建默认Xray配置模板文件
 	xrayConfigFilePath := constant.XrayFilePath
 	if !util.Exists(xrayConfigFilePath) {
