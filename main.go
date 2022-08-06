@@ -18,5 +18,5 @@ func init() {
 	core.InitConfig()
 	middleware.InitLog()
 	dao.InitMySQL()
-	middleware.InitCron()
+	//middleware.InitCron()
 }

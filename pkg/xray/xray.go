@@ -1,6 +1,7 @@
 package xray
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/xtls/xray-core/common/cmdarg"
 	"os"
@@ -11,6 +12,7 @@ import (
 
 // StartXray 启动Xray
 func StartXray() {
+	os.Args = []string{"run"}
 	start.SetConfigFiles(cmdarg.Arg{constant.XrayConfigFilePath})
 	start.XrayMain()
 }
@@ -32,7 +34,7 @@ func init() {
 		}
 		defer file.Close()
 
-		_, err = file.WriteString(`{
+		_, err = file.WriteString(fmt.Sprintf(`{
   "stats": {},
   "api": {
     "services": [
@@ -60,7 +62,7 @@ func init() {
     {
       "tag": "api",
       "listen": "127.0.0.1",
-      "port": 10087,
+      "port": %s,
       "protocol": "dokodemo-door",
       "settings": {
         "address": "127.0.0.1"
@@ -86,7 +88,7 @@ func init() {
     ]
   }
 }
-`)
+`, constant.GrpcPortXray))
 		if err != nil {
 			logrus.Errorf("xray config.json文件写入异常 err: %v\n", err)
 			panic(err)
