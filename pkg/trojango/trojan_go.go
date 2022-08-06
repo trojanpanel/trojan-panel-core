@@ -4,8 +4,17 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"trojan-panel-core/module/constant"
+	"trojan-panel-core/pkg/trojango/start"
 	"trojan-panel-core/util"
 )
+
+func StartTrojanGo() {
+	start.TrojanGoMain()
+}
+
+func StopTrojanGo() {
+
+}
 
 // 初始化TrojanGo
 func init() {

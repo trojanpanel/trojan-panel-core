@@ -4,13 +4,16 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"trojan-panel-core/module/constant"
+	"trojan-panel-core/pkg/xray/start"
 	"trojan-panel-core/util"
 )
 
-func StartXray() error {
-	return nil
+// StartXray 启动Xray
+func StartXray() {
+	start.XrayMain()
 }
 
+// StopXray 关闭Xray
 func StopXray() error {
 	return nil
 }
