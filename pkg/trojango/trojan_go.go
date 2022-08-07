@@ -4,19 +4,12 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"strings"
-	"sync"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
-	"trojan-panel-core/pkg/trojango/start"
 	"trojan-panel-core/util"
 )
 
-var trojanGoMap sync.Map
-
 func StartTrojanGo() {
-	go func() {
-		start.TrojanGoMain()
-	}()
 }
 
 func StopTrojanGo() {
@@ -24,6 +17,13 @@ func StopTrojanGo() {
 }
 
 func ConfigTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) {
+	trojanGoPath := constant.TrojanGoPath
+	if !util.Exists(trojanGoPath) {
+		if err := os.MkdirAll(trojanGoPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建Trojan Go文件夹异常 err: %v\n", err)
+			panic(err)
+		}
+	}
 	trojanGoConfigFilePath := constant.TrojanGoConfigFilePath
 	if !util.Exists(trojanGoConfigFilePath) {
 		file, err := os.Create(trojanGoConfigFilePath)

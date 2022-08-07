@@ -16,8 +16,8 @@ type trojanGoApi struct {
 	ctx context.Context
 }
 
-// TrojanGoApi 初始化Trojan Go Api
-func TrojanGoApi() *trojanGoApi {
+// NewTrojanGoApi 初始化Trojan Go Api
+func NewTrojanGoApi() *trojanGoApi {
 	return &trojanGoApi{
 		ctx: context.Background(),
 	}

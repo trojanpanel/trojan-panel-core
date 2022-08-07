@@ -27,7 +27,7 @@ import (
 type xrayApi struct {
 }
 
-func XrayApi() *xrayApi {
+func NewXrayApi() *xrayApi {
 	return &xrayApi{}
 }
 
