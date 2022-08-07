@@ -9,7 +9,8 @@ import (
 	"trojan-panel-core/util"
 )
 
-func StartTrojanGo() {
+func StartTrojanGo() error {
+	return nil
 }
 
 func StopTrojanGo() {
