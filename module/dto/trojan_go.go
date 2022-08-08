@@ -14,3 +14,12 @@ type TrojanGoConfigDto struct {
 	SSMethod        string
 	SSPassword      string
 }
+
+type TrojanGoAddUserDto struct {
+	Password           string // 无需加密
+	IpLimit            int
+	UploadTraffic      int
+	DownloadTraffic    int
+	UploadSpeedLimit   int
+	DownloadSpeedLimit int
+}
