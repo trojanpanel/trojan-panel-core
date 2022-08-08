@@ -4,19 +4,16 @@ Trojan Panel核心
 
 # 支持的节点类型
 
-## Xray
+只会读取/写入password、quota、download、upload。password需要进行加盐对称加密，quota、upload、download单位是byte
 
-只会读取/写入password、quota、download、upload。password需要进行base64编码，quota、upload、download单位是byte
+1. Xray
+2. Trojan Go
+3. Hysteria
 
-主要定时任务
+主要定时任务：
 
-1. 实时更新download、upload
-
-2. 查询xray_user表，检查download + upload < quota，如果是，则授予连接，否则拒接，quota如果为负数则表示无限配额
-
-## Trojan Go
-
-## Hysteria
+1. 实时更新download、upload字段
+2. 调用api根据password实时更新数据库中的用户至应用，条件：download + upload < quota
 
 # 编译命令
 
