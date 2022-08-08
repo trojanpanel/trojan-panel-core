@@ -3,12 +3,12 @@ go install mvdan.cc/garble@latest
 ::SET CGO_ENABLED=0
 ::SET GOOS=windows
 ::SET GOARCH=amd64
-::garble -literals build -o build/trojan-panel-core-windows/amd64.exe -trimpath -ldflags="-H windowsgui -s -w -buildid="
+::garble -literals -tiny build -o build/trojan-panel-core-windows/amd64.exe -trimpath -ldflags="-H windowsgui -s -w -buildid="
 ::Mac amd64
 ::SET CGO_ENABLED=0
 ::SET GOOS=darwin
 ::SET GOARCH=amd64
-::garble -literals build -o build/trojan-panel-core-darwin/amd64 -trimpath -ldflags "-s -w -buildid="
+::garble -literals -tiny build -o build/trojan-panel-core-darwin/amd64 -trimpath -ldflags "-s -w -buildid="
 ::Linux 386
 SET CGO_ENABLED=0
 SET GOOS=linux
