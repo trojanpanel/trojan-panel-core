@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io"
-	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -26,7 +25,7 @@ func DownloadFile(url string, fileName string) error {
 	if err != nil {
 		return err
 	}
-	if err = ioutil.WriteFile(fileName, data, fs.ModePerm); err != nil {
+	if err = ioutil.WriteFile(fileName, data, 0644); err != nil {
 		return err
 	}
 	return nil
