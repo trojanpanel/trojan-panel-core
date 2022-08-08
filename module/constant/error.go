@@ -5,8 +5,12 @@ const (
 
 	GrpcError string = "gRPC连接异常"
 
-	XrayStartError  string = "启动Xray异常"
-	XrayConfigError string = "解析Xray配置异常"
+	BinaryFileNotExist string = "二进制文件不存在"
+	ConfigFileNotExist string = "配置文件不存在"
 
-	BinaryNotExist = "二进制文件不存在"
+	XrayStartError     string = "启动Xray失败"
+	TrojanGoStartError string = "启动TrojanGo失败"
+	HysteriaStartError string = "启动Hysteria失败"
+
+	ProcessStopError string = "进程暂停失败"
 )

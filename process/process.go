@@ -2,31 +2,39 @@ package process
 
 import (
 	"errors"
-	"fmt"
-	"runtime"
+	"os/exec"
+	"sync"
 	"trojan-panel-core/module/constant"
-	"trojan-panel-core/util"
 )
 
-func GetBinaryFilePath(name string) (string, error) {
-	var binaryName string
-	var binaryPath string
-	switch name {
-	case "xray":
-		binaryName = fmt.Sprintf("xray-%s-%s", runtime.GOOS, runtime.GOARCH)
-		binaryPath = constant.XrayPath
-	case "trojan-go":
-		binaryName = fmt.Sprintf("trojan-go-%s-%s", runtime.GOOS, runtime.GOARCH)
-		binaryPath = constant.TrojanGoPath
-	case "hysteria":
-		binaryName = fmt.Sprintf("hysteria-%s-%s", runtime.GOOS, runtime.GOARCH)
-		binaryPath = constant.HysteriaPath
-	default:
-		return "", errors.New(constant.BinaryNotExist)
+type process struct {
+	cmdMap  sync.Map[int, exec.Cmd]
+	apiPort string
+	name    string
+}
+
+func (p *process) IsRunning(id int) bool {
+	cmd, ok := p.cmdMap.Load(id)
+	if ok {
+		if cmd == nil || cmd.(*exec.Cmd).Process == nil {
+			return false
+		}
+		if cmd.(*exec.Cmd).ProcessState == nil {
+			return true
+		}
 	}
-	binaryFilePath := fmt.Sprintf("%s/%s", binaryPath, binaryName)
-	if !util.Exists(binaryFilePath) {
-		return "", errors.New(constant.BinaryNotExist)
+	return false
+}
+
+func (p *process) Stop(id int) error {
+	if !p.IsRunning(id) {
+		return nil
 	}
-	return binaryFilePath, nil
+	cmd, ok := p.cmdMap.Load(id)
+	if ok {
+		if err := cmd.(*exec.Cmd).Process.Kill(); err != nil {
+			return errors.New(constant.ProcessStopError)
+		}
+	}
+	return errors.New(constant.ProcessStopError)
 }
