@@ -1,6 +1,7 @@
 package xray
 
 import (
+	"errors"
 	"github.com/sirupsen/logrus"
 	"os"
 	"strings"
@@ -10,6 +11,9 @@ import (
 
 // StartXray 启动Xray
 func StartXray() error {
+	if err := InitXray(constant.GrpcPortXray); err != nil {
+		return errors.New(constant.SysError)
+	}
 	return nil
 }
 
@@ -18,14 +22,16 @@ func StopXray() {
 
 }
 
-func init() {
+func InitXray(apiPort string) error {
+	// 初始化文件夹
 	xrayPath := constant.XrayPath
 	if !util.Exists(xrayPath) {
 		if err := os.MkdirAll(xrayPath, os.ModePerm); err != nil {
 			logrus.Errorf("创建Xray文件夹异常 err: %v\n", err)
-			panic(err)
+			return err
 		}
 	}
+	// 初始化配置
 	xrayConfigFilePath := constant.XrayConfigFilePath
 	if !util.Exists(xrayConfigFilePath) {
 		file, err := os.Create(xrayConfigFilePath)
@@ -90,11 +96,12 @@ func init() {
   }
 }
 `
-		configContent = strings.ReplaceAll(configContent, "${api_port}", constant.GrpcPortXray)
+		configContent = strings.ReplaceAll(configContent, "${api_port}", apiPort)
 		_, err = file.WriteString(configContent)
 		if err != nil {
 			logrus.Errorf("xray config.json文件写入异常 err: %v\n", err)
-			panic(err)
+			return err
 		}
 	}
+	return nil
 }

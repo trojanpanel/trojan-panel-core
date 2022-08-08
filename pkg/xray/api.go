@@ -25,14 +25,17 @@ import (
 )
 
 type xrayApi struct {
+	apiPort string
 }
 
-func NewXrayApi() *xrayApi {
-	return &xrayApi{}
+func NewXrayApi(apiPort string) *xrayApi {
+	return &xrayApi{
+		apiPort: apiPort,
+	}
 }
 
-func apiClient() (*grpc.ClientConn, error) {
-	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%s", constant.GrpcPortXray),
+func apiClient(apiPort string) (*grpc.ClientConn, error) {
+	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%s", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logrus.Errorf("Xray gRPC初始化失败 err: %v\n", err)
@@ -43,7 +46,7 @@ func apiClient() (*grpc.ClientConn, error) {
 
 // QueryStats 全量状态
 func (x *xrayApi) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, error) {
-	conn, err := apiClient()
+	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +74,7 @@ func (x *xrayApi) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, erro
 
 // GetUserStats 查询用户状态
 func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error) {
-	conn, err := apiClient()
+	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +97,7 @@ func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayS
 
 // GetBoundStats 查询入/出站状态
 func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset bool) (*vo.XrayStatsVo, error) {
-	conn, err := apiClient()
+	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return nil, nil
 	}
@@ -117,7 +120,7 @@ func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset boo
 
 // AddInboundHandler 添加入站
 func (x *xrayApi) AddInboundHandler(addBoundDto dto.AddBoundDto) error {
-	conn, err := apiClient()
+	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return err
 	}
@@ -157,7 +160,7 @@ func (x *xrayApi) AddInboundHandler(addBoundDto dto.AddBoundDto) error {
 }
 
 func (x *xrayApi) AddOutboundHandler(addBoundDto dto.AddBoundDto) error {
-	conn, err := apiClient()
+	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return nil
 	}
@@ -181,7 +184,7 @@ func (x *xrayApi) AddOutboundHandler(addBoundDto dto.AddBoundDto) error {
 
 // RemoveInboundHandler 删除入站
 func (x *xrayApi) RemoveInboundHandler(tag string) error {
-	conn, err := apiClient()
+	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return nil
 	}
@@ -203,7 +206,7 @@ func (x *xrayApi) RemoveInboundHandler(tag string) error {
 
 // RemoveOutboundHandler 删除出站
 func (x *xrayApi) RemoveOutboundHandler(tag string) error {
-	conn, err := apiClient()
+	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return nil
 	}
@@ -225,7 +228,7 @@ func (x *xrayApi) RemoveOutboundHandler(tag string) error {
 
 // AddUser 添加用户
 func (x *xrayApi) AddUser(addUserDto dto.AddUserDto) error {
-	conn, err := apiClient()
+	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return nil
 	}
@@ -295,7 +298,7 @@ func (x *xrayApi) AddUser(addUserDto dto.AddUserDto) error {
 
 // RemoveUser 删除用户
 func (x *xrayApi) RemoveUser(tag string, email string) error {
-	conn, err := apiClient()
+	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return nil
 	}

@@ -7,4 +7,6 @@ const (
 
 	XrayStartError  string = "启动Xray异常"
 	XrayConfigError string = "解析Xray配置异常"
+
+	BinaryNotExist = "二进制文件不存在"
 )

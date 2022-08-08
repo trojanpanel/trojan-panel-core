@@ -13,18 +13,20 @@ import (
 )
 
 type trojanGoApi struct {
-	ctx context.Context
+	ctx     context.Context
+	apiPort string
 }
 
 // NewTrojanGoApi 初始化Trojan Go Api
-func NewTrojanGoApi() *trojanGoApi {
+func NewTrojanGoApi(apiPort string) *trojanGoApi {
 	return &trojanGoApi{
-		ctx: context.Background(),
+		ctx:     context.Background(),
+		apiPort: apiPort,
 	}
 }
 
-func apiClient() (service.TrojanServerServiceClient, *grpc.ClientConn, error) {
-	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%s", constant.GrpcPortTrojanGo),
+func apiClient(apiPort string) (service.TrojanServerServiceClient, *grpc.ClientConn, error) {
+	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%s", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logrus.Errorf("Trojan Go gRPC初始化失败 err: %v\n", err)
@@ -35,7 +37,7 @@ func apiClient() (service.TrojanServerServiceClient, *grpc.ClientConn, error) {
 
 // ListUsers 查询节点上的所有用户
 func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
-	client, conn, err := apiClient()
+	client, conn, err := apiClient(t.apiPort)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +67,7 @@ func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 
 // GetUser 查询节点上的用户
 func (t *trojanGoApi) GetUser(hash string) (*service.UserStatus, error) {
-	client, conn, err := apiClient()
+	client, conn, err := apiClient(t.apiPort)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +100,7 @@ func (t *trojanGoApi) GetUser(hash string) (*service.UserStatus, error) {
 
 // 节点上设置用户
 func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
-	client, conn, err := apiClient()
+	client, conn, err := apiClient(t.apiPort)
 	if err != nil {
 		return err
 	}

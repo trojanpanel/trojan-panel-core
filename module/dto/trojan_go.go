@@ -1,14 +1,16 @@
 package dto
 
 type TrojanGoConfigDto struct {
-	LocalPort           string
-	Sni                 string
-	Domain              string
-	MuxEnable           string
-	WebsocketEnable     string
-	WebsocketPath       string
-	ShadowsocksEnable   string
-	ShadowsocksMethod   string
-	ShadowsocksPassword string
-	ApiPort             string
+	Id              int // 节点id
+	Ip              string
+	Port            string
+	ApiPort         string
+	Sni             string
+	MuxEnable       string
+	WebsocketEnable string
+	WebsocketPath   string
+	WebsocketHost   string
+	SSEnable        string
+	SSMethod        string
+	SSPassword      string
 }
