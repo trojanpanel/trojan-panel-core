@@ -54,7 +54,7 @@ func ConfigTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) {
         "cipher": "",
         "curves": "",
         "prefer_server_cipher": false,
-        "sni": "",
+        "sni": "${sni}",
         "alpn": [
             "http/1.1"
         ],
@@ -93,6 +93,7 @@ func ConfigTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) {
 }
 `
 		configContent = strings.ReplaceAll(configContent, "${local_port}", trojanGoConfigDto.LocalPort)
+		configContent = strings.ReplaceAll(configContent, "${sni}", trojanGoConfigDto.Sni)
 		configContent = strings.ReplaceAll(configContent, "${domain}", trojanGoConfigDto.Domain)
 		configContent = strings.ReplaceAll(configContent, "${mux_enable}", trojanGoConfigDto.MuxEnable)
 		configContent = strings.ReplaceAll(configContent, "${websocket_enabled}", trojanGoConfigDto.WebsocketEnable)

@@ -2,6 +2,7 @@ package dto
 
 type TrojanGoConfigDto struct {
 	LocalPort           string
+	Sni                 string
 	Domain              string
 	MuxEnable           string
 	WebsocketEnable     string
