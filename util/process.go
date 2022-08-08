@@ -7,6 +7,17 @@ import (
 	"trojan-panel-core/module/constant"
 )
 
+func GetBinaryFile(name string) (string, error) {
+	binaryFile, err := GetBinaryFilePath(name)
+	if err != nil {
+		return "", err
+	}
+	if !Exists(binaryFile) {
+		return "", errors.New(constant.BinaryFileNotExist)
+	}
+	return binaryFile, nil
+}
+
 func GetBinaryFilePath(name string) (string, error) {
 	var binaryPath string
 	var binaryName string
@@ -23,14 +34,21 @@ func GetBinaryFilePath(name string) (string, error) {
 	default:
 		return "", errors.New(constant.BinaryFileNotExist)
 	}
-	binaryFilePath := fmt.Sprintf("%s/%s", binaryPath, binaryName)
-	if !Exists(binaryFilePath) {
-		return "", errors.New(constant.BinaryFileNotExist)
-	}
-	return binaryFilePath, nil
+	return fmt.Sprintf("%s/%s", binaryPath, binaryName), nil
 }
 
-func GetConfigPath(id int, name string) (string, error) {
+func GetConfigFile(id int, name string) (string, error) {
+	configFile, err := GetConfigFilePath(id, name)
+	if err != nil {
+		return "", err
+	}
+	if !Exists(configFile) {
+		return "", errors.New(constant.ConfigFileNotExist)
+	}
+	return configFile, nil
+}
+
+func GetConfigFilePath(id int, name string) (string, error) {
 	var configPath string
 	var configName string
 	switch name {
@@ -38,17 +56,13 @@ func GetConfigPath(id int, name string) (string, error) {
 		configName = "config.json"
 		configPath = constant.XrayPath
 	case "trojan-go":
-		configName = fmt.Sprintf("trojan-go-config-%d.json", id)
+		configName = fmt.Sprintf("config-%d.json", id)
 		configPath = constant.TrojanGoPath
 	case "hysteria":
-		configName = fmt.Sprintf("hysteria-config-%d.json", id)
+		configName = fmt.Sprintf("config-%d.json", id)
 		configPath = constant.HysteriaPath
 	default:
 		return "", errors.New(constant.ConfigFileNotExist)
 	}
-	configFilePath := fmt.Sprintf("%s/%s", configPath, configName)
-	if !Exists(configFilePath) {
-		return "", errors.New(constant.ConfigFileNotExist)
-	}
-	return configFilePath, nil
+	return fmt.Sprintf("%s/%s", configPath, configName), nil
 }

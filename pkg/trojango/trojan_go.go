@@ -1,39 +1,67 @@
 package trojango
 
 import (
-	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
+	"runtime"
 	"strings"
+	"trojan-panel-core/core/process"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
 )
 
+var trojanGoProcess *process.TrojanGoProcess
+
 func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
-	_, err := InitTrojanGo(trojanGoConfigDto)
+	if err := initTrojanGo(trojanGoConfigDto); err != nil {
+		return err
+	}
+	var err error
+	trojanGoProcess, err = process.NewTrojanGoProcess(trojanGoConfigDto.Id, trojanGoConfigDto.ApiPort)
 	if err != nil {
-		return errors.New(constant.SysError)
+		return err
+	}
+	if err = trojanGoProcess.StartTrojanGo(trojanGoConfigDto.Id); err != nil {
+		return err
 	}
 	return nil
 }
 
-func StopTrojanGo(id int) {
-
+func StopTrojanGo(id int) error {
+	if err := trojanGoProcess.Stop(id); err != nil {
+		return err
+	}
+	return nil
 }
 
-func InitTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) (string, error) {
+func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	// 初始化文件夹
 	trojanGoPath := constant.TrojanGoPath
 	if !util.Exists(trojanGoPath) {
 		if err := os.MkdirAll(trojanGoPath, os.ModePerm); err != nil {
 			logrus.Errorf("创建Trojan Go文件夹异常 err: %v\n", err)
-			return "", err
+			panic(err)
 		}
 	}
+
+	// 下载二进制文件
+	binaryFilePath, err := util.GetBinaryFilePath("trojan-go")
+	if err != nil {
+		return err
+	}
+	if err = util.DownloadFile(fmt.Sprintf("%s/trojan-go-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
+		binaryFilePath); err != nil {
+		logrus.Errorf("Trojan Go二进制文件下载失败 err: %v\n", err)
+		panic(err)
+	}
+
 	// 初始化配置
-	trojanGoConfigFilePath := fmt.Sprintf("%s/config-%d.json", constant.TrojanGoPath, trojanGoConfigDto.Id)
+	trojanGoConfigFilePath, err := util.GetConfigFilePath(trojanGoConfigDto.Id, "trojan-go")
+	if err != nil {
+		return err
+	}
 	if !util.Exists(trojanGoConfigFilePath) {
 		file, err := os.Create(trojanGoConfigFilePath)
 		if err != nil {
@@ -114,8 +142,8 @@ func InitTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) (string, error) {
 		_, err = file.WriteString(configContent)
 		if err != nil {
 			logrus.Errorf("trojan go config-%d.json文件写入异常 err: %v\n", trojanGoConfigDto.Id, err)
-			return "", err
+			return err
 		}
 	}
-	return trojanGoConfigFilePath, nil
+	return nil
 }

@@ -1,13 +1,19 @@
 package hysteria
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
+	"runtime"
 	"trojan-panel-core/module/constant"
+	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
 )
 
-func StartHysteria() error {
+func StartHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
+	if err := initHysteria(hysteriaConfigDto); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -15,8 +21,9 @@ func StopHysteria() {
 
 }
 
-// 初始化Hysteria
-func init() {
+// InitHysteria 初始化Hysteria
+func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
+	// 初始化文件夹
 	hysteriaPath := constant.HysteriaPath
 	if !util.Exists(hysteriaPath) {
 		if err := os.MkdirAll(hysteriaPath, os.ModePerm); err != nil {
@@ -25,7 +32,22 @@ func init() {
 		}
 	}
 
-	hysteriaConfigFilePath := constant.HysteriaConfigFilePath
+	// 下载二进制文件
+	binaryFilePath, err := util.GetBinaryFilePath("hysteria")
+	if err != nil {
+		return err
+	}
+	if err = util.DownloadFile(fmt.Sprintf("%s/hysteria-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
+		binaryFilePath); err != nil {
+		logrus.Errorf("Hysteria二进制文件下载失败 err: %v\n", err)
+		panic(err)
+	}
+
+	// 初始化配置
+	hysteriaConfigFilePath, err := util.GetConfigFilePath(hysteriaConfigDto.Id, "hysteria")
+	if err != nil {
+		return err
+	}
 	if !util.Exists(hysteriaConfigFilePath) {
 		file, err := os.Create(hysteriaConfigFilePath)
 		if err != nil {
@@ -41,4 +63,5 @@ func init() {
 			panic(err)
 		}
 	}
+	return nil
 }

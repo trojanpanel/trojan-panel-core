@@ -14,3 +14,7 @@ type AddBoundDto struct {
 	Port         int
 	ProtocolName string
 }
+
+type XrayConfigDto struct {
+	ApiPort string
+}
