@@ -10,10 +10,11 @@ Trojan Panel核心
 2. Trojan Go
 3. Hysteria
 
-主要定时任务：
+主要方法：
 
 1. 实时更新download、upload字段
-2. 调用api根据password实时更新数据库中的用户至应用，条件：download + upload < quota
+2. 实时调用api根据password实时更新数据库中的用户至应用，条件：download + upload < quota
+3. 重设用户：调用api删除用户，再调用api添加用户
 
 # 编译命令
 
