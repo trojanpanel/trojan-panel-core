@@ -37,10 +37,12 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	if err != nil {
 		return err
 	}
-	if err = util.DownloadFile(fmt.Sprintf("%s/hysteria-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
-		binaryFilePath); err != nil {
-		logrus.Errorf("Hysteria二进制文件下载失败 err: %v\n", err)
-		panic(err)
+	if !util.Exists(binaryFilePath) {
+		if err = util.DownloadFile(fmt.Sprintf("%s/hysteria-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
+			binaryFilePath); err != nil {
+			logrus.Errorf("Hysteria二进制文件下载失败 err: %v\n", err)
+			panic(err)
+		}
 	}
 
 	// 初始化配置

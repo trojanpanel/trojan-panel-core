@@ -53,10 +53,12 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	if err != nil {
 		return err
 	}
-	if err = util.DownloadFile(fmt.Sprintf("%s/xray-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
-		binaryFilePath); err != nil {
-		logrus.Errorf("Xray二进制文件下载失败 err: %v\n", err)
-		panic(err)
+	if !util.Exists(binaryFilePath) {
+		if err = util.DownloadFile(fmt.Sprintf("%s/xray-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
+			binaryFilePath); err != nil {
+			logrus.Errorf("Xray二进制文件下载失败 err: %v\n", err)
+			panic(err)
+		}
 	}
 
 	// 初始化配置
