@@ -1,6 +1,6 @@
 package dto
 
-type AddUserDto struct {
+type XrayAddUserDto struct {
 	Tag            string
 	Email          string
 	SSPassword     string // ss
@@ -9,7 +9,7 @@ type AddUserDto struct {
 	VId            string // vless & vmess
 }
 
-type AddBoundDto struct {
+type XrayAddBoundDto struct {
 	Tag          string
 	Port         int
 	ProtocolName string

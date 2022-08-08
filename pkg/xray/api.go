@@ -119,7 +119,7 @@ func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset boo
 }
 
 // AddInboundHandler 添加入站
-func (x *xrayApi) AddInboundHandler(addBoundDto dto.AddBoundDto) error {
+func (x *xrayApi) AddInboundHandler(dto dto.XrayAddBoundDto) error {
 	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return err
@@ -128,9 +128,9 @@ func (x *xrayApi) AddInboundHandler(addBoundDto dto.AddBoundDto) error {
 	handlerServiceClient := command.NewHandlerServiceClient(conn)
 	addInboundResponse, err := handlerServiceClient.AddInbound(context.Background(), &command.AddInboundRequest{
 		Inbound: &core.InboundHandlerConfig{
-			Tag: addBoundDto.Tag,
+			Tag: dto.Tag,
 			ReceiverSettings: serial.ToTypedMessage(&proxyman.ReceiverConfig{
-				PortList: &net.PortList{Range: []*net.PortRange{net.SinglePortRange(net.Port(addBoundDto.Port))}},
+				PortList: &net.PortList{Range: []*net.PortRange{net.SinglePortRange(net.Port(dto.Port))}},
 				Listen:   net.NewIPOrDomain(net.LocalHostIP),
 			}),
 			ProxySettings: serial.ToTypedMessage(&inbound.Config{
@@ -159,29 +159,6 @@ func (x *xrayApi) AddInboundHandler(addBoundDto dto.AddBoundDto) error {
 	return nil
 }
 
-func (x *xrayApi) AddOutboundHandler(addBoundDto dto.AddBoundDto) error {
-	conn, err := apiClient(x.apiPort)
-	if err != nil {
-		return nil
-	}
-	defer conn.Close()
-	handlerServiceClient := command.NewHandlerServiceClient(conn)
-	addInboundResponse, err := handlerServiceClient.AddOutbound(context.Background(), &command.AddOutboundRequest{
-		Outbound: &core.OutboundHandlerConfig{
-			Tag:            addBoundDto.Tag,
-			SenderSettings: serial.ToTypedMessage(&proxyman.SenderConfig{}),
-		}})
-	if err != nil {
-		logrus.Errorf("xray add outbound err: %v\n", err)
-		return errors.New(constant.GrpcError)
-	}
-	if addInboundResponse == nil {
-		logrus.Errorf("xray add outbound unexpected nil response")
-		return errors.New(constant.GrpcError)
-	}
-	return nil
-}
-
 // RemoveInboundHandler 删除入站
 func (x *xrayApi) RemoveInboundHandler(tag string) error {
 	conn, err := apiClient(x.apiPort)
@@ -204,30 +181,8 @@ func (x *xrayApi) RemoveInboundHandler(tag string) error {
 	return nil
 }
 
-// RemoveOutboundHandler 删除出站
-func (x *xrayApi) RemoveOutboundHandler(tag string) error {
-	conn, err := apiClient(x.apiPort)
-	if err != nil {
-		return nil
-	}
-	defer conn.Close()
-	handlerServiceClient := command.NewHandlerServiceClient(conn)
-	removeOutboundResponse, err := handlerServiceClient.RemoveOutbound(context.Background(), &command.RemoveOutboundRequest{
-		Tag: tag,
-	})
-	if err != nil {
-		logrus.Errorf("xray remove outbound err: %v\n", err)
-		return errors.New(constant.GrpcError)
-	}
-	if removeOutboundResponse == nil {
-		logrus.Errorf("xray remove outbound unexpected nil response")
-		return errors.New(constant.GrpcError)
-	}
-	return nil
-}
-
 // AddUser 添加用户
-func (x *xrayApi) AddUser(addUserDto dto.AddUserDto) error {
+func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return nil
@@ -235,55 +190,55 @@ func (x *xrayApi) AddUser(addUserDto dto.AddUserDto) error {
 	defer conn.Close()
 	hsClient := command.NewHandlerServiceClient(conn)
 	var resp *command.AlterInboundResponse
-	switch addUserDto.Tag {
+	switch dto.Tag {
 	case constant.ProtocolShadowsocks:
 		resp, _ = hsClient.AlterInbound(context.Background(), &command.AlterInboundRequest{
-			Tag: addUserDto.Tag,
+			Tag: dto.Tag,
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
-						Email: addUserDto.Email,
+						Email: dto.Email,
 						Account: serial.ToTypedMessage(&shadowsocks.Account{
-							Password: addUserDto.SSPassword,
+							Password: dto.SSPassword,
 						}),
 					},
 				}),
 		})
 	case constant.ProtocolTrojan:
 		resp, _ = hsClient.AlterInbound(context.Background(), &command.AlterInboundRequest{
-			Tag: addUserDto.Tag,
+			Tag: dto.Tag,
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
-						Email: addUserDto.Email,
+						Email: dto.Email,
 						Account: serial.ToTypedMessage(&trojan.Account{
-							Password: addUserDto.TrojanPassword,
+							Password: dto.TrojanPassword,
 						}),
 					},
 				}),
 		})
 	case constant.ProtocolVless:
 		resp, _ = hsClient.AlterInbound(context.Background(), &command.AlterInboundRequest{
-			Tag: addUserDto.Tag,
+			Tag: dto.Tag,
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
-						Email: addUserDto.Email,
+						Email: dto.Email,
 						Account: serial.ToTypedMessage(&vless.Account{
-							Id: addUserDto.VId,
+							Id: dto.VId,
 						}),
 					},
 				}),
 		})
 	case constant.ProtocolVmess:
 		resp, _ = hsClient.AlterInbound(context.Background(), &command.AlterInboundRequest{
-			Tag: addUserDto.Tag,
+			Tag: dto.Tag,
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
-						Email: addUserDto.Email,
+						Email: dto.Email,
 						Account: serial.ToTypedMessage(&vmess.Account{
-							Id: addUserDto.VId,
+							Id: dto.VId,
 						}),
 					},
 				}),
