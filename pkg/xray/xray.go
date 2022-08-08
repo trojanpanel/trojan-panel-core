@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
+	"regexp"
 	"runtime"
 	"strings"
 	"trojan-panel-core/core/process"
@@ -13,6 +14,10 @@ import (
 )
 
 var xrayProcess *process.XrayProcess
+
+var userUplinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>uplink")
+
+var userDownlinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>downlink")
 
 // StartXray 启动Xray
 func StartXray(xrayConfigDto dto.XrayConfigDto) error {
@@ -36,6 +41,28 @@ func StopXray() error {
 		return err
 	}
 	return nil
+}
+
+// GetXrayTraffic 获取Xray上传和下载流量
+func GetXrayTraffic() (int, int, error) {
+	if xrayProcess.IsRunning(0) {
+		var upload, download int
+		api := NewXrayApi(xrayProcess.ApiPort)
+		stats, err := api.QueryStats("", false)
+		if err != nil {
+			return 0, 0, nil
+		}
+		for _, stat := range stats {
+			if userUplinkRegex.MatchString(stat.Name) {
+				upload += int(stat.Value)
+			}
+			if userDownlinkRegex.MatchString(stat.Name) {
+				download += int(stat.Value)
+			}
+		}
+		return upload, download, nil
+	}
+	return 0, 0, nil
 }
 
 func initXray(xrayConfigDto dto.XrayConfigDto) error {

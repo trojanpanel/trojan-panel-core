@@ -20,7 +20,7 @@ func NewXrayProcess(apiPort string) (*XrayProcess, error) {
 	if mutex.TryLock() {
 		x := &XrayProcess{
 			process{
-				apiPort: apiPort,
+				ApiPort: apiPort,
 			},
 		}
 		binaryFilePath, err := util.GetBinaryFile("xray")

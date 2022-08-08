@@ -20,7 +20,7 @@ func NewHysteriaProcess(id int, apiPort string) (*HysteriaProcess, error) {
 	if mutex.TryLock() {
 		h := &HysteriaProcess{
 			process{
-				apiPort: apiPort,
+				ApiPort: apiPort,
 			},
 		}
 		binaryFilePath, err := util.GetBinaryFile("hysteria")

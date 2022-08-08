@@ -11,7 +11,7 @@ import (
 type process struct {
 	mutex   sync.Mutex
 	cmdMap  sync.Map[int, exec.Cmd]
-	apiPort string
+	ApiPort string
 }
 
 func (p *process) IsRunning(id int) bool {

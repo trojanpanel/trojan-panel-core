@@ -20,10 +20,9 @@ func NewTrojanGoProcess(id int, apiPort string) (*TrojanGoProcess, error) {
 	if mutex.TryLock() {
 		t := &TrojanGoProcess{
 			process{
-				apiPort: apiPort,
+				ApiPort: apiPort,
 			},
 		}
-		t.apiPort = apiPort
 		binaryFilePath, err := util.GetBinaryFile("trojan-go")
 		if err != nil {
 			return nil, err
