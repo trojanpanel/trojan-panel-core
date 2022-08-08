@@ -12,7 +12,7 @@ Trojan Panel核心
 
 主要方法：
 
-1. 实时更新download、upload字段
+1. 应用实时更新download、upload字段至数据库
 2. 实时调用api根据password实时更新数据库中的用户至应用，删除：download + upload >= quota，查询如果存在则不操作，如果不存在则添加：download + upload < quota
 3. 重设用户流量：调用api删除用户，再调用api添加用户
 
