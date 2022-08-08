@@ -22,6 +22,12 @@ Trojan Panel核心
 
 [compile.bat](./compile.bat)
 
+## 版本对应关系
+
+| Trojan Panel | Trojan Panel Core | Xray   | Trojan Go | Hysteria |
+|--------------|-------------------|--------|-----------|----------|
+| v1.2.0       | v1.2.0            | v1.5.5 | v1.10.6   | v1.1.0   |
+
 # Community
 
 - Telegram Channel: [Trojan Panel](https://t.me/TrojanPanel)
