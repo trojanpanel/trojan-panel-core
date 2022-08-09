@@ -98,17 +98,40 @@ func (t *TrojanGoProcess) handlerUsers(apiPort string) {
 }
 
 func (t *TrojanGoProcess) handlerUserUploadAndDownload(apiPort string) {
+	api := trojango.NewTrojanGoApi(apiPort)
 	for {
 		if !t.IsRunning(apiPort) {
 			break
+		}
+		users, err := api.ListUsers()
+		if err != nil {
+			break
+		}
+		for _, user := range users {
+			downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
+			uploadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
+			if err := service.UpdateUser(user.GetUser().GetPassword(), &downloadTraffic,
+				&uploadTraffic, nil); err != nil {
+				continue
+			}
 		}
 	}
 }
 
 func (t *TrojanGoProcess) removeUsers(apiPort string) {
+	api := trojango.NewTrojanGoApi(apiPort)
 	for {
 		if !t.IsRunning(apiPort) {
 			break
+		}
+		apiUserVos, err := service.SelectUsersPassword(false)
+		if err != nil {
+			break
+		}
+		for _, apiUser := range apiUserVos {
+			if err := api.DeleteUser(apiUser.Password); err != nil {
+				continue
+			}
 		}
 	}
 }
