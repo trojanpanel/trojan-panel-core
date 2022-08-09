@@ -21,7 +21,7 @@ func NewTrojanGoProcess(apiPort string) (*TrojanGoProcess, error) {
 	var mutex sync.Mutex
 	defer mutex.Unlock()
 	if mutex.TryLock() {
-		t := &TrojanGoProcess{}
+		t := &TrojanGoProcess{process{binaryType: 2}}
 		binaryFilePath, err := util.GetBinaryFile(2)
 		if err != nil {
 			return nil, err

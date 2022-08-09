@@ -2,6 +2,7 @@ package util
 
 import (
 	"archive/zip"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -27,6 +28,14 @@ func DownloadFile(url string, fileName string) error {
 	}
 	if err = ioutil.WriteFile(fileName, data, 0644); err != nil {
 		return err
+	}
+	return nil
+}
+
+func RemoveFile(fileName string) error {
+	if err := os.Remove(fileName); err != nil {
+		logrus.Errorf("删除文件失败 fileName: %s err: %v\n", fileName, err)
+		return errors.New(constant.RemoveFileError)
 	}
 	return nil
 }

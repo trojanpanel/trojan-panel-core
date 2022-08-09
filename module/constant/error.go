@@ -18,4 +18,6 @@ const (
 	ProcessStopError string = "进程暂停失败"
 
 	DownloadFilError string = "远程文件下载失败"
+
+	RemoveFileError string = "删除文件失败"
 )

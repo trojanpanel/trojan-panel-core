@@ -6,11 +6,13 @@ import (
 	"os/exec"
 	"sync"
 	"trojan-panel-core/module/constant"
+	"trojan-panel-core/util"
 )
 
 type process struct {
-	mutex  sync.Mutex
-	cmdMap sync.Map[string, exec.Cmd]
+	mutex      sync.Mutex
+	cmdMap     sync.Map[string, exec.Cmd]
+	binaryType int // 1/xray 2/trojan-go 3/hysteria
 }
 
 func (p *process) IsRunning(apiPort string) bool {
@@ -39,6 +41,13 @@ func (p *process) Stop(apiPort string) error {
 				return errors.New(constant.ProcessStopError)
 			}
 			p.cmdMap.Delete(apiPort)
+			configFile, err := util.GetConfigFile(p.binaryType, apiPort)
+			if err != nil {
+				return err
+			}
+			if err = util.RemoveFile(configFile); err != nil {
+				return err
+			}
 			return nil
 		}
 		logrus.Errorf("stop process error apiPort: %s err: process not found\n", apiPort)

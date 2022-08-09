@@ -18,7 +18,7 @@ func NewHysteriaProcess(apiPort string) (*HysteriaProcess, error) {
 	var mutex sync.Mutex
 	defer mutex.Unlock()
 	if mutex.TryLock() {
-		h := &HysteriaProcess{}
+		h := &HysteriaProcess{process{binaryType: 3}}
 		binaryFilePath, err := util.GetBinaryFile(3)
 		if err != nil {
 			return nil, err
