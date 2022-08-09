@@ -1,6 +1,7 @@
 package trojango
 
 import (
+	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -57,7 +58,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 		if err = util.DownloadFile(fmt.Sprintf("%s/trojan-go-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
 			binaryFilePath); err != nil {
 			logrus.Errorf("Trojan Go二进制文件下载失败 err: %v\n", err)
-			panic(err)
+			panic(errors.New(constant.DownloadFilError))
 		}
 	}
 
@@ -146,7 +147,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 		_, err = file.WriteString(configContent)
 		if err != nil {
 			logrus.Errorf("trojan go config-%d.json文件写入异常 err: %v\n", trojanGoConfigDto.Id, err)
-			return err
+			panic(err)
 		}
 	}
 	return nil

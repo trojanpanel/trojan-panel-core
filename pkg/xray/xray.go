@@ -1,6 +1,7 @@
 package xray
 
 import (
+	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -59,7 +60,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 		if err = util.DownloadFile(fmt.Sprintf("%s/xray-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
 			binaryFilePath); err != nil {
 			logrus.Errorf("Xray二进制文件下载失败 err: %v\n", err)
-			panic(err)
+			panic(errors.New(constant.DownloadFilError))
 		}
 	}
 
@@ -135,7 +136,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 		_, err = file.WriteString(configContent)
 		if err != nil {
 			logrus.Errorf("xray config.json文件写入异常 err: %v\n", err)
-			return err
+			panic(err)
 		}
 	}
 	return nil

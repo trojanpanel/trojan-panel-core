@@ -1,6 +1,7 @@
 package hysteria
 
 import (
+	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -57,7 +58,7 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 		if err = util.DownloadFile(fmt.Sprintf("%s/hysteria-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
 			binaryFilePath); err != nil {
 			logrus.Errorf("Hysteria二进制文件下载失败 err: %v\n", err)
-			panic(err)
+			panic(errors.New(constant.DownloadFilError))
 		}
 	}
 
