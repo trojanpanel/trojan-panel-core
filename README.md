@@ -17,6 +17,11 @@ Trojan Panel核心
    quota || quota < 0
 3. 禁用用户：set quota = 0,download = 0,upload = 0
 4. 重设用户流量：set download = 0,upload = 0 然后api删除用户
+5. 启动时扫描配置文件，启动相关的应用
+
+问题：
+
+1. 流量叠加，统计？
 
 # 编译命令
 
