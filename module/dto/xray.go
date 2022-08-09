@@ -1,5 +1,9 @@
 package dto
 
+type XrayConfigDto struct {
+	ApiPort string // api端口
+}
+
 type XrayAddUserDto struct {
 	Tag            string
 	Email          string
@@ -13,8 +17,4 @@ type XrayAddBoundDto struct {
 	Tag          string
 	Port         int
 	ProtocolName string
-}
-
-type XrayConfigDto struct {
-	ApiPort string // api端口
 }
