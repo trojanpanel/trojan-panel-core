@@ -93,7 +93,7 @@ func (t *trojanGoApi) GetUser(password string) (*service.UserStatus, error) {
 	}
 	resp, err := stream.Recv()
 	if err != nil {
-		logrus.Errorf("trojan go get users stream send err: %v\n", err)
+		logrus.Errorf("trojan go get users stream recv err: %v\n", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	return resp.Status, nil
@@ -122,7 +122,7 @@ func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
 	}
 	resp, err := stream.Recv()
 	if err != nil {
-		logrus.Errorf("trojan go set user stream recv err: %v\n", err)
+		logrus.Errorf("trojan go set user recv recv err: %v\n", err)
 		return errors.New(constant.GrpcError)
 	}
 	if !resp.Success {
