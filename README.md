@@ -16,7 +16,7 @@ Trojan Panel核心
 2. api实时更新（数据库至应用）：根据password实时更新，删除：download + upload >= quota && quota >= 0；查询如果存在则不操作，如果不存在则添加：download + upload <
    quota || quota < 0
 3. 禁用用户：set quota = 0,download = 0,upload = 0
-4. 重设用户流量：set download = 0,upload = 0
+4. 重设用户流量：set download = 0,upload = 0 然后api删除用户
 
 # 编译命令
 
