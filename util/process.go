@@ -37,8 +37,8 @@ func GetBinaryFilePath(name string) (string, error) {
 	return fmt.Sprintf("%s/%s", binaryPath, binaryName), nil
 }
 
-func GetConfigFile(id int, name string) (string, error) {
-	configFile, err := GetConfigFilePath(id, name)
+func GetConfigFile(apiPort string, name string) (string, error) {
+	configFile, err := GetConfigFilePath(apiPort, name)
 	if err != nil {
 		return "", err
 	}
@@ -48,7 +48,7 @@ func GetConfigFile(id int, name string) (string, error) {
 	return configFile, nil
 }
 
-func GetConfigFilePath(id int, name string) (string, error) {
+func GetConfigFilePath(apiPort string, name string) (string, error) {
 	var configPath string
 	var configName string
 	switch name {
@@ -56,10 +56,10 @@ func GetConfigFilePath(id int, name string) (string, error) {
 		configName = "config.json"
 		configPath = constant.XrayPath
 	case "trojan-go":
-		configName = fmt.Sprintf("config-%d.json", id)
+		configName = fmt.Sprintf("config-%s.json", apiPort)
 		configPath = constant.TrojanGoPath
 	case "hysteria":
-		configName = fmt.Sprintf("config-%d.json", id)
+		configName = fmt.Sprintf("config-%s.json", apiPort)
 		configPath = constant.HysteriaPath
 	default:
 		return "", errors.New(constant.ConfigFileNotExist)

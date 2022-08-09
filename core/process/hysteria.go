@@ -14,39 +14,35 @@ type HysteriaProcess struct {
 	process
 }
 
-func NewHysteriaProcess(id int, apiPort string) (*HysteriaProcess, error) {
+func NewHysteriaProcess(apiPort string) (*HysteriaProcess, error) {
 	var mutex sync.Mutex
 	defer mutex.Unlock()
 	if mutex.TryLock() {
-		h := &HysteriaProcess{
-			process{
-				ApiPort: apiPort,
-			},
-		}
+		h := &HysteriaProcess{}
 		binaryFilePath, err := util.GetBinaryFile("hysteria")
 		if err != nil {
 			return nil, err
 		}
-		configFilePath, err := util.GetConfigFile(id, "hysteria")
+		configFilePath, err := util.GetConfigFile(apiPort, "hysteria")
 		if err != nil {
 			return nil, err
 		}
 		cmd := exec.Command(binaryFilePath, "-c", configFilePath, "server")
-		h.cmdMap.Store(id, cmd)
-		runtime.SetFinalizer(h, h.Stop(id))
+		h.cmdMap.Store(apiPort, cmd)
+		runtime.SetFinalizer(h, h.Stop(apiPort))
 		return h, nil
 	}
 	logrus.Errorf("new hysteria process errror err: lock not acquired\n")
 	return nil, errors.New(constant.NewHysteriaProcessError)
 }
 
-func (h *HysteriaProcess) StartHysteria(id int) error {
+func (h *HysteriaProcess) StartHysteria(apiPort string) error {
 	defer h.mutex.Unlock()
 	if h.mutex.TryLock() {
-		if h.IsRunning(id) {
+		if h.IsRunning(apiPort) {
 			return nil
 		}
-		cmd, ok := h.cmdMap.Load(id)
+		cmd, ok := h.cmdMap.Load(apiPort)
 		if ok {
 			if err := cmd.(*exec.Cmd).Start(); err != nil {
 				logrus.Errorf("start hysteria error err: %v\n", err)

@@ -18,35 +18,31 @@ func NewXrayProcess(apiPort string) (*XrayProcess, error) {
 	var mutex sync.Mutex
 	defer mutex.Unlock()
 	if mutex.TryLock() {
-		x := &XrayProcess{
-			process{
-				ApiPort: apiPort,
-			},
-		}
+		x := &XrayProcess{}
 		binaryFilePath, err := util.GetBinaryFile("xray")
 		if err != nil {
 			return nil, err
 		}
-		configFilePath, err := util.GetConfigFile(0, "xray")
+		configFilePath, err := util.GetConfigFile(apiPort, "xray")
 		if err != nil {
 			return nil, err
 		}
 		cmd := exec.Command(binaryFilePath, "-c", configFilePath)
 		x.cmdMap.Store(0, cmd)
-		runtime.SetFinalizer(x, x.Stop(0))
+		runtime.SetFinalizer(x, x.Stop(apiPort))
 		return x, nil
 	}
 	logrus.Errorf("new xray process errror err: lock not acquired\n")
 	return nil, errors.New(constant.NewXrayProcessError)
 }
 
-func (x *XrayProcess) StartXray(id int) error {
+func (x *XrayProcess) StartXray(apiPort string) error {
 	defer x.mutex.Unlock()
 	if x.mutex.TryLock() {
-		if x.IsRunning(id) {
+		if x.IsRunning(apiPort) {
 			return nil
 		}
-		cmd, ok := x.cmdMap.Load(id)
+		cmd, ok := x.cmdMap.Load(apiPort)
 		if ok {
 			if err := cmd.(*exec.Cmd).Start(); err != nil {
 				logrus.Errorf("start xray error err: %v\n", err)

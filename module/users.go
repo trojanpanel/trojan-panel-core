@@ -1,6 +1,6 @@
 package module
 
-type Users struct {
+type User struct {
 	Id       *int    `ddb:"id"`
 	Password *string `ddb:"password"`
 	Quota    *int    `ddb:"quota"`
