@@ -4,11 +4,14 @@ Trojan Panel核心
 
 # 支持的节点类型
 
-只会读取/写入password、quota、download、upload。password需要进行加盐对称加密，quota、upload、download单位是byte
-
 1. Xray
 2. Trojan Go
 3. Hysteria
+
+默认数据处理：
+
+1. 读取/写入users中password、quota、download、upload。password需要进行加盐对称加密，quota、upload、download单位是byte
+2. 读取/写入node和traffic，遍历node读取traffic，通过api写入到应用中，用于重启场景
 
 主要逻辑：
 
@@ -17,11 +20,7 @@ Trojan Panel核心
    quota || quota < 0
 3. 禁用用户：set quota = 0,download = 0,upload = 0
 4. 重设用户流量：set download = 0,upload = 0 然后api删除用户
-5. 启动时扫描配置文件，启动相关的应用
-
-问题：
-
-1. 流量叠加，统计？
+5. 重启场景：遍历node，启动相关的应用，并查询traffic调api写入用户信息
 
 # 编译命令
 
