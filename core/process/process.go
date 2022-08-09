@@ -38,6 +38,7 @@ func (p *process) Stop(apiPort string) error {
 				logrus.Errorf("stop process error apiPort: %s err: %v\n", apiPort, err)
 				return errors.New(constant.ProcessStopError)
 			}
+			p.cmdMap.Delete(apiPort)
 			return nil
 		}
 		logrus.Errorf("stop process error apiPort: %s err: process not found\n", apiPort)

@@ -15,10 +15,10 @@ import (
 var trojanGoProcess *process.TrojanGoProcess
 
 func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
-	if err := initTrojanGo(trojanGoConfigDto); err != nil {
+	var err error
+	if err = initTrojanGo(trojanGoConfigDto); err != nil {
 		return err
 	}
-	var err error
 	trojanGoProcess, err = process.NewTrojanGoProcess(trojanGoConfigDto.ApiPort)
 	if err != nil {
 		return err
@@ -30,8 +30,10 @@ func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 }
 
 func StopTrojanGo(apiPort string) error {
-	if err := trojanGoProcess.Stop(apiPort); err != nil {
-		return err
+	if trojanGoProcess != nil {
+		if err := trojanGoProcess.Stop(apiPort); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -47,7 +49,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	}
 
 	// 下载二进制文件
-	binaryFilePath, err := util.GetBinaryFilePath("trojan-go")
+	binaryFilePath, err := util.GetBinaryFilePath(2)
 	if err != nil {
 		return err
 	}
@@ -60,7 +62,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	}
 
 	// 初始化配置
-	trojanGoConfigFilePath, err := util.GetConfigFilePath(trojanGoConfigDto.ApiPort, "trojan-go")
+	trojanGoConfigFilePath, err := util.GetConfigFilePath(2, trojanGoConfigDto.ApiPort)
 	if err != nil {
 		return err
 	}

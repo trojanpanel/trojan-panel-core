@@ -4,11 +4,16 @@ import (
 	"errors"
 	"github.com/sirupsen/logrus"
 	"os/exec"
+	"regexp"
 	"runtime"
 	"sync"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/util"
 )
+
+var userUplinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>uplink")
+
+var userDownlinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>downlink")
 
 type XrayProcess struct {
 	process
@@ -19,11 +24,11 @@ func NewXrayProcess(apiPort string) (*XrayProcess, error) {
 	defer mutex.Unlock()
 	if mutex.TryLock() {
 		x := &XrayProcess{}
-		binaryFilePath, err := util.GetBinaryFile("xray")
+		binaryFilePath, err := util.GetBinaryFile(1)
 		if err != nil {
 			return nil, err
 		}
-		configFilePath, err := util.GetConfigFile(apiPort, "xray")
+		configFilePath, err := util.GetConfigFile(1, apiPort)
 		if err != nil {
 			return nil, err
 		}

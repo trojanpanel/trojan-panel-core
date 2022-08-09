@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
-	"regexp"
 	"runtime"
 	"strings"
 	"trojan-panel-core/core/process"
@@ -15,16 +14,12 @@ import (
 
 var xrayProcess *process.XrayProcess
 
-var userUplinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>uplink")
-
-var userDownlinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>downlink")
-
 // StartXray 启动Xray
 func StartXray(xrayConfigDto dto.XrayConfigDto) error {
-	if err := initXray(xrayConfigDto); err != nil {
+	var err error
+	if err = initXray(xrayConfigDto); err != nil {
 		return err
 	}
-	var err error
 	xrayProcess, err = process.NewXrayProcess(xrayConfigDto.ApiPort)
 	if err != nil {
 		return err
@@ -45,28 +40,6 @@ func StopXray(apiPort string) error {
 	return nil
 }
 
-// GetXrayTraffic 获取Xray上传和下载流量
-func GetXrayTraffic(apiPort string) (int, int, error) {
-	if xrayProcess.IsRunning(constant.ApiPortXray) {
-		var upload, download int
-		api := NewXrayApi(apiPort)
-		stats, err := api.QueryStats("", false)
-		if err != nil {
-			return 0, 0, nil
-		}
-		for _, stat := range stats {
-			if userUplinkRegex.MatchString(stat.Name) {
-				upload += int(stat.Value)
-			}
-			if userDownlinkRegex.MatchString(stat.Name) {
-				download += int(stat.Value)
-			}
-		}
-		return upload, download, nil
-	}
-	return 0, 0, nil
-}
-
 func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	// 初始化文件夹
 	xrayPath := constant.XrayPath
@@ -78,7 +51,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	}
 
 	// 下载二进制文件
-	binaryFilePath, err := util.GetBinaryFilePath("xray")
+	binaryFilePath, err := util.GetBinaryFilePath(1)
 	if err != nil {
 		return err
 	}
@@ -91,7 +64,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	}
 
 	// 初始化配置
-	xrayConfigFilePath, err := util.GetConfigFilePath(xrayConfigDto.ApiPort, "xray")
+	xrayConfigFilePath, err := util.GetConfigFilePath(1, xrayConfigDto.ApiPort)
 	if err != nil {
 		return err
 	}

@@ -19,11 +19,11 @@ func NewHysteriaProcess(apiPort string) (*HysteriaProcess, error) {
 	defer mutex.Unlock()
 	if mutex.TryLock() {
 		h := &HysteriaProcess{}
-		binaryFilePath, err := util.GetBinaryFile("hysteria")
+		binaryFilePath, err := util.GetBinaryFile(3)
 		if err != nil {
 			return nil, err
 		}
-		configFilePath, err := util.GetConfigFile(apiPort, "hysteria")
+		configFilePath, err := util.GetConfigFile(3, apiPort)
 		if err != nil {
 			return nil, err
 		}

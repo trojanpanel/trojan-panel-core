@@ -22,11 +22,11 @@ func NewTrojanGoProcess(apiPort string) (*TrojanGoProcess, error) {
 	defer mutex.Unlock()
 	if mutex.TryLock() {
 		t := &TrojanGoProcess{}
-		binaryFilePath, err := util.GetBinaryFile("trojan-go")
+		binaryFilePath, err := util.GetBinaryFile(2)
 		if err != nil {
 			return nil, err
 		}
-		configFilePath, err := util.GetConfigFile(apiPort, "trojan-go")
+		configFilePath, err := util.GetConfigFile(2, apiPort)
 		if err != nil {
 			return nil, err
 		}

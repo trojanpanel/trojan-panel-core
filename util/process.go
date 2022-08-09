@@ -7,8 +7,8 @@ import (
 	"trojan-panel-core/module/constant"
 )
 
-func GetBinaryFile(name string) (string, error) {
-	binaryFile, err := GetBinaryFilePath(name)
+func GetBinaryFile(binaryType int) (string, error) {
+	binaryFile, err := GetBinaryFilePath(binaryType)
 	if err != nil {
 		return "", err
 	}
@@ -18,17 +18,17 @@ func GetBinaryFile(name string) (string, error) {
 	return binaryFile, nil
 }
 
-func GetBinaryFilePath(name string) (string, error) {
+func GetBinaryFilePath(binaryType int) (string, error) {
 	var binaryPath string
 	var binaryName string
-	switch name {
-	case "xray":
+	switch binaryType {
+	case 1:
 		binaryName = fmt.Sprintf("xray-%s-%s", runtime.GOOS, runtime.GOARCH)
 		binaryPath = constant.XrayPath
-	case "trojan-go":
+	case 2:
 		binaryName = fmt.Sprintf("trojan-go-%s-%s", runtime.GOOS, runtime.GOARCH)
 		binaryPath = constant.TrojanGoPath
-	case "hysteria":
+	case 3:
 		binaryName = fmt.Sprintf("hysteria-%s-%s", runtime.GOOS, runtime.GOARCH)
 		binaryPath = constant.HysteriaPath
 	default:
@@ -37,8 +37,8 @@ func GetBinaryFilePath(name string) (string, error) {
 	return fmt.Sprintf("%s/%s", binaryPath, binaryName), nil
 }
 
-func GetConfigFile(apiPort string, name string) (string, error) {
-	configFile, err := GetConfigFilePath(apiPort, name)
+func GetConfigFile(binaryType int, apiPort string) (string, error) {
+	configFile, err := GetConfigFilePath(binaryType, apiPort)
 	if err != nil {
 		return "", err
 	}
@@ -48,17 +48,17 @@ func GetConfigFile(apiPort string, name string) (string, error) {
 	return configFile, nil
 }
 
-func GetConfigFilePath(apiPort string, name string) (string, error) {
+func GetConfigFilePath(binaryType int, apiPort string) (string, error) {
 	var configPath string
 	var configName string
-	switch name {
-	case "xray":
+	switch binaryType {
+	case 1:
 		configName = "config.json"
 		configPath = constant.XrayPath
-	case "trojan-go":
+	case 2:
 		configName = fmt.Sprintf("config-%s.json", apiPort)
 		configPath = constant.TrojanGoPath
-	case "hysteria":
+	case 3:
 		configName = fmt.Sprintf("config-%s.json", apiPort)
 		configPath = constant.HysteriaPath
 	default:
