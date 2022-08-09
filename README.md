@@ -10,10 +10,10 @@ Trojan Panel核心
 2. Trojan Go
 3. Hysteria
 
-主要方法：
+主要逻辑：
 
-1. 应用实时更新download、upload字段至数据库
-2. 实时调用api根据password实时更新数据库中的用户至应用，删除：download + upload >= quota && quota >= 0，查询如果存在则不操作，如果不存在则添加：download + upload <
+1. api实时更新（应用同步至数据库）：download、upload
+2. api实时更新（数据库至应用）：根据password实时更新，删除：download + upload >= quota && quota >= 0；查询如果存在则不操作，如果不存在则添加：download + upload <
    quota || quota < 0
 3. 禁用用户：set quota = 0,download = 0,upload = 0
 4. 重设用户流量：set download = 0,upload = 0
