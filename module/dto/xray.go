@@ -16,5 +16,5 @@ type XrayAddBoundDto struct {
 }
 
 type XrayConfigDto struct {
-	ApiPort string
+	ApiPort string // api端口
 }

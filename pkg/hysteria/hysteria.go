@@ -5,20 +5,36 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"runtime"
+	"trojan-panel-core/core/process"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
 )
 
+var hysteriaProcess *process.HysteriaProcess
+
 func StartHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
-	if err := initHysteria(hysteriaConfigDto); err != nil {
+	var err error
+	if err = initHysteria(hysteriaConfigDto); err != nil {
+		return err
+	}
+	hysteriaProcess, err = process.NewHysteriaProcess(hysteriaConfigDto.ApiPort)
+	if err != nil {
+		return err
+	}
+	if err = hysteriaProcess.StartHysteria(hysteriaConfigDto.ApiPort); err != nil {
 		return err
 	}
 	return nil
 }
 
-func StopHysteria() {
-
+func StopHysteria(apiPort string) error {
+	if hysteriaProcess != nil {
+		if err := hysteriaProcess.Stop(apiPort); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // InitHysteria 初始化Hysteria
@@ -46,7 +62,7 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	}
 
 	// 初始化配置
-	hysteriaConfigFilePath, err := util.GetConfigFilePath(hysteriaConfigDto.Id, "hysteria")
+	hysteriaConfigFilePath, err := util.GetConfigFilePath(hysteriaConfigDto.ApiPort, "hysteria")
 	if err != nil {
 		return err
 	}

@@ -29,25 +29,27 @@ func StartXray(xrayConfigDto dto.XrayConfigDto) error {
 	if err != nil {
 		return err
 	}
-	if err = xrayProcess.StartXray(0); err != nil {
+	if err = xrayProcess.StartXray(xrayConfigDto.ApiPort); err != nil {
 		return err
 	}
 	return nil
 }
 
 // StopXray 关闭Xray
-func StopXray() error {
-	if err := xrayProcess.Stop(0); err != nil {
-		return err
+func StopXray(apiPort string) error {
+	if xrayProcess != nil {
+		if err := xrayProcess.Stop(apiPort); err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
 // GetXrayTraffic 获取Xray上传和下载流量
-func GetXrayTraffic() (int, int, error) {
-	if xrayProcess.IsRunning(0) {
+func GetXrayTraffic(apiPort string) (int, int, error) {
+	if xrayProcess.IsRunning(constant.ApiPortXray) {
 		var upload, download int
-		api := NewXrayApi(xrayProcess.ApiPort)
+		api := NewXrayApi(apiPort)
 		stats, err := api.QueryStats("", false)
 		if err != nil {
 			return 0, 0, nil
@@ -89,7 +91,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	}
 
 	// 初始化配置
-	xrayConfigFilePath, err := util.GetConfigFilePath(0, "xray")
+	xrayConfigFilePath, err := util.GetConfigFilePath(xrayConfigDto.ApiPort, "xray")
 	if err != nil {
 		return err
 	}

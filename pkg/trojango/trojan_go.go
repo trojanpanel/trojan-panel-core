@@ -19,18 +19,18 @@ func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 		return err
 	}
 	var err error
-	trojanGoProcess, err = process.NewTrojanGoProcess(trojanGoConfigDto.Id, trojanGoConfigDto.ApiPort)
+	trojanGoProcess, err = process.NewTrojanGoProcess(trojanGoConfigDto.ApiPort)
 	if err != nil {
 		return err
 	}
-	if err = trojanGoProcess.StartTrojanGo(trojanGoConfigDto.Id); err != nil {
+	if err = trojanGoProcess.StartTrojanGo(trojanGoConfigDto.ApiPort); err != nil {
 		return err
 	}
 	return nil
 }
 
-func StopTrojanGo(id int) error {
-	if err := trojanGoProcess.Stop(id); err != nil {
+func StopTrojanGo(apiPort string) error {
+	if err := trojanGoProcess.Stop(apiPort); err != nil {
 		return err
 	}
 	return nil
@@ -60,7 +60,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	}
 
 	// 初始化配置
-	trojanGoConfigFilePath, err := util.GetConfigFilePath(trojanGoConfigDto.Id, "trojan-go")
+	trojanGoConfigFilePath, err := util.GetConfigFilePath(trojanGoConfigDto.ApiPort, "trojan-go")
 	if err != nil {
 		return err
 	}
