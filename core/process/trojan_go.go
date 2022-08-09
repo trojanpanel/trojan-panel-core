@@ -51,9 +51,9 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort string) error {
 				logrus.Errorf("start trojan-go error err: %v\n", err)
 				return errors.New(constant.TrojanGoStartError)
 			}
-			t.handlerUsers(apiPort)
+			//t.handlerUsersBegin(apiPort)
 			go t.handlerUserUploadAndDownload(apiPort)
-			go t.removeUsers(apiPort)
+			go t.handlerUsers(apiPort)
 			return nil
 		}
 		logrus.Errorf("start trojan-go error err: process not found\n")
@@ -63,36 +63,80 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort string) error {
 	return errors.New(constant.TrojanGoStartError)
 }
 
-func (t *TrojanGoProcess) handlerUsers(apiPort string) {
-	addApiUserVos, err := service.SelectUsersPassword(true)
-	if err != nil {
-		logrus.Errorf("查询api添加用户失败 err: %v\n", err)
-		return
-	}
-	api := trojango.NewTrojanGoApi(apiPort)
-	for _, apiUserVo := range addApiUserVos {
-		if err := api.AddUser(dto.TrojanGoAddUserDto{
-			Password:           apiUserVo.Password,
-			UploadTraffic:      apiUserVo.Upload,
-			DownloadTraffic:    apiUserVo.Download,
-			IpLimit:            0,
-			DownloadSpeedLimit: 0,
-			UploadSpeedLimit:   0,
-		}); err != nil {
-			logrus.Errorf("api添加用户失败 apiPort: %s err: %v", apiPort, err)
-			continue
-		}
-	}
+//func (t *TrojanGoProcess) handlerUsersBegin(apiPort string) error {
+//	api := trojango.NewTrojanGoApi(apiPort)
+//
+//	addApiUserVos, err := service.SelectUsersPassword(true)
+//	if err != nil {
+//		logrus.Errorf("数据库同步至Trojan Go apiPort: %s 查询用户失败 err: %v\n", apiPort, err)
+//		return err
+//	}
+//	for _, apiUserVo := range addApiUserVos {
+//		if err := api.AddUser(dto.TrojanGoAddUserDto{
+//			Password:           apiUserVo.Password,
+//			UploadTraffic:      apiUserVo.Upload,
+//			DownloadTraffic:    apiUserVo.Download,
+//			IpLimit:            0,
+//			DownloadSpeedLimit: 0,
+//			UploadSpeedLimit:   0,
+//		}); err != nil {
+//			logrus.Errorf("数据库同步至Trojan Go apiPort: %s 添加用户失败 err: %v\n", apiPort, err)
+//			continue
+//		}
+//	}
+//
+//	removeApiUserVos, err := service.SelectUsersPassword(false)
+//	if err != nil {
+//		logrus.Errorf("数据库同步至Trojan Go apiPort: %s 查询用户失败 err: %v\n", apiPort, err)
+//		return err
+//	}
+//	for _, apiUserVo := range removeApiUserVos {
+//		if err := api.DeleteUser(apiUserVo.Password); err != nil {
+//			logrus.Errorf("api删除用户失败 apiPort: %s err: %v", apiPort, err)
+//			continue
+//		}
+//	}
+//	return nil
+//}
 
-	removeApiUserVos, err := service.SelectUsersPassword(false)
-	if err != nil {
-		logrus.Errorf("查询api删除用户失败 err: %v\n", err)
-		return
-	}
-	for _, apiUserVo := range removeApiUserVos {
-		if err := api.DeleteUser(apiUserVo.Password); err != nil {
-			logrus.Errorf("api删除用户失败 apiPort: %s err: %v", apiPort, err)
-			continue
+func (t *TrojanGoProcess) handlerUsers(apiPort string) {
+	api := trojango.NewTrojanGoApi(apiPort)
+	for {
+		if !t.IsRunning(apiPort) {
+			break
+		}
+		addApiUserVos, err := service.SelectUsersPassword(true)
+		if err != nil {
+			logrus.Errorf("数据库同步至Trojan Go apiPort: %s 查询用户失败 err: %v\n", apiPort, err)
+		} else {
+			for _, apiUserVo := range addApiUserVos {
+				userStatus, err := api.GetUser(apiUserVo.Password)
+				if err != nil || userStatus == nil || userStatus.GetUser() == nil {
+					continue
+				}
+				if err := api.AddUser(dto.TrojanGoAddUserDto{
+					Password:           apiUserVo.Password,
+					UploadTraffic:      apiUserVo.Upload,
+					DownloadTraffic:    apiUserVo.Download,
+					IpLimit:            0,
+					DownloadSpeedLimit: 0,
+					UploadSpeedLimit:   0,
+				}); err != nil {
+					logrus.Errorf("数据库同步至Trojan Go apiPort: %s 添加用户失败 err: %v", apiPort, err)
+					continue
+				}
+			}
+		}
+		apiUserVos, err := service.SelectUsersPassword(false)
+		if err != nil {
+			logrus.Errorf("数据库同步至Trojan Go apiPort: %s 查询用户失败 err: %v\n", apiPort, err)
+		} else {
+			for _, apiUser := range apiUserVos {
+				if err := api.DeleteUser(apiUser.Password); err != nil {
+					logrus.Errorf("数据库同步至Trojan Go apiPort: %s 删除用户失败 err: %v", apiPort, err)
+					continue
+				}
+			}
 		}
 	}
 }
@@ -105,31 +149,14 @@ func (t *TrojanGoProcess) handlerUserUploadAndDownload(apiPort string) {
 		}
 		users, err := api.ListUsers()
 		if err != nil {
-			break
+			continue
 		}
 		for _, user := range users {
 			downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
 			uploadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
 			if err := service.UpdateUser(user.GetUser().GetPassword(), &downloadTraffic,
 				&uploadTraffic, nil); err != nil {
-				continue
-			}
-		}
-	}
-}
-
-func (t *TrojanGoProcess) removeUsers(apiPort string) {
-	api := trojango.NewTrojanGoApi(apiPort)
-	for {
-		if !t.IsRunning(apiPort) {
-			break
-		}
-		apiUserVos, err := service.SelectUsersPassword(false)
-		if err != nil {
-			break
-		}
-		for _, apiUser := range apiUserVos {
-			if err := api.DeleteUser(apiUser.Password); err != nil {
+				logrus.Errorf("Trojan Go同步至数据库 apiPort: %s 更新用户失败 err: %v", apiPort, err)
 				continue
 			}
 		}
