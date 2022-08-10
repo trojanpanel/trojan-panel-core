@@ -6,14 +6,11 @@ import (
 	"github.com/didi/gendry/builder"
 	"github.com/didi/gendry/scanner"
 	"github.com/sirupsen/logrus"
-	"trojan-panel-core/core"
 	"trojan-panel-core/module"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/vo"
 	"trojan-panel-core/util"
 )
-
-var mySQLConfig = core.Config.MySQLConfig
 
 // SelectUsersPassword 查询所有用户 用于api全量更新用户
 func SelectUsersPassword(isAdd bool) ([]vo.ApiUserVo, error) {
