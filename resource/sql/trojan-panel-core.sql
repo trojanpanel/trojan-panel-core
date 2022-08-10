@@ -29,8 +29,8 @@ CREATE TABLE `account` (
   `pass` varchar(32) NOT NULL DEFAULT '' COMMENT '密码',
   `email` varchar(64) NOT NULL DEFAULT '' COMMENT '邮箱',
   `ip_limit` tinyint(2) unsigned NOT NULL DEFAULT '3' COMMENT '限制IP设备数',
-  `upload_speed_limit` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '上传限速 单位/byte',
   `download_speed_limit` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '下载限速 单位/byte',
+  `upload_speed_limit` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '上传限速 单位/byte',
   `expire_time` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '过期时间',
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否禁用 0/正常 1/禁用',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -409,4 +409,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-10  9:55:49
+-- Dump completed on 2022-08-10 10:07:23
