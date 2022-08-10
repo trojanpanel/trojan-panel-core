@@ -23,12 +23,13 @@ type AppConfig struct {
 
 // MySQLConfig MySQL
 type MySQLConfig struct {
-	Host     string `ini:"host"`
-	User     string `ini:"user"`
-	Password string `ini:"password"`
-	Port     int    `ini:"port"`
-	Database string `ini:"database"`
-	Table    string `ini:"table"`
+	Host         string `ini:"host"`
+	User         string `ini:"user"`
+	Password     string `ini:"password"`
+	Port         int    `ini:"port"`
+	Database     string `ini:"database"`
+	UsersTable   string `ini:"users_table"`
+	TrafficTable string `ini:"traffic_table"`
 }
 
 // LogConfig log

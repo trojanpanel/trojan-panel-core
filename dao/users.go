@@ -27,12 +27,12 @@ func SelectUsersPassword(isAdd bool) ([]vo.ApiUserVo, error) {
 	if isAdd {
 		buildSelect, values, err = builder.NamedQuery(fmt.Sprintf("select `password`,download,upload from {{ table_name }} where `download` + `upload` < `quota` or `quota` < 0"),
 			map[string]interface{}{
-				"table_name": mySQLConfig.Table,
+				"table_name": mySQLConfig.UsersTable,
 			})
 	} else {
 		buildSelect, values, err = builder.NamedQuery(fmt.Sprintf("select `password`,download,upload from {{ table_name }} where `download` + `upload` >= `quota` and `quota` >= 0"),
 			map[string]interface{}{
-				"table_name": mySQLConfig.Table,
+				"table_name": mySQLConfig.UsersTable,
 			})
 	}
 
@@ -80,7 +80,7 @@ func UpdateUser(password string, download *int, upload *int, quota *int) error {
 	}
 
 	if len(update) > 0 {
-		buildUpdate, values, err := builder.BuildUpdate(mySQLConfig.Table, where, update)
+		buildUpdate, values, err := builder.BuildUpdate(mySQLConfig.UsersTable, where, update)
 		if err != nil {
 			logrus.Errorln(err.Error())
 			return errors.New(constant.SysError)
