@@ -36,7 +36,7 @@ CREATE TABLE `account` (
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `users_tp_username_uindex` (`username`)
+  UNIQUE KEY `account_username_uindex` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='账户';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -46,7 +46,7 @@ CREATE TABLE `account` (
 
 LOCK TABLES `account` WRITE;
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` VALUES (1,1,'sysadmin','MTIzNDU2','',3,0,0,32472115200000,0,'2022-04-01 00:00:00','2022-04-01 00:00:00');
+INSERT INTO `account` VALUES (1,1,'sysadmin','eWTgjy8ZBnXL/U2lm08xLg==','',3,0,0,32472115200000,0,'2022-04-01 00:00:00','2022-04-01 00:00:00');
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -146,7 +146,7 @@ CREATE TABLE `node` (
   `name` varchar(64) NOT NULL DEFAULT '' COMMENT '名称',
   `ip` varchar(64) NOT NULL DEFAULT '' COMMENT 'IP地址',
   `port` int(10) unsigned NOT NULL DEFAULT '443' COMMENT '端口',
-  `api_port` int(11) NOT NULL DEFAULT '0' COMMENT 'api端口',
+  `api_port` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'api端口',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
@@ -207,7 +207,7 @@ CREATE TABLE `node_trojan_go` (
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TrojanGO节点';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TrojanGo节点';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -350,9 +350,9 @@ DROP TABLE IF EXISTS `traffic`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `traffic` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `node_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '节点id',
-  `download` int(11) NOT NULL DEFAULT '0' COMMENT '下载 单位/byte',
-  `upload` int(11) NOT NULL DEFAULT '0' COMMENT '上传 单位/byte',
+  `api_port` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'api端口',
+  `download` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '下载 单位/byte',
+  `upload` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '上传 单位/byte',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
@@ -379,7 +379,7 @@ CREATE TABLE `users` (
   `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `account_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '账户id',
   `username` varchar(32) NOT NULL DEFAULT '' COMMENT '用户名',
-  `password` varchar(64) NOT NULL COMMENT '节点连接密码',
+  `password` varchar(32) NOT NULL DEFAULT '' COMMENT '连接密码',
   `quota` bigint(20) NOT NULL DEFAULT '0' COMMENT '配额 单位/byte',
   `download` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '全量下载 单位/byte',
   `upload` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '全量上传 单位/byte',
@@ -396,7 +396,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,0,'sysadmin','b4fc1369dd766eca295fb495b0938843becbac59fc5cb273b320aaa5',-1,0,0,'2022-04-01 00:00:00','2022-04-01 00:00:00');
+INSERT INTO `users` VALUES (1,1,'sysadmin','u7eqW8tHa51KYZF4nLK7+w==',-1,0,0,'2022-04-01 00:00:00','2022-04-01 00:00:00');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -409,4 +409,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-10  0:36:56
+-- Dump completed on 2022-08-10  9:55:49
