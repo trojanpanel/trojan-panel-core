@@ -8,10 +8,10 @@ import (
 	"trojan-panel-core/module/constant"
 )
 
-func CountTrafficByApiPort(apiPort int) (int, error) {
+func CountTrafficByApiPort(userId int, apiPort int) (int, error) {
 	var total int
 	selectFields := []string{"count(1)"}
-	where := map[string]interface{}{"api_port": apiPort}
+	where := map[string]interface{}{"user_id": userId, "api_port": apiPort}
 	buildSelect, values, err := builder.BuildSelect(mySQLConfig.TrafficTable, where, selectFields)
 	if err != nil {
 		logrus.Errorln(err.Error())
@@ -24,8 +24,8 @@ func CountTrafficByApiPort(apiPort int) (int, error) {
 	return total, nil
 }
 
-func UpdateTrafficByApiPort(apiPort int, download int, upload int) error {
-	where := map[string]interface{}{"api_port": apiPort}
+func UpdateTrafficByApiPort(userId int, apiPort int, download int, upload int) error {
+	where := map[string]interface{}{"user_id": userId, "api_port": apiPort}
 	update := map[string]interface{}{"download": download, "upload": upload}
 	buildUpdate, values, err := builder.BuildUpdate(mySQLConfig.TrafficTable, where, update)
 	if err != nil {
@@ -45,6 +45,7 @@ func SaveTraffic(traffics []module.Traffic) error {
 	var data []map[string]interface{}
 	for _, item := range traffics {
 		traffic := map[string]interface{}{
+			"user_id":  item.UserId,
 			"api_port": item.ApiPort,
 			"download": item.Download,
 			"upload":   item.Upload,

@@ -350,6 +350,7 @@ DROP TABLE IF EXISTS `traffic`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `traffic` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `user_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '用户id',
   `api_port` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'api端口',
   `download` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '下载 单位/byte',
   `upload` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '上传 单位/byte',
@@ -409,4 +410,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-10 10:07:23
+-- Dump completed on 2022-08-10 10:58:32
