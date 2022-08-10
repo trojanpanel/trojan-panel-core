@@ -353,6 +353,7 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
   `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `account_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '账户id',
   `api_port` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'api端口',
   `password` varchar(32) NOT NULL DEFAULT '' COMMENT '连接密码',
   `download` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '下载 单位/byte',
@@ -369,7 +370,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,0,'u7eqW8tHa51KYZF4nLK7+w==',0,0,'2022-04-01 00:00:00','2022-04-01 00:00:00');
+INSERT INTO `users` VALUES (1,0,0,'u7eqW8tHa51KYZF4nLK7+w==',0,0,'2022-04-01 00:00:00','2022-04-01 00:00:00');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -382,4 +383,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-10 23:14:54
+-- Dump completed on 2022-08-11  0:18:53

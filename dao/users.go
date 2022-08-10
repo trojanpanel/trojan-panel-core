@@ -2,7 +2,6 @@ package dao
 
 import (
 	"errors"
-	"fmt"
 	"github.com/didi/gendry/builder"
 	"github.com/didi/gendry/scanner"
 	"github.com/sirupsen/logrus"
@@ -12,25 +11,100 @@ import (
 	"trojan-panel-core/util"
 )
 
-// SelectUsersPassword 查询所有用户 用于api全量更新用户
-func SelectUsersPassword(isAdd bool) ([]vo.ApiUserVo, error) {
+func CountUserByApiPort(apiPort int) (int, error) {
+	var total int
+	selectFields := []string{"count(1)"}
+	where := map[string]interface{}{"api_port": apiPort}
+	buildSelect, values, err := builder.BuildSelect(mySQLConfig.UsersTable, where, selectFields)
+	if err != nil {
+		logrus.Errorln(err.Error())
+		return 0, errors.New(constant.SysError)
+	}
+	if err = db.QueryRow(buildSelect, values...).Scan(&total); err != nil {
+		logrus.Errorln(err.Error())
+		return 0, errors.New(constant.SysError)
+	}
+	return total, nil
+}
+
+func UpdateUser(apiPort int, password string, download *int, upload *int) error {
+	passwordEncode, err := util.AesEncode(password)
+	if err != nil {
+		return err
+	}
+	where := map[string]interface{}{"api_port": apiPort, "password": passwordEncode}
+	update := map[string]interface{}{}
+	if download != nil {
+		update["download"] = *download
+	}
+	if upload != nil {
+		update["upload"] = *upload
+	}
+
+	if len(update) > 0 {
+		buildUpdate, values, err := builder.BuildUpdate(mySQLConfig.UsersTable, where, update)
+		if err != nil {
+			logrus.Errorln(err.Error())
+			return errors.New(constant.SysError)
+		}
+
+		_, err = db.Exec(buildUpdate, values...)
+		if err != nil {
+			logrus.Errorln(err.Error())
+			return errors.New(constant.SysError)
+		}
+	}
+	return nil
+}
+
+func InsertUsers(users []module.Users) error {
+	var data []map[string]interface{}
+	for _, item := range users {
+		user := map[string]interface{}{
+			"api_port": item.ApiPort,
+			"password": item.Password,
+			"download": item.Download,
+			"upload":   item.Upload,
+		}
+		data = append(data, user)
+	}
+	buildInsert, values, err := builder.BuildInsert(mySQLConfig.AccountTable, data)
+	if err != nil {
+		logrus.Errorln(err.Error())
+		return errors.New(constant.SysError)
+	}
+	if _, err := db.Exec(buildInsert, values...); err != nil {
+		logrus.Errorln(err.Error())
+		return errors.New(constant.SysError)
+	}
+	return nil
+}
+
+func SelectUsersToApi(isAdd bool) ([]vo.ApiUserVo, error) {
 	var (
-		users       []module.User
+		users       []module.Users
 		buildSelect string
 		values      []interface{}
 		err         error
 	)
-
+	data := map[string]interface{}{
+		"account_table": mySQLConfig.AccountTable,
+		"users_table":   mySQLConfig.UsersTable,
+	}
 	if isAdd {
-		buildSelect, values, err = builder.NamedQuery(fmt.Sprintf("select `password`,download,upload from {{ table_name }} where `download` + `upload` < `quota` or `quota` < 0"),
-			map[string]interface{}{
-				"table_name": mySQLConfig.UsersTable,
-			})
+		buildSelect, values, err = builder.NamedQuery(`select u.api_port, u.password, u.download, u.upload
+from {{ account_table }} a
+         left join {{ users_table }} u on a.id = u.account_id
+where a.download + a.upload < a.quota
+   or a.quota < 0`,
+			data)
 	} else {
-		buildSelect, values, err = builder.NamedQuery(fmt.Sprintf("select `password`,download,upload from {{ table_name }} where `download` + `upload` >= `quota` and `quota` >= 0"),
-			map[string]interface{}{
-				"table_name": mySQLConfig.UsersTable,
-			})
+		buildSelect, values, err = builder.NamedQuery(`select u.api_port, u.password, u.download, u.upload
+from {{ account_table }} a
+         left join {{ users_table }} u on a.id = u.account_id
+where a.download + a.upload >= a.quota
+  and a.quota >= 0`,
+			data)
 	}
 
 	if err != nil {
@@ -48,46 +122,17 @@ func SelectUsersPassword(isAdd bool) ([]vo.ApiUserVo, error) {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
 	}
-	var apiUserVos = make([]vo.ApiUserVo, 0)
+	var apiUserVo = make([]vo.ApiUserVo, 0)
 	for _, user := range users {
-		apiUserVos = append(apiUserVos, vo.ApiUserVo{
-			Password: *user.Password,
+		passwordDecode, err := util.AesDecode(*user.Password)
+		if err != nil {
+			return nil, err
+		}
+		apiUserVo = append(apiUserVo, vo.ApiUserVo{
+			Password: passwordDecode,
 			Download: *user.Download,
 			Upload:   *user.Upload,
 		})
 	}
-	return apiUserVos, nil
-}
-
-func UpdateUser(password string, download *int, upload *int, quota *int) error {
-	passwordEncode, err := util.AesEncode(password)
-	if err != nil {
-		return err
-	}
-	where := map[string]interface{}{"password": passwordEncode}
-	update := map[string]interface{}{}
-	if download != nil {
-		update["download"] = *download
-	}
-	if upload != nil {
-		update["upload"] = *upload
-	}
-	if quota != nil {
-		update["quota"] = *quota
-	}
-
-	if len(update) > 0 {
-		buildUpdate, values, err := builder.BuildUpdate(mySQLConfig.UsersTable, where, update)
-		if err != nil {
-			logrus.Errorln(err.Error())
-			return errors.New(constant.SysError)
-		}
-
-		_, err = db.Exec(buildUpdate, values...)
-		if err != nil {
-			logrus.Errorln(err.Error())
-			return errors.New(constant.SysError)
-		}
-	}
-	return nil
+	return apiUserVo, nil
 }

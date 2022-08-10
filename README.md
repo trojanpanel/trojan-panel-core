@@ -10,17 +10,19 @@ Trojan Panel核心
 
 默认数据处理：
 
-1. 读取/写入users中password、quota、download、upload。password需要进行加盐对称加密，quota、upload、download单位是byte
-2. 读取/写入node和traffic，遍历node读取traffic，通过api写入到应用中，用于重启场景
+1. 读取/写入account中quota、download、upload
+2. 读取/写入users中api_port、password、download、upload。password需要进行加盐对称加密，upload、download单位是byte
 
 主要逻辑：
 
-1. api实时更新（应用同步至数据库）：download、upload
-2. api实时更新（数据库至应用）：根据password实时更新，删除：download + upload >= quota && quota >= 0；查询如果存在则不操作，如果不存在则添加：download + upload <
-   quota || quota < 0
-3. 禁用用户：set quota = 0,download = 0,upload = 0
-4. 重设用户流量：set download = 0,upload = 0 然后api删除用户
-5. 重启场景：遍历node，启动相关的应用，并查询traffic调api写入用户信息
+1. api实时更新（应用同步至数据库）：set users.download = ?,users.upload = ? where users.password = ? and users.password = ?
+2. api实时更新（数据库同步至应用）
+    - 删除场景 条件：account.download + account.upload >= account.quota and account.quota >= 0
+    - 添加场景 如果存在则不操作，如果不存在则添加：account.download + account.upload <
+      account.quota || account.quota < 0
+3. 重启场景：遍历users，根据配置文件启动相关的应用，并调api写入用户信息
+4. 禁用用户：set account.quota = 0,account.download = 0,account.upload = 0
+5. 重设用户流量：set account.download = 0,account.upload = 0 然后set users.download = 0,users.upload = 0，最后api删除用户
 
 # 编译命令
 

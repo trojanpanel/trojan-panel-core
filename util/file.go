@@ -124,16 +124,16 @@ func InitConfigFile() {
 			password     string
 			port         string
 			database     string
+			accountTable string
 			usersTable   string
-			trafficTable string
 		)
 		flag.StringVar(&host, "host", "localhost", "数据库地址")
 		flag.StringVar(&user, "user", "root", "数据库用户名")
 		flag.StringVar(&password, "password", "123456", "数据库密码")
 		flag.StringVar(&port, "port", "3306", "数据库端口")
 		flag.StringVar(&database, "database", "trojan_panel_db", "数据库名称")
+		flag.StringVar(&accountTable, "account-table", "account", "traffic表名称")
 		flag.StringVar(&usersTable, "users-table", "users", "users表名称")
-		flag.StringVar(&trafficTable, "traffic-table", "traffic", "traffic表名称")
 		flag.Parse()
 		_, err = file.WriteString(fmt.Sprintf(
 			`[mysql]
@@ -142,15 +142,15 @@ user=%s
 password=%s
 port=%s
 database=%s
+account_table=%s
 users_table=%s
-traffic_table=%s
 [log]
 filename=logs/trojan-panel-core.log
 max_size=1
 max_backups=5
 max_age=30
 compress=true
-`, host, user, password, port, database, usersTable, trafficTable))
+`, host, user, password, port, database, accountTable, usersTable))
 		if err != nil {
 			logrus.Errorf("config.ini文件写入异常 err: %v\n", err)
 			panic(err)
@@ -161,7 +161,7 @@ compress=true
 
 func usage() {
 	_, _ = fmt.Fprintf(os.Stderr, `xray manage help
-Usage: xraymanage [-host] [-password] [-port] [-database] [-table] [-h]
+Usage: xraymanage [-host] [-password] [-port] [-database] [-account-table] [-users-table] [-h]
 
 Options:
 -host            database host
@@ -169,8 +169,8 @@ Options:
 -password        database password
 -port            database port
 -database        database name
+-account-table   account table name
 -users-table	 users table name
--trafflc-table   trafflc table name
 -h               help
 `)
 }
