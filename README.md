@@ -15,7 +15,7 @@ Trojan Panel核心
 
 主要逻辑：
 
-1. api实时更新（应用同步至数据库）：set users.download = ?,users.upload = ? where users.password = ? and users.password = ?
+1. api实时更新（应用同步至数据库）：set users.download = ?,users.upload = ? where users.api_port = ? and users.password = ?
 2. api实时更新（数据库同步至应用）
     - 删除场景 条件：account.download + account.upload >= account.quota and account.quota >= 0
     - 添加场景 如果存在则不操作，如果不存在则添加：account.download + account.upload <

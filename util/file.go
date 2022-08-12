@@ -11,9 +11,102 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"trojan-panel-core/module/constant"
 )
+
+var configFileNameReg = regexp.MustCompile("^config-[1-9]\\d*\\.json$")
+
+func InitFile() {
+	// 初始化日志
+	logPath := constant.LogPath
+	if !Exists(logPath) {
+		if err := os.MkdirAll(logPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建logs文件夹异常 err: %v\n", err)
+			panic(err)
+		}
+	}
+
+	// 初始化全局配置文件
+	InitConfigFile()
+}
+
+func InitConfigFile() {
+	// 初始化全局配文件夹
+	configPath := constant.ConfigPath
+	if !Exists(configPath) {
+		if err := os.MkdirAll(configPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建config文件夹异常 err: %v\n", err)
+			panic(err)
+		}
+	}
+
+	configFilePath := constant.ConfigFilePath
+	if !Exists(configFilePath) {
+		file, err := os.Create(configFilePath)
+		if err != nil {
+			logrus.Errorf("创建config.ini文件异常 err: %v\n", err)
+			panic(err)
+		}
+		defer file.Close()
+
+		var (
+			host         string
+			user         string
+			password     string
+			port         string
+			database     string
+			accountTable string
+			usersTable   string
+		)
+		flag.StringVar(&host, "host", "localhost", "数据库地址")
+		flag.StringVar(&user, "user", "root", "数据库用户名")
+		flag.StringVar(&password, "password", "123456", "数据库密码")
+		flag.StringVar(&port, "port", "3306", "数据库端口")
+		flag.StringVar(&database, "database", "trojan_panel_db", "数据库名称")
+		flag.StringVar(&accountTable, "account-table", "account", "traffic表名称")
+		flag.StringVar(&usersTable, "users-table", "users", "users表名称")
+		flag.Parse()
+		_, err = file.WriteString(fmt.Sprintf(
+			`[mysql]
+host=%s
+user=%s
+password=%s
+port=%s
+database=%s
+account_table=%s
+users_table=%s
+[log]
+filename=logs/trojan-panel-core.log
+max_size=1
+max_backups=5
+max_age=30
+compress=true
+`, host, user, password, port, database, accountTable, usersTable))
+		if err != nil {
+			logrus.Errorf("config.ini文件写入异常 err: %v\n", err)
+			panic(err)
+		}
+		flag.Usage = usage
+	}
+}
+
+func usage() {
+	_, _ = fmt.Fprintf(os.Stderr, `xray manage help
+Usage: xraymanage [-host] [-password] [-port] [-database] [-account-table] [-users-table] [-h]
+
+Options:
+-host            database host
+-user            database user
+-password        database password
+-port            database port
+-database        database name
+-account-table   account table name
+-users-table	 users table name
+-h               help
+`)
+}
 
 func DownloadFile(url string, fileName string) error {
 	resp, err := http.Get(url)
@@ -99,92 +192,18 @@ func Exists(path string) bool {
 	return true
 }
 
-func InitConfigFile() {
-	// 初始化全局配文件夹
-	configPath := constant.ConfigPath
-	if !Exists(configPath) {
-		if err := os.MkdirAll(configPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建config文件夹异常 err: %v\n", err)
-			panic(err)
+func GetConfigFilePaths(dirPth string) (filePaths []string, err error) {
+	dir, err := ioutil.ReadDir(dirPth)
+	if err != nil {
+		return nil, err
+	}
+	pthSep := string(os.PathSeparator)
+	for _, fi := range dir {
+		// 过滤指定格式
+		ok := configFileNameReg.MatchString(fi.Name())
+		if ok {
+			filePaths = append(filePaths, dirPth+pthSep+fi.Name())
 		}
 	}
-
-	configFilePath := constant.ConfigFilePath
-	if !Exists(configFilePath) {
-		file, err := os.Create(configFilePath)
-		if err != nil {
-			logrus.Errorf("创建config.ini文件异常 err: %v\n", err)
-			panic(err)
-		}
-		defer file.Close()
-
-		var (
-			host         string
-			user         string
-			password     string
-			port         string
-			database     string
-			accountTable string
-			usersTable   string
-		)
-		flag.StringVar(&host, "host", "localhost", "数据库地址")
-		flag.StringVar(&user, "user", "root", "数据库用户名")
-		flag.StringVar(&password, "password", "123456", "数据库密码")
-		flag.StringVar(&port, "port", "3306", "数据库端口")
-		flag.StringVar(&database, "database", "trojan_panel_db", "数据库名称")
-		flag.StringVar(&accountTable, "account-table", "account", "traffic表名称")
-		flag.StringVar(&usersTable, "users-table", "users", "users表名称")
-		flag.Parse()
-		_, err = file.WriteString(fmt.Sprintf(
-			`[mysql]
-host=%s
-user=%s
-password=%s
-port=%s
-database=%s
-account_table=%s
-users_table=%s
-[log]
-filename=logs/trojan-panel-core.log
-max_size=1
-max_backups=5
-max_age=30
-compress=true
-`, host, user, password, port, database, accountTable, usersTable))
-		if err != nil {
-			logrus.Errorf("config.ini文件写入异常 err: %v\n", err)
-			panic(err)
-		}
-		flag.Usage = usage
-	}
-}
-
-func usage() {
-	_, _ = fmt.Fprintf(os.Stderr, `xray manage help
-Usage: xraymanage [-host] [-password] [-port] [-database] [-account-table] [-users-table] [-h]
-
-Options:
--host            database host
--user            database user
--password        database password
--port            database port
--database        database name
--account-table   account table name
--users-table	 users table name
--h               help
-`)
-}
-
-func InitFile() {
-	// 初始化日志
-	logPath := constant.LogPath
-	if !Exists(logPath) {
-		if err := os.MkdirAll(logPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建logs文件夹异常 err: %v\n", err)
-			panic(err)
-		}
-	}
-
-	// 初始化全局配置文件
-	InitConfigFile()
+	return filePaths, nil
 }
