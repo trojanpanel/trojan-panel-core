@@ -27,12 +27,18 @@ func CountUserByApiPort(apiPort int) (int, error) {
 	return total, nil
 }
 
-func UpdateUser(apiPort int, password string, download *int, upload *int) error {
-	passwordEncode, err := util.AesEncode(password)
-	if err != nil {
-		return err
+func UpdateUser(apiPort *int, password *string, download *int, upload *int) error {
+	where := map[string]interface{}{}
+	if apiPort != nil {
+		where["api_port"] = apiPort
 	}
-	where := map[string]interface{}{"api_port": apiPort, "password": passwordEncode}
+	if password != nil {
+		passwordEncode, err := util.AesEncode(*password)
+		if err != nil {
+			return err
+		}
+		where["password"] = passwordEncode
+	}
 	update := map[string]interface{}{}
 	if download != nil {
 		update["download"] = *download
@@ -60,9 +66,13 @@ func UpdateUser(apiPort int, password string, download *int, upload *int) error 
 func InsertUsers(users []module.Users) error {
 	var data []map[string]interface{}
 	for _, item := range users {
+		encodePassword, err := util.AesEncode(*item.Password)
+		if err != nil {
+			return err
+		}
 		user := map[string]interface{}{
 			"api_port": item.ApiPort,
-			"password": item.Password,
+			"password": encodePassword,
 			"download": item.Download,
 			"upload":   item.Upload,
 		}

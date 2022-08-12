@@ -14,8 +14,8 @@ func CountUserByApiPort(apiPort int) (int, error) {
 	return total, nil
 }
 
-func UpdateUser(password string, download *int, upload *int) error {
-	if err := dao.UpdateUser(password, download, upload); err != nil {
+func UpdateUser(apiPort *int, password *string, download *int, upload *int) error {
+	if err := dao.UpdateUser(apiPort, password, download, upload); err != nil {
 		return err
 	}
 	return nil
