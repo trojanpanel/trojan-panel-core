@@ -19,7 +19,7 @@ type XrayProcess struct {
 	process
 }
 
-func NewXrayProcess(apiPort string) (*XrayProcess, error) {
+func NewXrayProcess(apiPort int) (*XrayProcess, error) {
 	var mutex sync.Mutex
 	defer mutex.Unlock()
 	if mutex.TryLock() {
@@ -41,7 +41,7 @@ func NewXrayProcess(apiPort string) (*XrayProcess, error) {
 	return nil, errors.New(constant.NewXrayProcessError)
 }
 
-func (x *XrayProcess) StartXray(apiPort string) error {
+func (x *XrayProcess) StartXray(apiPort int) error {
 	defer x.mutex.Unlock()
 	if x.mutex.TryLock() {
 		if x.IsRunning(apiPort) {
@@ -60,4 +60,21 @@ func (x *XrayProcess) StartXray(apiPort string) error {
 	}
 	logrus.Errorf("start xray error err: lock not acquired\n")
 	return errors.New(constant.XrayStartError)
+}
+
+func InitXrayProcess() error {
+	apiPorts, err := util.GetConfigApiPorts(constant.XrayPath)
+	if err != nil {
+		return err
+	}
+	for _, apiPort := range apiPorts {
+		xrayProcess, err := NewXrayProcess(apiPort)
+		if err != nil {
+			return err
+		}
+		if err = xrayProcess.StartXray(apiPort); err != nil {
+			return err
+		}
+	}
+	return nil
 }

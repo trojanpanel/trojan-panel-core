@@ -25,16 +25,16 @@ import (
 )
 
 type xrayApi struct {
-	apiPort string
+	apiPort int
 }
 
-func NewXrayApi(apiPort string) *xrayApi {
+func NewXrayApi(apiPort int) *xrayApi {
 	return &xrayApi{
 		apiPort: apiPort,
 	}
 }
 
-func apiClient(apiPort string) (*grpc.ClientConn, error) {
+func apiClient(apiPort int) (*grpc.ClientConn, error) {
 	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%s", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {

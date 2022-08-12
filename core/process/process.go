@@ -15,7 +15,7 @@ type process struct {
 	binaryType int // 1/xray 2/trojan-go 3/hysteria
 }
 
-func (p *process) IsRunning(apiPort string) bool {
+func (p *process) IsRunning(apiPort int) bool {
 	cmd, ok := p.cmdMap.Load(apiPort)
 	if ok {
 		if cmd == nil || cmd.(*exec.Cmd).Process == nil {
@@ -28,7 +28,7 @@ func (p *process) IsRunning(apiPort string) bool {
 	return false
 }
 
-func (p *process) Stop(apiPort string) error {
+func (p *process) Stop(apiPort int) error {
 	defer p.mutex.Unlock()
 	if p.mutex.TryLock() {
 		if !p.IsRunning(apiPort) {
@@ -55,4 +55,16 @@ func (p *process) Stop(apiPort string) error {
 	}
 	logrus.Errorf("stop process error err: lock not acquired\n")
 	return errors.New(constant.ProcessStopError)
+}
+
+func InitProcess() {
+	if err := InitXrayProcess(); err != nil {
+		logrus.Errorf("Xray初始化异常 err: %v\n", err)
+	}
+	if err := InitTrojanGoProcess(); err != nil {
+		logrus.Errorf("TrojanGo初始化异常 err: %v\n", err)
+	}
+	if err := InitHysteriaProcess(); err != nil {
+		logrus.Errorf("Hysteria初始化异常 err: %v\n", err)
+	}
 }

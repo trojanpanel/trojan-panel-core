@@ -29,7 +29,7 @@ func StartHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	return nil
 }
 
-func StopHysteria(apiPort string) error {
+func StopHysteria(apiPort int) error {
 	if hysteriaProcess != nil {
 		if err := hysteriaProcess.Stop(apiPort); err != nil {
 			return err

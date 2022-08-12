@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"trojan-panel-core/module/constant"
 )
@@ -192,18 +193,23 @@ func Exists(path string) bool {
 	return true
 }
 
-func GetConfigFilePaths(dirPth string) (filePaths []string, err error) {
+func GetConfigApiPorts(dirPth string) ([]int, error) {
 	dir, err := ioutil.ReadDir(dirPth)
 	if err != nil {
 		return nil, err
 	}
-	pthSep := string(os.PathSeparator)
+	apiPorts := make([]int, 0)
 	for _, fi := range dir {
 		// 过滤指定格式
-		ok := configFileNameReg.MatchString(fi.Name())
-		if ok {
-			filePaths = append(filePaths, dirPth+pthSep+fi.Name())
+		finds := configFileNameReg.FindStringSubmatch(fi.Name())
+		if len(finds) > 0 {
+			apiPort, err := strconv.Atoi(finds[0])
+			if err != nil {
+				logrus.Errorf("类型转换异常 err: %v\n", err)
+				continue
+			}
+			apiPorts = append(apiPorts, apiPort)
 		}
 	}
-	return filePaths, nil
+	return apiPorts, nil
 }

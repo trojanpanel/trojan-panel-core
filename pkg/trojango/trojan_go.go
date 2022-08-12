@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/module/constant"
@@ -30,7 +31,7 @@ func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	return nil
 }
 
-func StopTrojanGo(apiPort string) error {
+func StopTrojanGo(apiPort int) error {
 	if trojanGoProcess != nil {
 		if err := trojanGoProcess.Stop(apiPort); err != nil {
 			return err
@@ -135,7 +136,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 `
 		configContent = strings.ReplaceAll(configContent, "${ip}", trojanGoConfigDto.Ip)
 		configContent = strings.ReplaceAll(configContent, "${port}", trojanGoConfigDto.Port)
-		configContent = strings.ReplaceAll(configContent, "${api_port}", trojanGoConfigDto.ApiPort)
+		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.Itoa(trojanGoConfigDto.ApiPort))
 		configContent = strings.ReplaceAll(configContent, "${sni}", trojanGoConfigDto.Sni)
 		configContent = strings.ReplaceAll(configContent, "${mux_enable}", trojanGoConfigDto.MuxEnable)
 		configContent = strings.ReplaceAll(configContent, "${websocket_enabled}", trojanGoConfigDto.WebsocketEnable)

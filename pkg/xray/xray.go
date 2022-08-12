@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/module/constant"
@@ -32,7 +33,7 @@ func StartXray(xrayConfigDto dto.XrayConfigDto) error {
 }
 
 // StopXray 关闭Xray
-func StopXray(apiPort string) error {
+func StopXray(apiPort int) error {
 	if xrayProcess != nil {
 		if err := xrayProcess.Stop(apiPort); err != nil {
 			return err
@@ -132,7 +133,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
   }
 }
 `
-		configContent = strings.ReplaceAll(configContent, "${api_port}", xrayConfigDto.ApiPort)
+		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.Itoa(xrayConfigDto.ApiPort))
 		_, err = file.WriteString(configContent)
 		if err != nil {
 			logrus.Errorf("xray config.json文件写入异常 err: %v\n", err)

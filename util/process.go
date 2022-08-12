@@ -37,7 +37,7 @@ func GetBinaryFilePath(binaryType int) (string, error) {
 	return fmt.Sprintf("%s/%s", binaryPath, binaryName), nil
 }
 
-func GetConfigFile(binaryType int, apiPort string) (string, error) {
+func GetConfigFile(binaryType int, apiPort int) (string, error) {
 	configFile, err := GetConfigFilePath(binaryType, apiPort)
 	if err != nil {
 		return "", err
@@ -48,7 +48,7 @@ func GetConfigFile(binaryType int, apiPort string) (string, error) {
 	return configFile, nil
 }
 
-func GetConfigFilePath(binaryType int, apiPort string) (string, error) {
+func GetConfigFilePath(binaryType int, apiPort int) (string, error) {
 	var configPath string
 	var configName string
 	switch binaryType {

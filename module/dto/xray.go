@@ -1,7 +1,7 @@
 package dto
 
 type XrayConfigDto struct {
-	ApiPort string // api端口
+	ApiPort int // api端口
 }
 
 type XrayAddUserDto struct {

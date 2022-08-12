@@ -14,7 +14,7 @@ type HysteriaProcess struct {
 	process
 }
 
-func NewHysteriaProcess(apiPort string) (*HysteriaProcess, error) {
+func NewHysteriaProcess(apiPort int) (*HysteriaProcess, error) {
 	var mutex sync.Mutex
 	defer mutex.Unlock()
 	if mutex.TryLock() {
@@ -36,7 +36,7 @@ func NewHysteriaProcess(apiPort string) (*HysteriaProcess, error) {
 	return nil, errors.New(constant.NewHysteriaProcessError)
 }
 
-func (h *HysteriaProcess) StartHysteria(apiPort string) error {
+func (h *HysteriaProcess) StartHysteria(apiPort int) error {
 	defer h.mutex.Unlock()
 	if h.mutex.TryLock() {
 		if h.IsRunning(apiPort) {
@@ -55,4 +55,21 @@ func (h *HysteriaProcess) StartHysteria(apiPort string) error {
 	}
 	logrus.Errorf("start hysteria error err: lock not acquired\n")
 	return errors.New(constant.HysteriaStartError)
+}
+
+func InitHysteriaProcess() error {
+	apiPorts, err := util.GetConfigApiPorts(constant.HysteriaPath)
+	if err != nil {
+		return err
+	}
+	for _, apiPort := range apiPorts {
+		hysteriaProcess, err := NewHysteriaProcess(apiPort)
+		if err != nil {
+			return err
+		}
+		if err = hysteriaProcess.StartHysteria(apiPort); err != nil {
+			return err
+		}
+	}
+	return nil
 }
