@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 	"trojan-panel-core/core/process"
+	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
@@ -14,6 +15,37 @@ import (
 
 var hysteriaProcess *process.HysteriaProcess
 
+// InitHysteriaApp 初始化Hysteria应用
+func InitHysteriaApp() error {
+	apiPorts, err := util.GetConfigApiPorts(constant.HysteriaPath)
+	if err != nil {
+		return err
+	}
+	for _, apiPort := range apiPorts {
+		hysteriaProcess, err := process.NewHysteriaProcess(apiPort)
+		if err != nil {
+			return err
+		}
+		if err = hysteriaProcess.StartHysteria(apiPort); err != nil {
+			return err
+		}
+		if err = syncHysteriaData(apiPort); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// 数据库同步至应用
+func syncHysteriaData(apiPort int) error {
+	_, err := dao.SelectUsersToApi(true)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// StartHysteria 启动Hysteria
 func StartHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	var err error
 	if err = initHysteria(hysteriaConfigDto); err != nil {
@@ -29,6 +61,7 @@ func StartHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	return nil
 }
 
+// StopHysteria 暂停Hysteria
 func StopHysteria(apiPort int) error {
 	if hysteriaProcess != nil {
 		if err := hysteriaProcess.Stop(apiPort); err != nil {
@@ -38,7 +71,7 @@ func StopHysteria(apiPort int) error {
 	return nil
 }
 
-// InitHysteria 初始化Hysteria
+// 初始化Hysteria文件
 func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	// 初始化文件夹
 	hysteriaPath := constant.HysteriaPath

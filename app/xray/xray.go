@@ -9,12 +9,43 @@ import (
 	"strconv"
 	"strings"
 	"trojan-panel-core/core/process"
+	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
 )
 
 var xrayProcess *process.XrayProcess
+
+// InitXrayApp 初始化Xray应用
+func InitXrayApp() error {
+	apiPorts, err := util.GetConfigApiPorts(constant.XrayPath)
+	if err != nil {
+		return err
+	}
+	for _, apiPort := range apiPorts {
+		xrayProcess, err := process.NewXrayProcess(apiPort)
+		if err != nil {
+			return err
+		}
+		if err = xrayProcess.StartXray(apiPort); err != nil {
+			return err
+		}
+		if err = syncXrayData(apiPort); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// 数据库同步至应用
+func syncXrayData(apiPort int) error {
+	_, err := dao.SelectUsersToApi(true)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // StartXray 启动Xray
 func StartXray(xrayConfigDto dto.XrayConfigDto) error {
@@ -32,7 +63,7 @@ func StartXray(xrayConfigDto dto.XrayConfigDto) error {
 	return nil
 }
 
-// StopXray 关闭Xray
+// StopXray 暂停Xray
 func StopXray(apiPort int) error {
 	if xrayProcess != nil {
 		if err := xrayProcess.Stop(apiPort); err != nil {
@@ -42,6 +73,7 @@ func StopXray(apiPort int) error {
 	return nil
 }
 
+// 初始化Xray文件
 func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	// 初始化文件夹
 	xrayPath := constant.XrayPath

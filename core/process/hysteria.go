@@ -56,20 +56,3 @@ func (h *HysteriaProcess) StartHysteria(apiPort int) error {
 	logrus.Errorf("start hysteria error err: lock not acquired\n")
 	return errors.New(constant.HysteriaStartError)
 }
-
-func InitHysteriaProcess() error {
-	apiPorts, err := util.GetConfigApiPorts(constant.HysteriaPath)
-	if err != nil {
-		return err
-	}
-	for _, apiPort := range apiPorts {
-		hysteriaProcess, err := NewHysteriaProcess(apiPort)
-		if err != nil {
-			return err
-		}
-		if err = hysteriaProcess.StartHysteria(apiPort); err != nil {
-			return err
-		}
-	}
-	return nil
-}

@@ -56,15 +56,3 @@ func (p *process) Stop(apiPort int) error {
 	logrus.Errorf("stop process error err: lock not acquired\n")
 	return errors.New(constant.ProcessStopError)
 }
-
-func InitProcess() {
-	if err := InitXrayProcess(); err != nil {
-		logrus.Errorf("Xray初始化异常 err: %v\n", err)
-	}
-	if err := InitTrojanGoProcess(); err != nil {
-		logrus.Errorf("TrojanGo初始化异常 err: %v\n", err)
-	}
-	if err := InitHysteriaProcess(); err != nil {
-		logrus.Errorf("Hysteria初始化异常 err: %v\n", err)
-	}
-}

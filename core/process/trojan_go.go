@@ -6,9 +6,9 @@ import (
 	"os/exec"
 	"runtime"
 	"sync"
+	"trojan-panel-core/app/trojango"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
-	"trojan-panel-core/pkg/trojango"
 	"trojan-panel-core/service"
 	"trojan-panel-core/util"
 )
@@ -37,23 +37,6 @@ func NewTrojanGoProcess(apiPort int) (*TrojanGoProcess, error) {
 	}
 	logrus.Errorf("new trojan-go process errror err: lock not acquired\n")
 	return nil, errors.New(constant.NewTrojanGoProcessError)
-}
-
-func InitTrojanGoProcess() error {
-	apiPorts, err := util.GetConfigApiPorts(constant.TrojanGoPath)
-	if err != nil {
-		return err
-	}
-	for _, apiPort := range apiPorts {
-		trojanGoProcess, err := NewTrojanGoProcess(apiPort)
-		if err != nil {
-			return err
-		}
-		if err = trojanGoProcess.StartTrojanGo(apiPort); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func (t *TrojanGoProcess) StartTrojanGo(apiPort int) error {

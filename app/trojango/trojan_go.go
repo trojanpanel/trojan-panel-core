@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"trojan-panel-core/core/process"
+	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
@@ -16,6 +17,59 @@ import (
 
 var trojanGoProcess *process.TrojanGoProcess
 
+// InitTrojanGoApp 初始化TrojanGo应用
+func InitTrojanGoApp() error {
+	apiPorts, err := util.GetConfigApiPorts(constant.TrojanGoPath)
+	if err != nil {
+		return err
+	}
+	for _, apiPort := range apiPorts {
+		trojanGoProcess, err := process.NewTrojanGoProcess(apiPort)
+		if err != nil {
+			return err
+		}
+		if err = trojanGoProcess.StartTrojanGo(apiPort); err != nil {
+			return err
+		}
+		if err = syncTrojanGoData(apiPort); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// 数据库同步至应用
+func syncTrojanGoData(apiPort int) error {
+	api := NewTrojanGoApi(apiPort)
+	apiUserVos, err := dao.SelectUsersToApi(true)
+	if err != nil {
+		return err
+	}
+	for _, apiUser := range apiUserVos {
+		userDto := dto.TrojanGoAddUserDto{
+			Password:        apiUser.Password,
+			DownloadTraffic: apiUser.Download,
+			UploadTraffic:   apiUser.Upload,
+		}
+		if err := api.AddUser(userDto); err != nil {
+			logrus.Errorf("数据库同步至应用 trojan go api用户添加失败 err:%v\n", err)
+			continue
+		}
+	}
+	apiUserVos, err = dao.SelectUsersToApi(false)
+	if err != nil {
+		return err
+	}
+	for _, apiUser := range apiUserVos {
+		if err := api.DeleteUser(apiUser.Password); err != nil {
+			logrus.Errorf("数据库同步至应用 trojan go api用户删除失败 err:%v\n", err)
+			continue
+		}
+	}
+	return nil
+}
+
+// StartTrojanGo 启动TrojanGo
 func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	var err error
 	if err = initTrojanGo(trojanGoConfigDto); err != nil {
@@ -31,6 +85,7 @@ func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	return nil
 }
 
+// StopTrojanGo 暂停TrojanGo
 func StopTrojanGo(apiPort int) error {
 	if trojanGoProcess != nil {
 		if err := trojanGoProcess.Stop(apiPort); err != nil {
@@ -40,6 +95,7 @@ func StopTrojanGo(apiPort int) error {
 	return nil
 }
 
+// 初始化TrojanGo文件
 func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	// 初始化文件夹
 	trojanGoPath := constant.TrojanGoPath
