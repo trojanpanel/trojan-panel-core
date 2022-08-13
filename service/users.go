@@ -28,7 +28,7 @@ func InsertUsers(users []module.Users) error {
 	return nil
 }
 
-func SelectUsersToApi(isAdd bool) ([]vo.ApiUserVo, error) {
+func SelectUsersToApi(isAdd bool) ([]vo.UserApiVo, error) {
 	apiUserVos, err := dao.SelectUsersToApi(isAdd)
 	if err != nil {
 		return nil, err

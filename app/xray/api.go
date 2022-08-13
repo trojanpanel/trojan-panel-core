@@ -251,8 +251,8 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 	return nil
 }
 
-// RemoveUser 删除用户
-func (x *xrayApi) RemoveUser(tag string, email string) error {
+// DeleteUser 删除用户
+func (x *xrayApi) DeleteUser(tag string, email string) error {
 	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return nil

@@ -1,6 +1,6 @@
-package vo
+package dto
 
-type UserApiVo struct {
+type UsersUpdateDto struct {
 	Password string
 	Download int
 	Upload   int

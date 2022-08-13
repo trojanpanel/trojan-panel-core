@@ -69,11 +69,11 @@ func (t *TrojanGoProcess) handlerUsers(apiPort int) {
 		if !t.IsRunning(apiPort) {
 			break
 		}
-		addApiUserVos, err := service.SelectUsersToApi(true)
+		addUserApiVos, err := service.SelectUsersToApi(true)
 		if err != nil {
 			logrus.Errorf("数据库同步至Trojan Go apiPort: %d 查询用户失败 err: %v\n", apiPort, err)
 		} else {
-			for _, apiUserVo := range addApiUserVos {
+			for _, apiUserVo := range addUserApiVos {
 				userStatus, err := api.GetUser(apiUserVo.Password)
 				if err != nil || userStatus == nil || userStatus.GetUser() == nil {
 					continue

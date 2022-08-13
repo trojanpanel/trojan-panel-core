@@ -90,7 +90,7 @@ func InsertUsers(users []module.Users) error {
 	return nil
 }
 
-func SelectUsersToApi(isAdd bool) ([]vo.ApiUserVo, error) {
+func SelectUsersToApi(isAdd bool) ([]vo.UserApiVo, error) {
 	var (
 		users       []module.Users
 		buildSelect string
@@ -132,13 +132,13 @@ where a.download + a.upload >= a.quota
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
 	}
-	var apiUserVo = make([]vo.ApiUserVo, 0)
+	var apiUserVo = make([]vo.UserApiVo, 0)
 	for _, user := range users {
 		passwordDecode, err := util.AesDecode(*user.Password)
 		if err != nil {
 			return nil, err
 		}
-		apiUserVo = append(apiUserVo, vo.ApiUserVo{
+		apiUserVo = append(apiUserVo, vo.UserApiVo{
 			Password: passwordDecode,
 			Download: *user.Download,
 			Upload:   *user.Upload,

@@ -24,13 +24,16 @@ func InitXrayApp() error {
 		return err
 	}
 	for _, apiPort := range apiPorts {
+		// 初始化进程对象
 		xrayProcess, err := process.NewXrayProcess(apiPort)
 		if err != nil {
 			return err
 		}
+		// 启动xray
 		if err = xrayProcess.StartXray(apiPort); err != nil {
 			return err
 		}
+		// 同步数据
 		if err = syncXrayData(apiPort); err != nil {
 			return err
 		}
