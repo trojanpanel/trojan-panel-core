@@ -64,13 +64,14 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort int) error {
 
 func (t *TrojanGoProcess) handlerUsers(apiPort int) {
 	api := trojango.NewTrojanGoApi(apiPort)
+	// 更新每个应用中的数据
 	for {
 		if !t.IsRunning(apiPort) {
 			break
 		}
 		addApiUserVos, err := service.SelectUsersToApi(true)
 		if err != nil {
-			logrus.Errorf("数据库同步至Trojan Go apiPort: %s 查询用户失败 err: %v\n", apiPort, err)
+			logrus.Errorf("数据库同步至Trojan Go apiPort: %d 查询用户失败 err: %v\n", apiPort, err)
 		} else {
 			for _, apiUserVo := range addApiUserVos {
 				userStatus, err := api.GetUser(apiUserVo.Password)
@@ -85,18 +86,18 @@ func (t *TrojanGoProcess) handlerUsers(apiPort int) {
 					DownloadSpeedLimit: 0,
 					UploadSpeedLimit:   0,
 				}); err != nil {
-					logrus.Errorf("数据库同步至Trojan Go apiPort: %s 添加用户失败 err: %v", apiPort, err)
+					logrus.Errorf("数据库同步至Trojan Go apiPort: %d 添加用户失败 err: %v", apiPort, err)
 					continue
 				}
 			}
 		}
 		apiUserVos, err := service.SelectUsersToApi(false)
 		if err != nil {
-			logrus.Errorf("数据库同步至Trojan Go apiPort: %s 查询用户失败 err: %v\n", apiPort, err)
+			logrus.Errorf("数据库同步至Trojan Go apiPort: %d 查询用户失败 err: %v\n", apiPort, err)
 		} else {
 			for _, apiUser := range apiUserVos {
 				if err := api.DeleteUser(apiUser.Password); err != nil {
-					logrus.Errorf("数据库同步至Trojan Go apiPort: %s 删除用户失败 err: %v", apiPort, err)
+					logrus.Errorf("数据库同步至Trojan Go apiPort: %d 删除用户失败 err: %v", apiPort, err)
 					continue
 				}
 			}
@@ -118,9 +119,13 @@ func (t *TrojanGoProcess) handlerUserUploadAndDownload(apiPort int) {
 			downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
 			uploadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
 			password := user.GetUser().GetPassword()
-			if err := service.UpdateUser(&apiPort, &password, &downloadTraffic,
+			encodePassword, err := util.AesEncode(password)
+			if err != nil {
+				continue
+			}
+			if err := service.UpdateUser(&apiPort, &encodePassword, &downloadTraffic,
 				&uploadTraffic); err != nil {
-				logrus.Errorf("Trojan Go同步至数据库 apiPort: %s 更新用户失败 err: %v", apiPort, err)
+				logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
 				continue
 			}
 		}
