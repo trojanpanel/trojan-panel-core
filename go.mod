@@ -4,8 +4,10 @@ go 1.18
 
 require (
 	github.com/didi/gendry v1.7.0
+	github.com/didip/tollbooth v4.0.2+incompatible
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/gomodule/redigo v1.8.9
 	github.com/p4gefau1t/trojan-go v0.10.6
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sirupsen/logrus v1.9.0
@@ -29,6 +31,7 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
 	github.com/pires/go-proxyproto v0.6.2 // indirect
 	github.com/refraction-networking/utls v1.1.0 // indirect

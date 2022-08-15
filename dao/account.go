@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"trojan-panel-core/module"
 	"trojan-panel-core/module/constant"
+	"trojan-panel-core/module/vo"
 	"trojan-panel-core/util"
 )
 
@@ -87,4 +88,40 @@ where (quota >= 0 and quota <= download + upload)
 		return nil, errors.New(constant.SysError)
 	}
 	return accounts, nil
+}
+
+func SelectAccountByUsernameAndPass(username *string, pass *string) (*vo.AccountVo, error) {
+	var account module.Account
+
+	passEncode, err := util.AesEncode(*pass)
+	if err != nil {
+		return nil, err
+	}
+	where := map[string]interface{}{"username": *username, "pass": passEncode}
+	selectFields := []string{"id", "username"}
+	buildSelect, values, err := builder.BuildSelect("account", where, selectFields)
+	if err != nil {
+		logrus.Errorln(err.Error())
+		return nil, errors.New(constant.SysError)
+	}
+	rows, err := db.Query(buildSelect, values...)
+	if err != nil {
+		logrus.Errorln(err.Error())
+		return nil, errors.New(constant.SysError)
+	}
+	defer rows.Close()
+
+	err = scanner.Scan(rows, &account)
+	if err == scanner.ErrEmptyResult {
+		return nil, errors.New(constant.UsernameOrPassError)
+	} else if err != nil {
+		logrus.Errorln(err.Error())
+		return nil, errors.New(constant.SysError)
+	}
+
+	accountVo := vo.AccountVo{
+		Id:       *account.Id,
+		Username: *account.Username,
+	}
+	return &accountVo, nil
 }

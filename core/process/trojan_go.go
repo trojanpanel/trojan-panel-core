@@ -62,6 +62,7 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort int) error {
 	return errors.New(constant.TrojanGoStartError)
 }
 
+// 更新应用中的用户
 func (t *TrojanGoProcess) handlerUsers(apiPort int) {
 	api := trojango.NewTrojanGoApi(apiPort)
 	// 更新每个应用中的数据
@@ -105,6 +106,7 @@ func (t *TrojanGoProcess) handlerUsers(apiPort int) {
 	}
 }
 
+// 更新数据库中用户的下载和上传流量
 func (t *TrojanGoProcess) handlerUserUploadAndDownload(apiPort int) {
 	api := trojango.NewTrojanGoApi(apiPort)
 	for {

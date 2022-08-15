@@ -120,7 +120,7 @@ func (x *XrayProcess) handlerUsers(apiPort int) {
 				}
 				updateDto.Password = encodePassword
 				if isDown {
-					updateDto.Download = int(stat.Value)
+					updateDto.Download = uint(stat.Value)
 				} else {
 					updateDto.Upload = int(stat.Value)
 				}

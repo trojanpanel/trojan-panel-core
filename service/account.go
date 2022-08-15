@@ -47,3 +47,11 @@ func CronBanUser() {
 		}
 	}
 }
+
+func SelectUserByUsernameAndPass(username *string, pass *string) (*vo.UsersVo, error) {
+	userVo, err := dao.SelectUserByUsernameAndPass(username, pass)
+	if err != nil {
+		return nil, err
+	}
+	return userVo, nil
+}

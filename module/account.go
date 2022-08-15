@@ -1,7 +1,7 @@
 package module
 
 type Account struct {
-	Id                 *int    `ddb:"id"`
+	Id                 *uint   `ddb:"id"`
 	Username           *string `ddb:"username"`
 	Pass               *string `ddb:"pass"`
 	Quota              *int    `ddb:"quota"`

@@ -18,6 +18,7 @@ func init() {
 	core.InitConfig()
 	middleware.InitLog()
 	dao.InitMySQL()
+	middleware.InitRateLimiter()
 	//middleware.InitCron()
 	//app.InitApp()
 }
