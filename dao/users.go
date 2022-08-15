@@ -147,3 +147,22 @@ where a.download + a.upload >= a.quota
 	}
 	return apiUserVo, nil
 }
+
+func SelectUsersDUByAccountId(accountId int) (int, int, error) {
+	var (
+		download int
+		upload   int
+	)
+	selectFields := []string{"sum(u.download) download,sum(u.upload) upload"}
+	where := map[string]interface{}{"account_id": accountId}
+	buildSelect, values, err := builder.BuildSelect(mySQLConfig.UsersTable, where, selectFields)
+	if err != nil {
+		logrus.Errorln(err.Error())
+		return 0, 0, errors.New(constant.SysError)
+	}
+	if err = db.QueryRow(buildSelect, values...).Scan(&download, &upload); err != nil {
+		logrus.Errorln(err.Error())
+		return 0, 0, errors.New(constant.SysError)
+	}
+	return download, upload, nil
+}
