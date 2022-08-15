@@ -134,7 +134,7 @@ func (x *XrayProcess) handlerUsers(apiPort int) {
 			}
 			download := user.Download
 			upload := user.Upload
-			if err := service.UpdateUser(&apiPort, &encodePassword, &download,
+			if err := service.UpdateUser(nil, &apiPort, &encodePassword, &download,
 				&upload); err != nil {
 				logrus.Errorf("Xray同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
 				continue

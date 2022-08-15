@@ -36,11 +36,12 @@ func UpdateAccountById(id int, quota *int, download *int, upload *int) error {
 	return nil
 }
 
-// SelectAccount 查询账户 全量
-func SelectAccount() ([]module.Account, error) {
+// SelectAccountActive 查询正常状态的账户 全量
+func SelectAccountActive() ([]module.Account, error) {
 	var accounts []module.Account
 	selectFields := []string{"id"}
-	buildSelect, values, err := builder.BuildSelect(mySQLConfig.AccountTable, nil, selectFields)
+	where := map[string]interface{}{"quota <>": 0}
+	buildSelect, values, err := builder.BuildSelect(mySQLConfig.AccountTable, where, selectFields)
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)

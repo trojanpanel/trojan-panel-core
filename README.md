@@ -21,8 +21,9 @@ Trojan Panel核心
     - 添加场景 如果存在则不操作，如果不存在则添加：account.download + account.upload <
       account.quota || account.quota < 0
 3. 重启场景：遍历users，根据配置文件启动相关的应用，并调api写入用户信息
-4. 禁用用户：set account.quota = 0,account.download = 0,account.upload = 0
-5. 重设用户流量：set account.download = 0,account.upload = 0 然后set users.download = 0,users.upload = 0，最后api删除用户
+4. 禁用用户：set account.quota = 0
+5. 重设用户流量：api重设用户流量
+6. 定时更新account.download,account.upload
 
 # 编译命令
 

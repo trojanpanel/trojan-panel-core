@@ -13,7 +13,7 @@ func UpdateAccountById(id int, quota *int, download *int, upload *int) error {
 }
 
 func CronCalUD() {
-	accounts, err := dao.SelectAccount()
+	accounts, err := dao.SelectAccountActive()
 	if err != nil {
 		logrus.Errorf("定时刷新流量 查询全量账户错误 err: %v\n", err)
 	}
@@ -36,9 +36,12 @@ func CronBanUser() {
 	if err != nil {
 		logrus.Errorf("查询禁用用户错误 err: %v\n", err)
 	}
-	var zero int
 	for _, item := range users {
-		if err := dao.UpdateAccountById(*item.Id, &zero, &zero, &zero); err != nil {
+		if err := dao.UpdateAccountById(*item.Id, new(int), nil, nil); err != nil {
+			logrus.Errorf("禁用用户错误 err: %v\n", err)
+			continue
+		}
+		if err := dao.UpdateUser(item.Id, nil, nil, new(int), new(int)); err != nil {
 			logrus.Errorf("禁用用户错误 err: %v\n", err)
 			continue
 		}

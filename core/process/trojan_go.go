@@ -123,7 +123,7 @@ func (t *TrojanGoProcess) handlerUserUploadAndDownload(apiPort int) {
 			if err != nil {
 				continue
 			}
-			if err := service.UpdateUser(&apiPort, &encodePassword, &downloadTraffic,
+			if err := service.UpdateUser(nil, &apiPort, &encodePassword, &downloadTraffic,
 				&uploadTraffic); err != nil {
 				logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
 				continue

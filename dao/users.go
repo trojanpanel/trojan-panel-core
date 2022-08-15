@@ -27,8 +27,11 @@ func CountUserByApiPort(apiPort int) (int, error) {
 	return total, nil
 }
 
-func UpdateUser(apiPort *int, password *string, download *int, upload *int) error {
+func UpdateUser(accountId *int, apiPort *int, password *string, download *int, upload *int) error {
 	where := map[string]interface{}{}
+	if accountId != nil {
+		where["account_id"] = accountId
+	}
 	if apiPort != nil {
 		where["api_port"] = apiPort
 	}
