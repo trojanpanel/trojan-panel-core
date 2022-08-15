@@ -5,8 +5,8 @@ import (
 	"trojan-panel-core/dao"
 )
 
-func UpdateAccountById(id int, download int, upload int) error {
-	if err := dao.UpdateAccountById(id, download, upload); err != nil {
+func UpdateAccountById(id int, quota *int, download *int, upload *int) error {
+	if err := dao.UpdateAccountById(id, quota, download, upload); err != nil {
 		return err
 	}
 	return nil
@@ -23,8 +23,23 @@ func CronCalUD() {
 			logrus.Errorf("定时刷新流量 查询用户download,upload错误 err: %v\n", err)
 			continue
 		}
-		if err = dao.UpdateAccountById(*item.Id, download, upload); err != nil {
+		if err = dao.UpdateAccountById(*item.Id, nil, &download, &upload); err != nil {
 			logrus.Errorf("定时刷新流量 更新account download,upload错误 err: %v\n", err)
+			continue
+		}
+	}
+}
+
+// CronBanUser 禁用用户
+func CronBanUser() {
+	users, err := dao.BanUsers()
+	if err != nil {
+		logrus.Errorf("查询禁用用户错误 err: %v\n", err)
+	}
+	var zero int
+	for _, item := range users {
+		if err := dao.UpdateAccountById(*item.Id, &zero, &zero, &zero); err != nil {
+			logrus.Errorf("禁用用户错误 err: %v\n", err)
 			continue
 		}
 	}
