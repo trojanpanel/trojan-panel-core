@@ -71,10 +71,11 @@ func InsertUsers(users []module.Users) error {
 			return err
 		}
 		user := map[string]interface{}{
-			"api_port": item.ApiPort,
-			"password": encodePassword,
-			"download": item.Download,
-			"upload":   item.Upload,
+			"account_id": item.AccountId,
+			"api_port":   item.ApiPort,
+			"password":   encodePassword,
+			"download":   item.Download,
+			"upload":     item.Upload,
 		}
 		data = append(data, user)
 	}

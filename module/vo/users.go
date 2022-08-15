@@ -1,7 +1,7 @@
 package vo
 
 type UserApiVo struct {
-	Password string
-	Download int
-	Upload   int
+	Password string `json:"password"`
+	Download int    `json:"download"`
+	Upload   int    `json:"upload"`
 }
