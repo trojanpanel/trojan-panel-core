@@ -6,7 +6,7 @@ import (
 	"trojan-panel-core/module/vo"
 )
 
-func CountUserByApiPort(apiPort int) (int, error) {
+func CountUserByApiPort(apiPort uint) (int, error) {
 	total, err := dao.CountUserByApiPort(apiPort)
 	if err != nil {
 		return 0, err
@@ -14,7 +14,7 @@ func CountUserByApiPort(apiPort int) (int, error) {
 	return total, nil
 }
 
-func UpdateUser(accountId *int, apiPort *int, password *string, download *int, upload *int) error {
+func UpdateUser(accountId *uint, apiPort *uint, password *string, download *int, upload *int) error {
 	if err := dao.UpdateUser(accountId, apiPort, password, download, upload); err != nil {
 		return err
 	}

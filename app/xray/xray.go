@@ -42,7 +42,7 @@ func InitXrayApp() error {
 }
 
 // 数据库同步至应用
-func syncXrayData(apiPort int) error {
+func syncXrayData(apiPort uint) error {
 	_, err := dao.SelectUsersToApi(true)
 	if err != nil {
 		return err
@@ -67,7 +67,7 @@ func StartXray(xrayConfigDto dto.XrayConfigDto) error {
 }
 
 // StopXray 暂停Xray
-func StopXray(apiPort int) error {
+func StopXray(apiPort uint) error {
 	if xrayProcess != nil {
 		if err := xrayProcess.Stop(apiPort); err != nil {
 			return err
@@ -168,7 +168,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
   }
 }
 `
-		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.Itoa(xrayConfigDto.ApiPort))
+		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(xrayConfigDto.ApiPort), 10))
 		_, err = file.WriteString(configContent)
 		if err != nil {
 			logrus.Errorf("xray config.json文件写入异常 err: %v\n", err)

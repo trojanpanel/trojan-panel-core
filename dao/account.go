@@ -11,17 +11,17 @@ import (
 	"trojan-panel-core/util"
 )
 
-func UpdateAccountById(id int, quota *int, download *int, upload *int) error {
-	where := map[string]interface{}{"id": id}
+func UpdateAccountById(id *uint, quota *int, download *int, upload *int) error {
+	where := map[string]interface{}{"id": *id}
 	update := map[string]interface{}{}
 	if quota != nil {
-		update["quota"] = quota
+		update["quota"] = *quota
 	}
 	if download != nil {
-		update["download"] = download
+		update["download"] = *download
 	}
 	if upload != nil {
-		update["upload"] = upload
+		update["upload"] = *upload
 	}
 	buildUpdate, values, err := builder.BuildUpdate(mySQLConfig.AccountTable, where, update)
 	if err != nil {
@@ -97,9 +97,14 @@ func SelectAccountByUsernameAndPass(username *string, pass *string) (*vo.Account
 	if err != nil {
 		return nil, err
 	}
-	where := map[string]interface{}{"username": *username, "pass": passEncode}
-	selectFields := []string{"id", "username"}
-	buildSelect, values, err := builder.BuildSelect("account", where, selectFields)
+	data := map[string]interface{}{
+		"account_table": mySQLConfig.AccountTable,
+		"username":      *username,
+		"pass":          passEncode,
+	}
+	buildSelect, values, err := builder.NamedQuery(`select id,username
+from {{ account_table }}
+where quota != 0 and username = {{ username }} and pass = {{ pass }}`, data)
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)

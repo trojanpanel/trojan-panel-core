@@ -14,7 +14,7 @@ type HysteriaProcess struct {
 	process
 }
 
-func NewHysteriaProcess(apiPort int) (*HysteriaProcess, error) {
+func NewHysteriaProcess(apiPort uint) (*HysteriaProcess, error) {
 	var mutex sync.Mutex
 	defer mutex.Unlock()
 	if mutex.TryLock() {
@@ -36,7 +36,7 @@ func NewHysteriaProcess(apiPort int) (*HysteriaProcess, error) {
 	return nil, errors.New(constant.NewHysteriaProcessError)
 }
 
-func (h *HysteriaProcess) StartHysteria(apiPort int) error {
+func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
 	defer h.mutex.Unlock()
 	if h.mutex.TryLock() {
 		if h.IsRunning(apiPort) {

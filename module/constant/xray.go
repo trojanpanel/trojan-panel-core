@@ -1,8 +1,8 @@
 package constant
 
 const (
-	ProtocolShadowsocks = "shadowsocks"
-	ProtocolTrojan      = "trojan"
-	ProtocolVless       = "vless"
-	ProtocolVmess       = "vmess"
+	ProtocolShadowsocks string = "shadowsocks"
+	ProtocolTrojan      string = "trojan"
+	ProtocolVless       string = "vless"
+	ProtocolVmess       string = "vmess"
 )

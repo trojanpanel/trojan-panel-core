@@ -7,6 +7,7 @@ import (
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
+	"trojan-panel-core/service"
 )
 
 func HysteriaApi(c *gin.Context) {
@@ -22,17 +23,13 @@ func HysteriaApi(c *gin.Context) {
 		return
 	}
 	usernameAndPass := strings.Split(string(decodeString), "&")
-	usersVo, err := service.SelectUserByUsernameAndPass(&usernameAndPass[0], &usernameAndPass[1])
+	accountVo, err := service.SelectAccountByUsernameAndPass(&usernameAndPass[0], &usernameAndPass[1])
 	if err != nil {
 		vo.HysteriaApiFail(err.Error(), c)
 		return
 	}
-	if usersVo.Deleted == 1 {
-		vo.HysteriaApiFail(constant.UserDisabled, c)
-		return
-	}
-	if usersVo != nil {
-		vo.HysteriaApiSuccess(usersVo.Username, c)
+	if accountVo != nil {
+		vo.HysteriaApiSuccess(accountVo.Username, c)
 		return
 	}
 	vo.HysteriaApiFail(constant.UsernameOrPassError, c)

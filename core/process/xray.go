@@ -20,7 +20,7 @@ type XrayProcess struct {
 	process
 }
 
-func NewXrayProcess(apiPort int) (*XrayProcess, error) {
+func NewXrayProcess(apiPort uint) (*XrayProcess, error) {
 	var mutex sync.Mutex
 	defer mutex.Unlock()
 	if mutex.TryLock() {
@@ -42,7 +42,7 @@ func NewXrayProcess(apiPort int) (*XrayProcess, error) {
 	return nil, errors.New(constant.NewXrayProcessError)
 }
 
-func (x *XrayProcess) StartXray(apiPort int) error {
+func (x *XrayProcess) StartXray(apiPort uint) error {
 	defer x.mutex.Unlock()
 	if x.mutex.TryLock() {
 		if x.IsRunning(apiPort) {
@@ -65,7 +65,7 @@ func (x *XrayProcess) StartXray(apiPort int) error {
 	return errors.New(constant.XrayStartError)
 }
 
-func (x *XrayProcess) handlerUserUploadAndDownload(apiPort int) {
+func (x *XrayProcess) handlerUserUploadAndDownload(apiPort uint) {
 	api := xray.NewXrayApi(apiPort)
 	for true {
 		addUserApiVos, err := service.SelectUsersToApi(true)
@@ -97,7 +97,7 @@ func (x *XrayProcess) handlerUserUploadAndDownload(apiPort int) {
 	}
 }
 
-func (x *XrayProcess) handlerUsers(apiPort int) {
+func (x *XrayProcess) handlerUsers(apiPort uint) {
 	api := xray.NewXrayApi(apiPort)
 	for true {
 		if !x.IsRunning(apiPort) {
@@ -120,9 +120,9 @@ func (x *XrayProcess) handlerUsers(apiPort int) {
 				}
 				updateDto.Password = encodePassword
 				if isDown {
-					updateDto.Download = uint(stat.Value)
+					updateDto.Download = stat.Value
 				} else {
-					updateDto.Upload = int(stat.Value)
+					updateDto.Upload = stat.Value
 				}
 				users = append(users, updateDto)
 			}

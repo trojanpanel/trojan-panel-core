@@ -11,7 +11,7 @@ import (
 	"trojan-panel-core/util"
 )
 
-func CountUserByApiPort(apiPort int) (int, error) {
+func CountUserByApiPort(apiPort uint) (int, error) {
 	var total int
 	selectFields := []string{"count(1)"}
 	where := map[string]interface{}{"api_port": apiPort}
@@ -27,13 +27,13 @@ func CountUserByApiPort(apiPort int) (int, error) {
 	return total, nil
 }
 
-func UpdateUser(accountId *int, apiPort *int, password *string, download *int, upload *int) error {
+func UpdateUser(accountId *uint, apiPort *uint, password *string, download *int, upload *int) error {
 	where := map[string]interface{}{}
 	if accountId != nil {
-		where["account_id"] = accountId
+		where["account_id"] = *accountId
 	}
 	if apiPort != nil {
-		where["api_port"] = apiPort
+		where["api_port"] = *apiPort
 	}
 	if password != nil {
 		passwordEncode, err := util.AesEncode(*password)
@@ -136,22 +136,22 @@ where a.download + a.upload >= a.quota
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
 	}
-	var apiUserVo = make([]vo.UserApiVo, 0)
+	var apiUserVos = make([]vo.UserApiVo, 0)
 	for _, user := range users {
 		passwordDecode, err := util.AesDecode(*user.Password)
 		if err != nil {
 			return nil, err
 		}
-		apiUserVo = append(apiUserVo, vo.UserApiVo{
+		apiUserVos = append(apiUserVos, vo.UserApiVo{
 			Password: passwordDecode,
 			Download: *user.Download,
 			Upload:   *user.Upload,
 		})
 	}
-	return apiUserVo, nil
+	return apiUserVos, nil
 }
 
-func SelectUsersDUByAccountId(accountId int) (int, int, error) {
+func SelectUsersDUByAccountId(accountId uint) (int, int, error) {
 	var (
 		download int
 		upload   int

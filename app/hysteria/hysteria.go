@@ -37,7 +37,7 @@ func InitHysteriaApp() error {
 }
 
 // 数据库同步至应用
-func syncHysteriaData(apiPort int) error {
+func syncHysteriaData(apiPort uint) error {
 	_, err := dao.SelectUsersToApi(true)
 	if err != nil {
 		return err
@@ -62,7 +62,7 @@ func StartHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 }
 
 // StopHysteria 暂停Hysteria
-func StopHysteria(apiPort int) error {
+func StopHysteria(apiPort uint) error {
 	if hysteriaProcess != nil {
 		if err := hysteriaProcess.Stop(apiPort); err != nil {
 			return err

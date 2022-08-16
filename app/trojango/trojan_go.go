@@ -39,7 +39,7 @@ func InitTrojanGoApp() error {
 }
 
 // 数据库同步至应用
-func syncTrojanGoData(apiPort int) error {
+func syncTrojanGoData(apiPort uint) error {
 	api := NewTrojanGoApi(apiPort)
 	apiUserVos, err := dao.SelectUsersToApi(true)
 	if err != nil {
@@ -86,7 +86,7 @@ func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 }
 
 // StopTrojanGo 暂停TrojanGo
-func StopTrojanGo(apiPort int) error {
+func StopTrojanGo(apiPort uint) error {
 	if trojanGoProcess != nil {
 		if err := trojanGoProcess.Stop(apiPort); err != nil {
 			return err
@@ -191,8 +191,8 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 }
 `
 		configContent = strings.ReplaceAll(configContent, "${ip}", trojanGoConfigDto.Ip)
-		configContent = strings.ReplaceAll(configContent, "${port}", trojanGoConfigDto.Port)
-		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.Itoa(trojanGoConfigDto.ApiPort))
+		configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(trojanGoConfigDto.Port), 10))
+		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(trojanGoConfigDto.ApiPort), 10))
 		configContent = strings.ReplaceAll(configContent, "${sni}", trojanGoConfigDto.Sni)
 		configContent = strings.ReplaceAll(configContent, "${mux_enable}", trojanGoConfigDto.MuxEnable)
 		configContent = strings.ReplaceAll(configContent, "${websocket_enabled}", trojanGoConfigDto.WebsocketEnable)

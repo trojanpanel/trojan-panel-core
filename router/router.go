@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"trojan-panel-core/api"
 	"trojan-panel-core/middleware"
 )
 

@@ -17,7 +17,7 @@ type TrojanGoProcess struct {
 	process
 }
 
-func NewTrojanGoProcess(apiPort int) (*TrojanGoProcess, error) {
+func NewTrojanGoProcess(apiPort uint) (*TrojanGoProcess, error) {
 	var mutex sync.Mutex
 	defer mutex.Unlock()
 	if mutex.TryLock() {
@@ -39,7 +39,7 @@ func NewTrojanGoProcess(apiPort int) (*TrojanGoProcess, error) {
 	return nil, errors.New(constant.NewTrojanGoProcessError)
 }
 
-func (t *TrojanGoProcess) StartTrojanGo(apiPort int) error {
+func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
 	defer t.mutex.Unlock()
 	if t.mutex.TryLock() {
 		if t.IsRunning(apiPort) {
@@ -63,7 +63,7 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort int) error {
 }
 
 // 更新应用中的用户
-func (t *TrojanGoProcess) handlerUsers(apiPort int) {
+func (t *TrojanGoProcess) handlerUsers(apiPort uint) {
 	api := trojango.NewTrojanGoApi(apiPort)
 	// 更新每个应用中的数据
 	for {
@@ -107,7 +107,7 @@ func (t *TrojanGoProcess) handlerUsers(apiPort int) {
 }
 
 // 更新数据库中用户的下载和上传流量
-func (t *TrojanGoProcess) handlerUserUploadAndDownload(apiPort int) {
+func (t *TrojanGoProcess) handlerUserUploadAndDownload(apiPort uint) {
 	api := trojango.NewTrojanGoApi(apiPort)
 	for {
 		if !t.IsRunning(apiPort) {

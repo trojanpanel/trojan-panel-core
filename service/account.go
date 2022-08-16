@@ -3,15 +3,17 @@ package service
 import (
 	"github.com/sirupsen/logrus"
 	"trojan-panel-core/dao"
+	"trojan-panel-core/module/vo"
 )
 
-func UpdateAccountById(id int, quota *int, download *int, upload *int) error {
+func UpdateAccountById(id *uint, quota *int, download *int, upload *int) error {
 	if err := dao.UpdateAccountById(id, quota, download, upload); err != nil {
 		return err
 	}
 	return nil
 }
 
+// CronCalUD 更新正常账户的download,upload
 func CronCalUD() {
 	accounts, err := dao.SelectAccountActive()
 	if err != nil {
@@ -23,7 +25,7 @@ func CronCalUD() {
 			logrus.Errorf("定时刷新流量 查询用户download,upload错误 err: %v\n", err)
 			continue
 		}
-		if err = dao.UpdateAccountById(*item.Id, nil, &download, &upload); err != nil {
+		if err = dao.UpdateAccountById(item.Id, nil, &download, &upload); err != nil {
 			logrus.Errorf("定时刷新流量 更新account download,upload错误 err: %v\n", err)
 			continue
 		}
@@ -37,7 +39,7 @@ func CronBanUser() {
 		logrus.Errorf("查询禁用用户错误 err: %v\n", err)
 	}
 	for _, item := range users {
-		if err := dao.UpdateAccountById(*item.Id, new(int), nil, nil); err != nil {
+		if err := dao.UpdateAccountById(item.Id, new(int), nil, nil); err != nil {
 			logrus.Errorf("禁用用户错误 err: %v\n", err)
 			continue
 		}
@@ -48,10 +50,10 @@ func CronBanUser() {
 	}
 }
 
-func SelectUserByUsernameAndPass(username *string, pass *string) (*vo.UsersVo, error) {
-	userVo, err := dao.SelectUserByUsernameAndPass(username, pass)
+func SelectAccountByUsernameAndPass(username *string, pass *string) (*vo.AccountVo, error) {
+	accountVo, err := dao.SelectAccountByUsernameAndPass(username, pass)
 	if err != nil {
 		return nil, err
 	}
-	return userVo, nil
+	return accountVo, nil
 }

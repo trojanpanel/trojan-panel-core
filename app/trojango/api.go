@@ -15,18 +15,18 @@ import (
 
 type trojanGoApi struct {
 	ctx     context.Context
-	apiPort int
+	apiPort uint
 }
 
 // NewTrojanGoApi 初始化Trojan Go Api
-func NewTrojanGoApi(apiPort int) *trojanGoApi {
+func NewTrojanGoApi(apiPort uint) *trojanGoApi {
 	return &trojanGoApi{
 		ctx:     context.Background(),
 		apiPort: apiPort,
 	}
 }
 
-func apiClient(apiPort int) (service.TrojanServerServiceClient, *grpc.ClientConn, error) {
+func apiClient(apiPort uint) (service.TrojanServerServiceClient, *grpc.ClientConn, error) {
 	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%s", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {

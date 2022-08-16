@@ -11,11 +11,11 @@ import (
 
 type process struct {
 	mutex      sync.Mutex
-	cmdMap     sync.Map[string, exec.Cmd]
+	cmdMap     sync.Map[uint, exec.Cmd]
 	binaryType int // 1/xray 2/trojan-go 3/hysteria
 }
 
-func (p *process) IsRunning(apiPort int) bool {
+func (p *process) IsRunning(apiPort uint) bool {
 	cmd, ok := p.cmdMap.Load(apiPort)
 	if ok {
 		if cmd == nil || cmd.(*exec.Cmd).Process == nil {
@@ -28,7 +28,7 @@ func (p *process) IsRunning(apiPort int) bool {
 	return false
 }
 
-func (p *process) Stop(apiPort int) error {
+func (p *process) Stop(apiPort uint) error {
 	defer p.mutex.Unlock()
 	if p.mutex.TryLock() {
 		if !p.IsRunning(apiPort) {
@@ -37,7 +37,7 @@ func (p *process) Stop(apiPort int) error {
 		cmd, ok := p.cmdMap.Load(apiPort)
 		if ok {
 			if err := cmd.(*exec.Cmd).Process.Kill(); err != nil {
-				logrus.Errorf("stop process error apiPort: %s err: %v\n", apiPort, err)
+				logrus.Errorf("stop process error apiPort: %d err: %v\n", apiPort, err)
 				return errors.New(constant.ProcessStopError)
 			}
 			p.cmdMap.Delete(apiPort)
@@ -50,7 +50,7 @@ func (p *process) Stop(apiPort int) error {
 			}
 			return nil
 		}
-		logrus.Errorf("stop process error apiPort: %s err: process not found\n", apiPort)
+		logrus.Errorf("stop process error apiPort: %d err: process not found\n", apiPort)
 		return errors.New(constant.ProcessStopError)
 	}
 	logrus.Errorf("stop process error err: lock not acquired\n")

@@ -193,12 +193,12 @@ func Exists(path string) bool {
 	return true
 }
 
-func GetConfigApiPorts(dirPth string) ([]int, error) {
+func GetConfigApiPorts(dirPth string) ([]uint, error) {
 	dir, err := ioutil.ReadDir(dirPth)
 	if err != nil {
 		return nil, err
 	}
-	apiPorts := make([]int, 0)
+	apiPorts := make([]uint, 0)
 	for _, fi := range dir {
 		// 过滤指定格式
 		finds := configFileNameReg.FindStringSubmatch(fi.Name())
@@ -208,7 +208,7 @@ func GetConfigApiPorts(dirPth string) ([]int, error) {
 				logrus.Errorf("类型转换异常 err: %v\n", err)
 				continue
 			}
-			apiPorts = append(apiPorts, apiPort)
+			apiPorts = append(apiPorts, uint(apiPort))
 		}
 	}
 	return apiPorts, nil

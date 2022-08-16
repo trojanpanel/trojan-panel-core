@@ -25,16 +25,16 @@ import (
 )
 
 type xrayApi struct {
-	apiPort int
+	apiPort uint
 }
 
-func NewXrayApi(apiPort int) *xrayApi {
+func NewXrayApi(apiPort uint) *xrayApi {
 	return &xrayApi{
 		apiPort: apiPort,
 	}
 }
 
-func apiClient(apiPort int) (*grpc.ClientConn, error) {
+func apiClient(apiPort uint) (*grpc.ClientConn, error) {
 	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%s", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -66,7 +66,7 @@ func (x *xrayApi) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, erro
 	for _, stat := range stats {
 		xrayStatsVos = append(xrayStatsVos, vo.XrayStatsVo{
 			Name:  stat.Name,
-			Value: stat.GetValue(),
+			Value: int(stat.GetValue()),
 		})
 	}
 	return xrayStatsVos, nil
@@ -90,7 +90,7 @@ func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayS
 	}
 	statsVo := vo.XrayStatsVo{
 		Name:  email,
-		Value: downLinkResponse.GetStat().GetValue(),
+		Value: int(downLinkResponse.GetStat().GetValue()),
 	}
 	return &statsVo, nil
 }
@@ -113,7 +113,7 @@ func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset boo
 	}
 	statsVo := vo.XrayStatsVo{
 		Name:  tag,
-		Value: downLinkResponse.GetStat().GetValue(),
+		Value: int(downLinkResponse.GetStat().GetValue()),
 	}
 	return &statsVo, nil
 }
