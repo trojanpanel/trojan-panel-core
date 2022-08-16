@@ -36,7 +36,7 @@ func NewXrayApi(apiPort uint) *xrayApi {
 }
 
 func apiClient(apiPort uint) (*grpc.ClientConn, error) {
-	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%s", apiPort),
+	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%d", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logrus.Errorf("Xray gRPC初始化失败 err: %v\n", err)
@@ -215,10 +215,11 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 	}()
 	hsClient := command.NewHandlerServiceClient(conn)
 	var resp *command.AlterInboundResponse
-	switch dto.Tag {
+
+	switch dto.Protocol {
 	case constant.ProtocolShadowsocks:
 		resp, _ = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
-			Tag: dto.Tag,
+			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
@@ -231,7 +232,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 		})
 	case constant.ProtocolTrojan:
 		resp, _ = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
-			Tag: dto.Tag,
+			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
@@ -244,7 +245,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 		})
 	case constant.ProtocolVless:
 		resp, _ = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
-			Tag: dto.Tag,
+			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
@@ -257,7 +258,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 		})
 	case constant.ProtocolVmess:
 		resp, _ = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
-			Tag: dto.Tag,
+			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
@@ -277,7 +278,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 }
 
 // DeleteUser 删除用户
-func (x *xrayApi) DeleteUser(tag string, email string) error {
+func (x *xrayApi) DeleteUser(email string) error {
 	conn, err := apiClient(x.apiPort)
 	if err != nil {
 		return nil
@@ -289,7 +290,7 @@ func (x *xrayApi) DeleteUser(tag string, email string) error {
 		cancel()
 	}()
 	resp, err := hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
-		Tag:       tag,
+		Tag:       "user",
 		Operation: serial.ToTypedMessage(&command.RemoveUserOperation{Email: email}),
 	})
 	if err != nil {

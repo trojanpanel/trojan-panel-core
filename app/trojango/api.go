@@ -27,7 +27,7 @@ func NewTrojanGoApi(apiPort uint) *trojanGoApi {
 }
 
 func apiClient(apiPort uint) (service.TrojanServerServiceClient, *grpc.ClientConn, error) {
-	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%s", apiPort),
+	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%d", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logrus.Errorf("Trojan Go gRPC初始化失败 err: %v\n", err)

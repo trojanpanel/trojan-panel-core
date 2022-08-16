@@ -5,7 +5,7 @@ type XrayConfigDto struct {
 }
 
 type XrayAddUserDto struct {
-	Tag            string
+	Protocol       string // 协议
 	Email          string
 	SSPassword     string // ss
 	SSMethod       string // ss
