@@ -67,12 +67,21 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 
 func (x *XrayProcess) handlerUserUploadAndDownload(apiPort uint) {
 	api := xray.NewXrayApi(apiPort)
-	for true {
+	for {
+		if !x.IsRunning(apiPort) {
+			logrus.Errorf("数据库同步至Xray apiPort: %d xray not running\n", apiPort)
+			break
+		}
 		addUserApiVos, err := service.SelectUsersToApi(true)
 		if err != nil {
 			logrus.Errorf("数据库同步至Xray apiPort: %d 查询用户失败 err: %v\n", apiPort, err)
 		} else {
 			for _, apiUserVo := range addUserApiVos {
+				// 如果应用中存在则跳过
+				stats, err := api.GetUserStats(apiUserVo.Password, "downlink", false)
+				if err != nil || stats != nil {
+					continue
+				}
 				userDto := dto.XrayAddUserDto{
 					Tag:   "user",
 					Email: apiUserVo.Password,
@@ -99,8 +108,9 @@ func (x *XrayProcess) handlerUserUploadAndDownload(apiPort uint) {
 
 func (x *XrayProcess) handlerUsers(apiPort uint) {
 	api := xray.NewXrayApi(apiPort)
-	for true {
+	for {
 		if !x.IsRunning(apiPort) {
+			logrus.Errorf("数据库同步至Xray apiPort: %d xray not running\n", apiPort)
 			break
 		}
 		stats, err := api.QueryStats("", false)
@@ -114,11 +124,7 @@ func (x *XrayProcess) handlerUsers(apiPort uint) {
 			if len(submatch) > 0 {
 				email := submatch[0]
 				isDown := submatch[1] == "downlink"
-				encodePassword, err := util.AesEncode(email)
-				if err != nil {
-					continue
-				}
-				updateDto.Password = encodePassword
+				updateDto.Password = email
 				if isDown {
 					updateDto.Download = stat.Value
 				} else {

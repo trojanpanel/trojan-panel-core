@@ -68,6 +68,7 @@ func (t *TrojanGoProcess) handlerUsers(apiPort uint) {
 	// 更新每个应用中的数据
 	for {
 		if !t.IsRunning(apiPort) {
+			logrus.Errorf("数据库同步至Trojan Go apiPort: %d trojan go not running\n", apiPort)
 			break
 		}
 		addUserApiVos, err := service.SelectUsersToApi(true)
@@ -111,6 +112,7 @@ func (t *TrojanGoProcess) handlerUserUploadAndDownload(apiPort uint) {
 	api := trojango.NewTrojanGoApi(apiPort)
 	for {
 		if !t.IsRunning(apiPort) {
+			logrus.Errorf("数据库同步至Trojan Go apiPort: %d trojan go not running\n", apiPort)
 			break
 		}
 		users, err := api.ListUsers()
@@ -120,8 +122,7 @@ func (t *TrojanGoProcess) handlerUserUploadAndDownload(apiPort uint) {
 		for _, user := range users {
 			downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
 			uploadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
-			password := user.GetUser().GetPassword()
-			encodePassword, err := util.AesEncode(password)
+			encodePassword, err := util.AesEncode(user.GetUser().GetPassword())
 			if err != nil {
 				continue
 			}

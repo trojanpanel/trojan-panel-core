@@ -13,6 +13,7 @@ import (
 
 func CountUserByApiPort(apiPort uint) (int, error) {
 	var total int
+
 	selectFields := []string{"count(1)"}
 	where := map[string]interface{}{"api_port": apiPort}
 	buildSelect, values, err := builder.BuildSelect(mySQLConfig.UsersTable, where, selectFields)
@@ -56,7 +57,6 @@ func UpdateUser(accountId *uint, apiPort *uint, password *string, download *int,
 			logrus.Errorln(err.Error())
 			return errors.New(constant.SysError)
 		}
-
 		_, err = db.Exec(buildUpdate, values...)
 		if err != nil {
 			logrus.Errorln(err.Error())

@@ -63,12 +63,13 @@ func SelectAccountActive() ([]module.Account, error) {
 
 func BanUsers() ([]module.Account, error) {
 	var accounts []module.Account
+
 	data := map[string]interface{}{
 		"account_table": mySQLConfig.AccountTable,
 		"expire_time":   util.NowMilli,
 	}
 	buildSelect, values, err := builder.NamedQuery(`select id
-from account
+from {{ account_table }}
 where (quota >= 0 and quota <= download + upload)
    or deleted = 1
    or expire_time < {{ expire_time }}`, data)

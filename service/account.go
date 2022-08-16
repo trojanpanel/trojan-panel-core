@@ -6,6 +6,7 @@ import (
 	"trojan-panel-core/module/vo"
 )
 
+// UpdateAccountById 更新账户的总下载流量 总上传流量
 func UpdateAccountById(id *uint, quota *int, download *int, upload *int) error {
 	if err := dao.UpdateAccountById(id, quota, download, upload); err != nil {
 		return err
@@ -13,16 +14,16 @@ func UpdateAccountById(id *uint, quota *int, download *int, upload *int) error {
 	return nil
 }
 
-// CronCalUD 更新正常账户的download,upload
+// CronCalUD 定时任务 更新全量正常账户的download,upload
 func CronCalUD() {
 	accounts, err := dao.SelectAccountActive()
 	if err != nil {
-		logrus.Errorf("定时刷新流量 查询全量账户错误 err: %v\n", err)
+		logrus.Errorf("定时刷新流量 查询全量正常账户错误 err: %v\n", err)
 	}
 	for _, item := range accounts {
 		download, upload, err := dao.SelectUsersDUByAccountId(*item.Id)
 		if err != nil {
-			logrus.Errorf("定时刷新流量 查询用户download,upload错误 err: %v\n", err)
+			logrus.Errorf("定时刷新流量 查询users download,upload错误 err: %v\n", err)
 			continue
 		}
 		if err = dao.UpdateAccountById(item.Id, nil, &download, &upload); err != nil {
@@ -32,14 +33,14 @@ func CronCalUD() {
 	}
 }
 
-// CronBanUser 禁用用户
+// CronBanUser 定时任务 禁用用户
 func CronBanUser() {
 	users, err := dao.BanUsers()
 	if err != nil {
 		logrus.Errorf("查询禁用用户错误 err: %v\n", err)
 	}
 	for _, item := range users {
-		if err := dao.UpdateAccountById(item.Id, new(int), nil, nil); err != nil {
+		if err := dao.UpdateAccountById(item.Id, new(int), new(int), new(int)); err != nil {
 			logrus.Errorf("禁用用户错误 err: %v\n", err)
 			continue
 		}
@@ -50,6 +51,7 @@ func CronBanUser() {
 	}
 }
 
+// SelectAccountByUsernameAndPass 用户认证 hysteria
 func SelectAccountByUsernameAndPass(username *string, pass *string) (*vo.AccountVo, error) {
 	accountVo, err := dao.SelectAccountByUsernameAndPass(username, pass)
 	if err != nil {
