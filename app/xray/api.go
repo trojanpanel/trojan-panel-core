@@ -19,6 +19,7 @@ import (
 	"github.com/xtls/xray-core/proxy/vmess"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"time"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
@@ -50,9 +51,13 @@ func (x *xrayApi) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, erro
 	if err != nil {
 		return nil, err
 	}
-	defer conn.Close()
 	statsServiceClient := statscmd.NewStatsServiceClient(conn)
-	response, err := statsServiceClient.QueryStats(context.Background(), &statscmd.QueryStatsRequest{
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer func() {
+		conn.Close()
+		cancel()
+	}()
+	response, err := statsServiceClient.QueryStats(ctx, &statscmd.QueryStatsRequest{
 		Pattern: pattern,
 		Reset_:  reset,
 	})
@@ -78,9 +83,13 @@ func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayS
 	if err != nil {
 		return nil, err
 	}
-	defer conn.Close()
 	statsServiceClient := statscmd.NewStatsServiceClient(conn)
-	downLinkResponse, err := statsServiceClient.GetStats(context.Background(), &statscmd.GetStatsRequest{
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer func() {
+		conn.Close()
+		cancel()
+	}()
+	downLinkResponse, err := statsServiceClient.GetStats(ctx, &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("user>>>%s>>>traffic>>>%s", email, link),
 		Reset_: reset,
 	})
@@ -101,9 +110,13 @@ func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset boo
 	if err != nil {
 		return nil, nil
 	}
-	defer conn.Close()
 	statsServiceClient := statscmd.NewStatsServiceClient(conn)
-	downLinkResponse, err := statsServiceClient.GetStats(context.Background(), &statscmd.GetStatsRequest{
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer func() {
+		conn.Close()
+		cancel()
+	}()
+	downLinkResponse, err := statsServiceClient.GetStats(ctx, &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("%s>>>%s>>>traffic>>>%s", bound, tag, link),
 		Reset_: reset,
 	})
@@ -124,9 +137,13 @@ func (x *xrayApi) AddInboundHandler(dto dto.XrayAddBoundDto) error {
 	if err != nil {
 		return err
 	}
-	defer conn.Close()
 	handlerServiceClient := command.NewHandlerServiceClient(conn)
-	addInboundResponse, err := handlerServiceClient.AddInbound(context.Background(), &command.AddInboundRequest{
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer func() {
+		conn.Close()
+		cancel()
+	}()
+	addInboundResponse, err := handlerServiceClient.AddInbound(ctx, &command.AddInboundRequest{
 		Inbound: &core.InboundHandlerConfig{
 			Tag: dto.Tag,
 			ReceiverSettings: serial.ToTypedMessage(&proxyman.ReceiverConfig{
@@ -165,9 +182,13 @@ func (x *xrayApi) RemoveInboundHandler(tag string) error {
 	if err != nil {
 		return nil
 	}
-	defer conn.Close()
 	handlerServiceClient := command.NewHandlerServiceClient(conn)
-	removeInboundResponse, err := handlerServiceClient.RemoveInbound(context.Background(), &command.RemoveInboundRequest{
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer func() {
+		conn.Close()
+		cancel()
+	}()
+	removeInboundResponse, err := handlerServiceClient.RemoveInbound(ctx, &command.RemoveInboundRequest{
 		Tag: tag,
 	})
 	if err != nil {
@@ -187,12 +208,16 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 	if err != nil {
 		return nil
 	}
-	defer conn.Close()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer func() {
+		conn.Close()
+		cancel()
+	}()
 	hsClient := command.NewHandlerServiceClient(conn)
 	var resp *command.AlterInboundResponse
 	switch dto.Tag {
 	case constant.ProtocolShadowsocks:
-		resp, _ = hsClient.AlterInbound(context.Background(), &command.AlterInboundRequest{
+		resp, _ = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: dto.Tag,
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
@@ -205,7 +230,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 				}),
 		})
 	case constant.ProtocolTrojan:
-		resp, _ = hsClient.AlterInbound(context.Background(), &command.AlterInboundRequest{
+		resp, _ = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: dto.Tag,
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
@@ -218,7 +243,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 				}),
 		})
 	case constant.ProtocolVless:
-		resp, _ = hsClient.AlterInbound(context.Background(), &command.AlterInboundRequest{
+		resp, _ = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: dto.Tag,
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
@@ -231,7 +256,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 				}),
 		})
 	case constant.ProtocolVmess:
-		resp, _ = hsClient.AlterInbound(context.Background(), &command.AlterInboundRequest{
+		resp, _ = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: dto.Tag,
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
@@ -257,9 +282,13 @@ func (x *xrayApi) DeleteUser(tag string, email string) error {
 	if err != nil {
 		return nil
 	}
-	defer conn.Close()
 	hsClient := command.NewHandlerServiceClient(conn)
-	resp, err := hsClient.AlterInbound(context.Background(), &command.AlterInboundRequest{
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer func() {
+		conn.Close()
+		cancel()
+	}()
+	resp, err := hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
 		Tag:       tag,
 		Operation: serial.ToTypedMessage(&command.RemoveUserOperation{Email: email}),
 	})
