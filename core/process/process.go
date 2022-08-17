@@ -10,8 +10,8 @@ import (
 )
 
 type process struct {
-	mutex      sync.Mutex
-	cmdMap     sync.Map[uint, exec.Cmd]
+	mutex      *sync.Mutex
+	cmdMap     *sync.Map
 	binaryType int // 1/xray 2/trojan-go 3/hysteria
 }
 
@@ -32,12 +32,13 @@ func (p *process) Stop(apiPort uint) error {
 	defer p.mutex.Unlock()
 	if p.mutex.TryLock() {
 		if !p.IsRunning(apiPort) {
+			logrus.Errorf("process has been stoped. apiPort: %d\n", apiPort)
 			return nil
 		}
 		cmd, ok := p.cmdMap.Load(apiPort)
 		if ok {
 			if err := cmd.(*exec.Cmd).Process.Kill(); err != nil {
-				logrus.Errorf("stop process error apiPort: %d err: %v\n", apiPort, err)
+				logrus.Errorf("stop process error. apiPort: %d err: %v\n", apiPort, err)
 				return errors.New(constant.ProcessStopError)
 			}
 			p.cmdMap.Delete(apiPort)

@@ -10,30 +10,15 @@ import (
 	"trojan-panel-core/util"
 )
 
+var hysteriaMutex sync.Mutex
+var hysteriaCmdMap sync.Map
+
 type HysteriaProcess struct {
 	process
 }
 
-func NewHysteriaProcess(apiPort uint) (*HysteriaProcess, error) {
-	var mutex sync.Mutex
-	defer mutex.Unlock()
-	if mutex.TryLock() {
-		h := &HysteriaProcess{process{binaryType: 3}}
-		binaryFilePath, err := util.GetBinaryFile(3)
-		if err != nil {
-			return nil, err
-		}
-		configFilePath, err := util.GetConfigFile(3, apiPort)
-		if err != nil {
-			return nil, err
-		}
-		cmd := exec.Command(binaryFilePath, "-c", configFilePath, "server")
-		h.cmdMap.Store(apiPort, cmd)
-		runtime.SetFinalizer(h, h.Stop(apiPort))
-		return h, nil
-	}
-	logrus.Errorf("new hysteria process errror err: lock not acquired\n")
-	return nil, errors.New(constant.NewHysteriaProcessError)
+func NewHysteriaInstance() *HysteriaProcess {
+	return &HysteriaProcess{process{mutex: &hysteriaMutex, binaryType: 3, cmdMap: &hysteriaCmdMap}}
 }
 
 func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
@@ -42,16 +27,22 @@ func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
 		if h.IsRunning(apiPort) {
 			return nil
 		}
-		cmd, ok := h.cmdMap.Load(apiPort)
-		if ok {
-			if err := cmd.(*exec.Cmd).Start(); err != nil {
-				logrus.Errorf("start hysteria error err: %v\n", err)
-				return errors.New(constant.HysteriaStartError)
-			}
-			return nil
+		binaryFilePath, err := util.GetBinaryFile(3)
+		if err != nil {
+			return err
 		}
-		logrus.Errorf("start hysteria error err: process not found\n")
-		return errors.New(constant.HysteriaStartError)
+		configFilePath, err := util.GetConfigFile(3, apiPort)
+		if err != nil {
+			return err
+		}
+		cmd := exec.Command(binaryFilePath, "-c", configFilePath, "server")
+		h.cmdMap.Store(apiPort, cmd)
+		runtime.SetFinalizer(h, h.Stop(apiPort))
+		if err := cmd.Start(); err != nil {
+			logrus.Errorf("start hysteria error err: %v\n", err)
+			return errors.New(constant.HysteriaStartError)
+		}
+		return nil
 	}
 	logrus.Errorf("start hysteria error err: lock not acquired\n")
 	return errors.New(constant.HysteriaStartError)

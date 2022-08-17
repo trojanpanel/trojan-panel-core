@@ -13,30 +13,15 @@ import (
 	"trojan-panel-core/util"
 )
 
+var trojanGoMutex sync.Mutex
+var trojanGoCmdMap sync.Map
+
 type TrojanGoProcess struct {
 	process
 }
 
-func NewTrojanGoProcess(apiPort uint) (*TrojanGoProcess, error) {
-	var mutex sync.Mutex
-	defer mutex.Unlock()
-	if mutex.TryLock() {
-		t := &TrojanGoProcess{process{binaryType: 2}}
-		binaryFilePath, err := util.GetBinaryFile(2)
-		if err != nil {
-			return nil, err
-		}
-		configFilePath, err := util.GetConfigFile(2, apiPort)
-		if err != nil {
-			return nil, err
-		}
-		cmd := exec.Command(binaryFilePath, "-config", configFilePath)
-		t.cmdMap.Store(apiPort, cmd)
-		runtime.SetFinalizer(t, t.Stop(apiPort))
-		return t, nil
-	}
-	logrus.Errorf("new trojan-go process errror err: lock not acquired\n")
-	return nil, errors.New(constant.NewTrojanGoProcessError)
+func NewTrojanGoInstance() *TrojanGoProcess {
+	return &TrojanGoProcess{process{mutex: &trojanGoMutex, binaryType: 2, cmdMap: &trojanGoCmdMap}}
 }
 
 func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
@@ -45,18 +30,24 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
 		if t.IsRunning(apiPort) {
 			return nil
 		}
-		cmd, ok := t.cmdMap.Load(apiPort)
-		if ok {
-			if err := cmd.(*exec.Cmd).Start(); err != nil {
-				logrus.Errorf("start trojan-go error err: %v\n", err)
-				return errors.New(constant.TrojanGoStartError)
-			}
-			go t.handlerUserUploadAndDownload(apiPort)
-			go t.handlerUsers(apiPort)
-			return nil
+		binaryFilePath, err := util.GetBinaryFile(2)
+		if err != nil {
+			return err
 		}
-		logrus.Errorf("start trojan-go error err: process not found\n")
-		return errors.New(constant.TrojanGoStartError)
+		configFilePath, err := util.GetConfigFile(2, apiPort)
+		if err != nil {
+			return err
+		}
+		cmd := exec.Command(binaryFilePath, "-config", configFilePath)
+		t.cmdMap.Store(apiPort, cmd)
+		runtime.SetFinalizer(t, t.Stop(apiPort))
+		if err := cmd.Start(); err != nil {
+			logrus.Errorf("start trojan-go error err: %v\n", err)
+			return errors.New(constant.TrojanGoStartError)
+		}
+		go t.handlerUserUploadAndDownload(apiPort)
+		go t.handlerUsers(apiPort)
+		return nil
 	}
 	logrus.Errorf("start trojan-go error err: lock not acquired\n")
 	return errors.New(constant.TrojanGoStartError)

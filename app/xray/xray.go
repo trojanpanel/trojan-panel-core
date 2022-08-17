@@ -15,20 +15,14 @@ import (
 	"trojan-panel-core/util"
 )
 
-var xrayProcess *process.XrayProcess
-
 // InitXrayApp 初始化Xray应用
 func InitXrayApp() error {
 	apiPorts, err := util.GetConfigApiPorts(constant.XrayPath)
 	if err != nil {
 		return err
 	}
+	xrayProcess := process.NewXrayProcess()
 	for _, apiPort := range apiPorts {
-		// 初始化进程对象
-		xrayProcess, err := process.NewXrayProcess(apiPort)
-		if err != nil {
-			return err
-		}
 		// 启动xray
 		if err = xrayProcess.StartXray(apiPort); err != nil {
 			return err
@@ -56,11 +50,7 @@ func StartXray(xrayConfigDto dto.XrayConfigDto) error {
 	if err = initXray(xrayConfigDto); err != nil {
 		return err
 	}
-	xrayProcess, err = process.NewXrayProcess(xrayConfigDto.ApiPort)
-	if err != nil {
-		return err
-	}
-	if err = xrayProcess.StartXray(xrayConfigDto.ApiPort); err != nil {
+	if err = process.NewXrayProcess().StartXray(xrayConfigDto.ApiPort); err != nil {
 		return err
 	}
 	return nil
@@ -68,10 +58,9 @@ func StartXray(xrayConfigDto dto.XrayConfigDto) error {
 
 // StopXray 暂停Xray
 func StopXray(apiPort uint) error {
-	if xrayProcess != nil {
-		if err := xrayProcess.Stop(apiPort); err != nil {
-			return err
-		}
+	if err := process.NewXrayProcess().Stop(apiPort); err != nil {
+		logrus.Errorf("xray stop err: %v\n", err)
+		return err
 	}
 	return nil
 }

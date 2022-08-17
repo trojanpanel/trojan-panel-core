@@ -15,20 +15,15 @@ import (
 	"trojan-panel-core/util"
 )
 
-var trojanGoProcess *process.TrojanGoProcess
-
 // InitTrojanGoApp 初始化TrojanGo应用
 func InitTrojanGoApp() error {
 	apiPorts, err := util.GetConfigApiPorts(constant.TrojanGoPath)
 	if err != nil {
 		return err
 	}
+	trojanGoInstance := process.NewTrojanGoInstance()
 	for _, apiPort := range apiPorts {
-		trojanGoProcess, err := process.NewTrojanGoProcess(apiPort)
-		if err != nil {
-			return err
-		}
-		if err = trojanGoProcess.StartTrojanGo(apiPort); err != nil {
+		if err = trojanGoInstance.StartTrojanGo(apiPort); err != nil {
 			return err
 		}
 		if err = syncTrojanGoData(apiPort); err != nil {
@@ -75,11 +70,7 @@ func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	if err = initTrojanGo(trojanGoConfigDto); err != nil {
 		return err
 	}
-	trojanGoProcess, err = process.NewTrojanGoProcess(trojanGoConfigDto.ApiPort)
-	if err != nil {
-		return err
-	}
-	if err = trojanGoProcess.StartTrojanGo(trojanGoConfigDto.ApiPort); err != nil {
+	if err = process.NewTrojanGoInstance().StartTrojanGo(trojanGoConfigDto.ApiPort); err != nil {
 		return err
 	}
 	return nil
@@ -87,10 +78,9 @@ func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 
 // StopTrojanGo 暂停TrojanGo
 func StopTrojanGo(apiPort uint) error {
-	if trojanGoProcess != nil {
-		if err := trojanGoProcess.Stop(apiPort); err != nil {
-			return err
-		}
+	if err := process.NewTrojanGoInstance().Stop(apiPort); err != nil {
+		logrus.Errorf("trojan go stop err: %v\n", err)
+		return err
 	}
 	return nil
 }

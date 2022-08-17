@@ -16,30 +16,15 @@ import (
 
 var userLinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>(downlink|uplink)")
 
+var xrayMutex sync.Mutex
+var xrayCmdMap sync.Map
+
 type XrayProcess struct {
 	process
 }
 
-func NewXrayProcess(apiPort uint) (*XrayProcess, error) {
-	var mutex sync.Mutex
-	defer mutex.Unlock()
-	if mutex.TryLock() {
-		x := &XrayProcess{process{binaryType: 1}}
-		binaryFilePath, err := util.GetBinaryFile(1)
-		if err != nil {
-			return nil, err
-		}
-		configFilePath, err := util.GetConfigFile(1, apiPort)
-		if err != nil {
-			return nil, err
-		}
-		cmd := exec.Command(binaryFilePath, "-c", configFilePath)
-		x.cmdMap.Store(0, cmd)
-		runtime.SetFinalizer(x, x.Stop(apiPort))
-		return x, nil
-	}
-	logrus.Errorf("new xray process errror err: lock not acquired\n")
-	return nil, errors.New(constant.NewXrayProcessError)
+func NewXrayProcess() *XrayProcess {
+	return &XrayProcess{process{mutex: &xrayMutex, binaryType: 1, cmdMap: &xrayCmdMap}}
 }
 
 func (x *XrayProcess) StartXray(apiPort uint) error {
@@ -48,18 +33,24 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 		if x.IsRunning(apiPort) {
 			return nil
 		}
-		cmd, ok := x.cmdMap.Load(apiPort)
-		if ok {
-			if err := cmd.(*exec.Cmd).Start(); err != nil {
-				logrus.Errorf("start xray error err: %v\n", err)
-				return errors.New(constant.XrayStartError)
-			}
-			go x.handlerUserUploadAndDownload(apiPort)
-			go x.handlerUsers(apiPort)
-			return nil
+		binaryFilePath, err := util.GetBinaryFile(1)
+		if err != nil {
+			return err
 		}
-		logrus.Errorf("start xray error err: process not found\n")
-		return errors.New(constant.XrayStartError)
+		configFilePath, err := util.GetConfigFile(1, apiPort)
+		if err != nil {
+			return err
+		}
+		cmd := exec.Command(binaryFilePath, "-c", configFilePath)
+		x.cmdMap.Store(0, cmd)
+		runtime.SetFinalizer(x, x.Stop(apiPort))
+		if err := cmd.Start(); err != nil {
+			logrus.Errorf("start xray error err: %v\n", err)
+			return errors.New(constant.XrayStartError)
+		}
+		go x.handlerUserUploadAndDownload(apiPort)
+		go x.handlerUsers(apiPort)
+		return nil
 	}
 	logrus.Errorf("start xray error err: lock not acquired\n")
 	return errors.New(constant.XrayStartError)
@@ -83,7 +74,6 @@ func (x *XrayProcess) handlerUserUploadAndDownload(apiPort uint) {
 					continue
 				}
 				userDto := dto.XrayAddUserDto{
-					Tag:   "user",
 					Email: apiUserVo.Password,
 				}
 				if err := api.AddUser(userDto); err != nil {
@@ -97,7 +87,7 @@ func (x *XrayProcess) handlerUserUploadAndDownload(apiPort uint) {
 			logrus.Errorf("数据库同步至Xray apiPort: %d 查询用户失败 err: %v\n", apiPort, err)
 		} else {
 			for _, apiUser := range apiUserVos {
-				if err := api.DeleteUser("user", apiUser.Password); err != nil {
+				if err := api.DeleteUser(apiUser.Password); err != nil {
 					logrus.Errorf("数据库同步至Xray apiPort: %d 删除用户失败 err: %v", apiPort, err)
 					continue
 				}

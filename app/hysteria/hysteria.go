@@ -13,16 +13,14 @@ import (
 	"trojan-panel-core/util"
 )
 
-var hysteriaProcess *process.HysteriaProcess
-
 // InitHysteriaApp 初始化Hysteria应用
 func InitHysteriaApp() error {
 	apiPorts, err := util.GetConfigApiPorts(constant.HysteriaPath)
 	if err != nil {
 		return err
 	}
+	hysteriaProcess := process.NewHysteriaInstance()
 	for _, apiPort := range apiPorts {
-		hysteriaProcess, err := process.NewHysteriaProcess(apiPort)
 		if err != nil {
 			return err
 		}
@@ -51,11 +49,7 @@ func StartHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	if err = initHysteria(hysteriaConfigDto); err != nil {
 		return err
 	}
-	hysteriaProcess, err = process.NewHysteriaProcess(hysteriaConfigDto.ApiPort)
-	if err != nil {
-		return err
-	}
-	if err = hysteriaProcess.StartHysteria(hysteriaConfigDto.ApiPort); err != nil {
+	if err = process.NewHysteriaInstance().StartHysteria(hysteriaConfigDto.ApiPort); err != nil {
 		return err
 	}
 	return nil
@@ -63,10 +57,9 @@ func StartHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 
 // StopHysteria 暂停Hysteria
 func StopHysteria(apiPort uint) error {
-	if hysteriaProcess != nil {
-		if err := hysteriaProcess.Stop(apiPort); err != nil {
-			return err
-		}
+	if err := process.NewHysteriaInstance().Stop(apiPort); err != nil {
+		logrus.Errorf("hysteria stop err: %v\n", err)
+		return err
 	}
 	return nil
 }
