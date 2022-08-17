@@ -117,83 +117,83 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	if !util.Exists(trojanGoConfigFilePath) {
 		file, err := os.Create(trojanGoConfigFilePath)
 		if err != nil {
-			logrus.Errorf("创建trojan go config-%d.json文件异常 err: %v\n", trojanGoConfigDto.Id, err)
+			logrus.Errorf("创建trojan go config-%d.json文件异常 err: %v\n", trojanGoConfigDto.ApiPort, err)
 			panic(err)
 		}
 		defer file.Close()
 
 		configContent := `{
-    "run_type": "server",
-    "local_addr": "0.0.0.0",
-    "local_port": ${port},
-    "remote_addr": "trojan-panel-caddy",
-    "remote_port": 80,
-    "log_level": 1,
-    "log_file": "",
-    "password": [],
-    "disable_http_check": false,
-    "udp_timeout": 60,
-    "ssl": {
-        "verify": true,
-        "verify_hostname": true,
-        "cert": "/tpdata/caddy/acme/${ip}/${ip}.crt",
-        "key": "/tpdata/caddy/acme/${ip}/${ip}.key",
-        "key_password": "",
-        "cipher": "",
-        "curves": "",
-        "prefer_server_cipher": false,
-        "sni": "${sni}",
-        "alpn": [
-            "http/1.1"
-        ],
-        "session_ticket": true,
-        "reuse_session": true,
-        "plain_http_response": "",
-        "fallback_addr": "",
-        "fallback_port": 80,
-        "fingerprint": ""
-    },
-    "tcp": {
-        "no_delay": true,
-        "keep_alive": true,
-        "prefer_ipv4": false
-    },
+  "run_type": "server",
+  "local_addr": "0.0.0.0",
+  "local_port": ${port},
+  "remote_addr": "trojan-panel-caddy",
+  "remote_port": 80,
+  "log_level": 1,
+  "log_file": "",
+  "password": [],
+  "disable_http_check": false,
+  "udp_timeout": 60,
+  "ssl": {
+    "verify": true,
+    "verify_hostname": true,
+    "cert": "/tpdata/caddy/acme/${ip}/${ip}.crt",
+    "key": "/tpdata/caddy/acme/${ip}/${ip}.key",
+    "key_password": "",
+    "cipher": "",
+    "curves": "",
+    "prefer_server_cipher": false,
+    "sni": "${sni}",
+    "alpn": [
+      "http/1.1"
+    ],
+    "session_ticket": true,
+    "reuse_session": true,
+    "plain_http_response": "",
+    "fallback_addr": "",
+    "fallback_port": 80,
+    "fingerprint": ""
+  },
+  "tcp": {
+    "no_delay": true,
+    "keep_alive": true,
+    "prefer_ipv4": false
+  },
     "mux": {
-        "enabled": ${mux_enable},
-        "concurrency": 8,
-        "idle_timeout": 60
-    },
-    "websocket": {
-        "enabled": ${websocket_enabled},
-        "path": "/${websocket_path}",
-        "host": "${websocket_host}"
-    },
-    "shadowsocks": {
-        "enabled": ${ss_enable},
-        "method": "${ss_method}",
-        "password": "${ss_password}"
-    },
-    "api": {
-        "enabled": true,
-        "api_addr": "127.0.0.1",
-        "api_port": ${api_port}
-    }
+    "enabled": ${mux_enable},
+    "concurrency": 8,
+    "idle_timeout": 60
+  },
+  "websocket": {
+    "enabled": ${websocket_enable},
+    "path": "/${websocket_path}",
+    "host": "${websocket_host}"
+  },
+  "shadowsocks": {
+    "enabled": ${ss_enable},
+    "method": "${ss_method}",
+    "password": "${ss_password}"
+  },
+  "api": {
+	"enabled": true,
+	"api_addr": "",
+	"api_port": ${apiPort}
+  }
 }
 `
-		configContent = strings.ReplaceAll(configContent, "${ip}", trojanGoConfigDto.Ip)
 		configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(trojanGoConfigDto.Port), 10))
-		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(trojanGoConfigDto.ApiPort), 10))
+		configContent = strings.ReplaceAll(configContent, "${ip}", trojanGoConfigDto.Ip)
 		configContent = strings.ReplaceAll(configContent, "${sni}", trojanGoConfigDto.Sni)
 		configContent = strings.ReplaceAll(configContent, "${mux_enable}", trojanGoConfigDto.MuxEnable)
-		configContent = strings.ReplaceAll(configContent, "${websocket_enabled}", trojanGoConfigDto.WebsocketEnable)
+		configContent = strings.ReplaceAll(configContent, "${websocket_enable}", trojanGoConfigDto.WebsocketEnable)
 		configContent = strings.ReplaceAll(configContent, "${websocket_path}", trojanGoConfigDto.WebsocketPath)
 		configContent = strings.ReplaceAll(configContent, "${websocket_host}", trojanGoConfigDto.WebsocketHost)
 		configContent = strings.ReplaceAll(configContent, "${ss_enable}", trojanGoConfigDto.SSEnable)
 		configContent = strings.ReplaceAll(configContent, "${ss_method}", trojanGoConfigDto.SSMethod)
 		configContent = strings.ReplaceAll(configContent, "${ss_password}", trojanGoConfigDto.SSPassword)
+		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(trojanGoConfigDto.ApiPort), 10))
 		_, err = file.WriteString(configContent)
 		if err != nil {
-			logrus.Errorf("trojan go config-%d.json文件写入异常 err: %v\n", trojanGoConfigDto.Id, err)
+			logrus.Errorf("trojan go config-%d.json文件写入异常 err: %v\n", trojanGoConfigDto.ApiPort, err)
 			panic(err)
 		}
 	}

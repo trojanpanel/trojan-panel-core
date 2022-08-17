@@ -6,6 +6,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"runtime"
+	"strconv"
+	"strings"
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
@@ -101,7 +103,25 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 		}
 		defer file.Close()
 
-		configContent := ``
+		configContent := `{
+  "listen": ":${port}",
+  "protocol": "${protocol}",
+  "cert": "/tpdata/caddy/acme/${ip}/${ip}.crt",
+  "key": "/tpdata/caddy/acme/${ip}/${ip}.key",
+  "up_mbps": ${up_mbps},
+  "down_mbps": ${down_mbps},
+  "auth": {
+    "mode": "external",
+    "config": {
+      "http": "http://127.0.0.1:8082/api/auth/hysteria"
+    }
+  }
+}`
+		configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(hysteriaConfigDto.Port), 10))
+		configContent = strings.ReplaceAll(configContent, "${protocol}", hysteriaConfigDto.Protocol)
+		configContent = strings.ReplaceAll(configContent, "${ip}", hysteriaConfigDto.Ip)
+		configContent = strings.ReplaceAll(configContent, "${up_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.UpMbps), 10))
+		configContent = strings.ReplaceAll(configContent, "${down_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.DownMbps), 10))
 		_, err = file.WriteString(configContent)
 		if err != nil {
 			logrus.Errorf("hysteria config.json文件写入异常 err: %v\n", err)

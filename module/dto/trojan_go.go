@@ -1,10 +1,8 @@
 package dto
 
 type TrojanGoConfigDto struct {
-	Id              uint // 节点id
-	Ip              string
 	Port            uint
-	ApiPort         uint
+	Ip              string
 	Sni             string
 	MuxEnable       string
 	WebsocketEnable string
@@ -13,6 +11,7 @@ type TrojanGoConfigDto struct {
 	SSEnable        string
 	SSMethod        string
 	SSPassword      string
+	ApiPort         uint
 }
 
 type TrojanGoAddUserDto struct {
