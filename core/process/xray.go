@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"regexp"
 	"runtime"
-	"sync"
 	"trojan-panel-core/app/xray"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
@@ -16,15 +15,12 @@ import (
 
 var userLinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>(downlink|uplink)")
 
-var xrayMutex sync.Mutex
-var xrayCmdMap sync.Map
-
 type XrayProcess struct {
 	process
 }
 
 func NewXrayProcess() *XrayProcess {
-	return &XrayProcess{process{mutex: &xrayMutex, binaryType: 1, cmdMap: &xrayCmdMap}}
+	return &XrayProcess{process{mutex: &mutex, binaryType: 1, cmdMap: &cmdMap}}
 }
 
 func (x *XrayProcess) StartXray(apiPort uint) error {

@@ -5,7 +5,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"os/exec"
 	"runtime"
-	"sync"
 	"trojan-panel-core/app/trojango"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
@@ -13,15 +12,12 @@ import (
 	"trojan-panel-core/util"
 )
 
-var trojanGoMutex sync.Mutex
-var trojanGoCmdMap sync.Map
-
 type TrojanGoProcess struct {
 	process
 }
 
 func NewTrojanGoInstance() *TrojanGoProcess {
-	return &TrojanGoProcess{process{mutex: &trojanGoMutex, binaryType: 2, cmdMap: &trojanGoCmdMap}}
+	return &TrojanGoProcess{process{mutex: &mutex, binaryType: 2, cmdMap: &cmdMap}}
 }
 
 func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {

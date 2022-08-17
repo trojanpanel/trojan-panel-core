@@ -5,20 +5,16 @@ import (
 	"github.com/sirupsen/logrus"
 	"os/exec"
 	"runtime"
-	"sync"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/util"
 )
-
-var hysteriaMutex sync.Mutex
-var hysteriaCmdMap sync.Map
 
 type HysteriaProcess struct {
 	process
 }
 
 func NewHysteriaInstance() *HysteriaProcess {
-	return &HysteriaProcess{process{mutex: &hysteriaMutex, binaryType: 3, cmdMap: &hysteriaCmdMap}}
+	return &HysteriaProcess{process{mutex: &mutex, binaryType: 3, cmdMap: &cmdMap}}
 }
 
 func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
