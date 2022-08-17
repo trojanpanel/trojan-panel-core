@@ -9,19 +9,18 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"io"
+	"time"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 )
 
 type trojanGoApi struct {
-	ctx     context.Context
 	apiPort uint
 }
 
 // NewTrojanGoApi 初始化Trojan Go Api
 func NewTrojanGoApi(apiPort uint) *trojanGoApi {
 	return &trojanGoApi{
-		ctx:     context.Background(),
 		apiPort: apiPort,
 	}
 }
@@ -42,16 +41,17 @@ func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 	if err != nil {
 		return nil, err
 	}
-	stream, err := client.ListUsers(t.ctx, &service.ListUsersRequest{})
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	stream, err := client.ListUsers(ctx, &service.ListUsersRequest{})
+	defer func() {
+		stream.CloseSend()
+		cancel()
+		conn.Close()
+	}()
 	if err != nil {
 		logrus.Errorf("trojan go list users stream err: %v\n", err)
 		return nil, errors.New(constant.GrpcError)
 	}
-	defer func() {
-		stream.CloseSend()
-		conn.Close()
-	}()
-
 	var userStatus []*service.UserStatus
 	for {
 		resp, err := stream.Recv()
@@ -72,15 +72,17 @@ func (t *trojanGoApi) GetUser(password string) (*service.UserStatus, error) {
 	if err != nil {
 		return nil, err
 	}
-	stream, err := client.GetUsers(t.ctx)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	stream, err := client.GetUsers(ctx)
+	defer func() {
+		stream.CloseSend()
+		cancel()
+		conn.Close()
+	}()
 	if err != nil {
 		logrus.Errorf("trojan go get user stream err: %v\n", err)
 		return nil, errors.New(constant.GrpcError)
 	}
-	defer func() {
-		stream.CloseSend()
-		conn.Close()
-	}()
 
 	err = stream.Send(&service.GetUsersRequest{
 		User: &service.User{
@@ -105,15 +107,17 @@ func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
 	if err != nil {
 		return err
 	}
-	stream, err := client.SetUsers(t.ctx)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	stream, err := client.SetUsers(ctx)
+	defer func() {
+		stream.CloseSend()
+		cancel()
+		conn.Close()
+	}()
 	if err != nil {
 		logrus.Errorf("trojan go set users stream err: %v\n", err)
 		return errors.New(constant.GrpcError)
 	}
-	defer func() {
-		stream.CloseSend()
-		conn.Close()
-	}()
 
 	err = stream.Send(setUsersRequest)
 	if err != nil {
