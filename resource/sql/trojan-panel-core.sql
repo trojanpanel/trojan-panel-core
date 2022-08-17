@@ -202,6 +202,7 @@ DROP TABLE IF EXISTS `node_trojan_go`;
 CREATE TABLE `node_trojan_go` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `sni` varchar(64) NOT NULL DEFAULT '' COMMENT 'sni',
+  `mux_enable` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启多路复用 0/关闭 1/开启',
   `websocket_enable` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否开启websocket 0/否 1/是',
   `websocket_path` varchar(64) NOT NULL DEFAULT 'trojan-panel-websocket-path' COMMENT 'websocket路径',
   `ss_enable` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否开启ss加密 0/否 1/是',
@@ -383,4 +384,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-11  0:18:53
+-- Dump completed on 2022-08-18  0:09:03
