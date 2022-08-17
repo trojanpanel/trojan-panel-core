@@ -77,33 +77,6 @@ func (x *xrayApi) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, erro
 	return xrayStatsVos, nil
 }
 
-// GetUserStats 查询用户状态
-func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error) {
-	conn, err := apiClient(x.apiPort)
-	if err != nil {
-		return nil, err
-	}
-	statsServiceClient := statscmd.NewStatsServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
-	defer func() {
-		conn.Close()
-		cancel()
-	}()
-	downLinkResponse, err := statsServiceClient.GetStats(ctx, &statscmd.GetStatsRequest{
-		Name:   fmt.Sprintf("user>>>%s>>>traffic>>>%s", email, link),
-		Reset_: reset,
-	})
-	if err != nil {
-		logrus.Errorf("xray get user stats err: %v\n", err)
-		return nil, errors.New(constant.GrpcError)
-	}
-	statsVo := vo.XrayStatsVo{
-		Name:  email,
-		Value: int(downLinkResponse.GetStat().GetValue()),
-	}
-	return &statsVo, nil
-}
-
 // GetBoundStats 查询入/出站状态
 func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset bool) (*vo.XrayStatsVo, error) {
 	conn, err := apiClient(x.apiPort)
@@ -126,6 +99,33 @@ func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset boo
 	}
 	statsVo := vo.XrayStatsVo{
 		Name:  tag,
+		Value: int(downLinkResponse.GetStat().GetValue()),
+	}
+	return &statsVo, nil
+}
+
+// GetUserStats 查询用户状态
+func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error) {
+	conn, err := apiClient(x.apiPort)
+	if err != nil {
+		return nil, err
+	}
+	statsServiceClient := statscmd.NewStatsServiceClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer func() {
+		conn.Close()
+		cancel()
+	}()
+	downLinkResponse, err := statsServiceClient.GetStats(ctx, &statscmd.GetStatsRequest{
+		Name:   fmt.Sprintf("user>>>%s>>>traffic>>>%s", email, link),
+		Reset_: reset,
+	})
+	if err != nil {
+		logrus.Errorf("xray get user stats err: %v\n", err)
+		return nil, errors.New(constant.GrpcError)
+	}
+	statsVo := vo.XrayStatsVo{
+		Name:  email,
 		Value: int(downLinkResponse.GetStat().GetValue()),
 	}
 	return &statsVo, nil
@@ -171,32 +171,6 @@ func (x *xrayApi) AddInboundHandler(dto dto.XrayAddBoundDto) error {
 	}
 	if addInboundResponse == nil {
 		logrus.Errorf("xray add inbound unexpected nil response")
-		return errors.New(constant.GrpcError)
-	}
-	return nil
-}
-
-// RemoveInboundHandler 删除入站
-func (x *xrayApi) RemoveInboundHandler(tag string) error {
-	conn, err := apiClient(x.apiPort)
-	if err != nil {
-		return nil
-	}
-	handlerServiceClient := command.NewHandlerServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
-	defer func() {
-		conn.Close()
-		cancel()
-	}()
-	removeInboundResponse, err := handlerServiceClient.RemoveInbound(ctx, &command.RemoveInboundRequest{
-		Tag: tag,
-	})
-	if err != nil {
-		logrus.Errorf("xray remove inbound err: %v\n", err)
-		return errors.New(constant.GrpcError)
-	}
-	if removeInboundResponse == nil {
-		logrus.Errorf("xray remove inbound unexpected nil response")
 		return errors.New(constant.GrpcError)
 	}
 	return nil
@@ -272,6 +246,32 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 	}
 	if resp == nil {
 		logrus.Errorf("xray add user unexpected nil response")
+		return errors.New(constant.GrpcError)
+	}
+	return nil
+}
+
+// RemoveInboundHandler 删除入站
+func (x *xrayApi) RemoveInboundHandler(tag string) error {
+	conn, err := apiClient(x.apiPort)
+	if err != nil {
+		return nil
+	}
+	handlerServiceClient := command.NewHandlerServiceClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	defer func() {
+		conn.Close()
+		cancel()
+	}()
+	removeInboundResponse, err := handlerServiceClient.RemoveInbound(ctx, &command.RemoveInboundRequest{
+		Tag: tag,
+	})
+	if err != nil {
+		logrus.Errorf("xray remove inbound err: %v\n", err)
+		return errors.New(constant.GrpcError)
+	}
+	if removeInboundResponse == nil {
+		logrus.Errorf("xray remove inbound unexpected nil response")
 		return errors.New(constant.GrpcError)
 	}
 	return nil
