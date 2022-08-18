@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"trojan-panel-core/core"
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
@@ -103,11 +104,12 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 		}
 		defer file.Close()
 
+		certConfig := core.Config.CertConfig
 		configContent := `{
   "listen": ":${port}",
   "protocol": "${protocol}",
-  "cert": "/tpdata/caddy/acme/${ip}/${ip}.crt",
-  "key": "/tpdata/caddy/acme/${ip}/${ip}.key",
+  "cert": "${crt_path}",
+  "key": "${key_path}",
   "up_mbps": ${up_mbps},
   "down_mbps": ${down_mbps},
   "auth": {
@@ -119,7 +121,8 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 }`
 		configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(hysteriaConfigDto.Port), 10))
 		configContent = strings.ReplaceAll(configContent, "${protocol}", hysteriaConfigDto.Protocol)
-		configContent = strings.ReplaceAll(configContent, "${ip}", hysteriaConfigDto.Ip)
+		configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
+		configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
 		configContent = strings.ReplaceAll(configContent, "${up_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.UpMbps), 10))
 		configContent = strings.ReplaceAll(configContent, "${down_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.DownMbps), 10))
 		_, err = file.WriteString(configContent)
