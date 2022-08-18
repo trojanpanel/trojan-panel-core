@@ -25,28 +25,33 @@ func NewTrojanGoApi(apiPort uint) *trojanGoApi {
 	}
 }
 
-func apiClient(apiPort uint) (service.TrojanServerServiceClient, *grpc.ClientConn, error) {
+func apiClient(apiPort uint) (clent service.TrojanServerServiceClient, ctx context.Context, clo func(), err error) {
 	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%d", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		logrus.Errorf("Trojan Go gRPC初始化失败 err: %v\n", err)
-		return nil, nil, errors.New(constant.GrpcError)
+		err = errors.New(constant.GrpcError)
+		return
 	}
-	return service.NewTrojanServerServiceClient(conn), conn, nil
+	clent = service.NewTrojanServerServiceClient(conn)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	clo = func() {
+		cancel()
+		conn.Close()
+	}
+	return
 }
 
 // ListUsers 查询节点上的所有用户
 func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
-	client, conn, err := apiClient(t.apiPort)
+	client, ctx, clo, err := apiClient(t.apiPort)
 	if err != nil {
 		return nil, err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 	stream, err := client.ListUsers(ctx, &service.ListUsersRequest{})
 	defer func() {
 		stream.CloseSend()
-		cancel()
-		conn.Close()
+		clo()
 	}()
 	if err != nil {
 		logrus.Errorf("trojan go list users stream err: %v\n", err)
@@ -68,16 +73,14 @@ func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 
 // GetUser 查询节点上的用户
 func (t *trojanGoApi) GetUser(password string) (*service.UserStatus, error) {
-	client, conn, err := apiClient(t.apiPort)
+	client, ctx, clo, err := apiClient(t.apiPort)
 	if err != nil {
 		return nil, err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 	stream, err := client.GetUsers(ctx)
 	defer func() {
 		stream.CloseSend()
-		cancel()
-		conn.Close()
+		clo()
 	}()
 	if err != nil {
 		logrus.Errorf("trojan go get user stream err: %v\n", err)
@@ -103,16 +106,14 @@ func (t *trojanGoApi) GetUser(password string) (*service.UserStatus, error) {
 
 // 节点上设置用户
 func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
-	client, conn, err := apiClient(t.apiPort)
+	client, ctx, clo, err := apiClient(t.apiPort)
 	if err != nil {
 		return err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 	stream, err := client.SetUsers(ctx)
 	defer func() {
 		stream.CloseSend()
-		cancel()
-		conn.Close()
+		clo()
 	}()
 	if err != nil {
 		logrus.Errorf("trojan go set users stream err: %v\n", err)

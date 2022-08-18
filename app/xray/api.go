@@ -35,28 +35,30 @@ func NewXrayApi(apiPort uint) *xrayApi {
 	}
 }
 
-func apiClient(apiPort uint) (*grpc.ClientConn, error) {
-	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%d", apiPort),
+func apiClient(apiPort uint) (conn *grpc.ClientConn, ctx context.Context, clo func(), err error) {
+	conn, err = grpc.Dial(fmt.Sprintf("127.0.0.1:%d", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		logrus.Errorf("Xray gRPC初始化失败 err: %v\n", err)
-		return nil, errors.New(constant.GrpcError)
+		logrus.Errorf("gRPC初始化失败 err: %v\n", err)
+		err = errors.New(constant.GrpcError)
+		return
 	}
-	return conn, nil
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	clo = func() {
+		cancel()
+		conn.Close()
+	}
+	return
 }
 
 // QueryStats 全量状态
 func (x *xrayApi) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, error) {
-	conn, err := apiClient(x.apiPort)
+	conn, ctx, clo, err := apiClient(x.apiPort)
+	defer clo()
 	if err != nil {
 		return nil, err
 	}
 	statsServiceClient := statscmd.NewStatsServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
-	defer func() {
-		conn.Close()
-		cancel()
-	}()
 	response, err := statsServiceClient.QueryStats(ctx, &statscmd.QueryStatsRequest{
 		Pattern: pattern,
 		Reset_:  reset,
@@ -79,16 +81,12 @@ func (x *xrayApi) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, erro
 
 // GetBoundStats 查询入/出站状态
 func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset bool) (*vo.XrayStatsVo, error) {
-	conn, err := apiClient(x.apiPort)
+	conn, ctx, clo, err := apiClient(x.apiPort)
+	defer clo()
 	if err != nil {
 		return nil, nil
 	}
 	statsServiceClient := statscmd.NewStatsServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
-	defer func() {
-		conn.Close()
-		cancel()
-	}()
 	downLinkResponse, err := statsServiceClient.GetStats(ctx, &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("%s>>>%s>>>traffic>>>%s", bound, tag, link),
 		Reset_: reset,
@@ -106,16 +104,12 @@ func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset boo
 
 // GetUserStats 查询用户状态
 func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error) {
-	conn, err := apiClient(x.apiPort)
+	conn, ctx, clo, err := apiClient(x.apiPort)
+	defer clo()
 	if err != nil {
 		return nil, err
 	}
 	statsServiceClient := statscmd.NewStatsServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
-	defer func() {
-		conn.Close()
-		cancel()
-	}()
 	downLinkResponse, err := statsServiceClient.GetStats(ctx, &statscmd.GetStatsRequest{
 		Name:   fmt.Sprintf("user>>>%s>>>traffic>>>%s", email, link),
 		Reset_: reset,
@@ -133,16 +127,12 @@ func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayS
 
 // AddInboundHandler 添加入站
 func (x *xrayApi) AddInboundHandler(dto dto.XrayAddBoundDto) error {
-	conn, err := apiClient(x.apiPort)
+	conn, ctx, clo, err := apiClient(x.apiPort)
+	defer clo()
 	if err != nil {
 		return err
 	}
 	handlerServiceClient := command.NewHandlerServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
-	defer func() {
-		conn.Close()
-		cancel()
-	}()
 	addInboundResponse, err := handlerServiceClient.AddInbound(ctx, &command.AddInboundRequest{
 		Inbound: &core.InboundHandlerConfig{
 			Tag: dto.Tag,
@@ -178,15 +168,11 @@ func (x *xrayApi) AddInboundHandler(dto dto.XrayAddBoundDto) error {
 
 // AddUser 添加用户
 func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
-	conn, err := apiClient(x.apiPort)
+	conn, ctx, clo, err := apiClient(x.apiPort)
+	defer clo()
 	if err != nil {
 		return nil
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
-	defer func() {
-		conn.Close()
-		cancel()
-	}()
 	hsClient := command.NewHandlerServiceClient(conn)
 	var resp *command.AlterInboundResponse
 
@@ -253,16 +239,12 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 
 // RemoveInboundHandler 删除入站
 func (x *xrayApi) RemoveInboundHandler(tag string) error {
-	conn, err := apiClient(x.apiPort)
+	conn, ctx, clo, err := apiClient(x.apiPort)
+	defer clo()
 	if err != nil {
 		return nil
 	}
 	handlerServiceClient := command.NewHandlerServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
-	defer func() {
-		conn.Close()
-		cancel()
-	}()
 	removeInboundResponse, err := handlerServiceClient.RemoveInbound(ctx, &command.RemoveInboundRequest{
 		Tag: tag,
 	})
@@ -279,16 +261,12 @@ func (x *xrayApi) RemoveInboundHandler(tag string) error {
 
 // DeleteUser 删除用户
 func (x *xrayApi) DeleteUser(email string) error {
-	conn, err := apiClient(x.apiPort)
+	conn, ctx, clo, err := apiClient(x.apiPort)
+	defer clo()
 	if err != nil {
 		return nil
 	}
 	hsClient := command.NewHandlerServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
-	defer func() {
-		conn.Close()
-		cancel()
-	}()
 	resp, err := hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
 		Tag:       "user",
 		Operation: serial.ToTypedMessage(&command.RemoveUserOperation{Email: email}),
