@@ -38,15 +38,14 @@ func NewXrayApi(apiPort uint) *xrayApi {
 func apiClient(apiPort uint) (conn *grpc.ClientConn, ctx context.Context, clo func(), err error) {
 	conn, err = grpc.Dial(fmt.Sprintf("127.0.0.1:%d", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		logrus.Errorf("gRPC初始化失败 err: %v\n", err)
-		err = errors.New(constant.GrpcError)
-		return
-	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 	clo = func() {
 		cancel()
 		conn.Close()
+	}
+	if err != nil {
+		logrus.Errorf("gRPC初始化失败 err: %v\n", err)
+		err = errors.New(constant.GrpcError)
 	}
 	return
 }
