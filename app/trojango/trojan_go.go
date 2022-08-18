@@ -86,6 +86,17 @@ func StopTrojanGo(apiPort uint) error {
 	return nil
 }
 
+// RestartTrojanGo 重启TrojanGo
+func RestartTrojanGo(apiPort uint) error {
+	if err := StopTrojanGo(apiPort); err != nil {
+		return err
+	}
+	if err := StartTrojanGo(dto.TrojanGoConfigDto{ApiPort: apiPort}); err != nil {
+		return err
+	}
+	return nil
+}
+
 // 初始化TrojanGo文件
 func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	// 初始化文件夹

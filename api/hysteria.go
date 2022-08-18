@@ -11,13 +11,13 @@ import (
 )
 
 func HysteriaApi(c *gin.Context) {
-	var hysteriaAutoDto dto.HysteriaAutoDto
-	_ = c.ShouldBindJSON(&hysteriaAutoDto)
-	if err := validate.Struct(&hysteriaAutoDto); err != nil {
+	var hysteriaAuthDto dto.HysteriaAuthDto
+	_ = c.ShouldBindJSON(&hysteriaAuthDto)
+	if err := validate.Struct(&hysteriaAuthDto); err != nil {
 		vo.HysteriaApiFail(constant.ValidateFailed, c)
 		return
 	}
-	decodeString, err := base64.StdEncoding.DecodeString(*hysteriaAutoDto.Payload)
+	decodeString, err := base64.StdEncoding.DecodeString(*hysteriaAuthDto.Payload)
 	if err != nil {
 		vo.HysteriaApiFail(constant.ValidateFailed, c)
 		return

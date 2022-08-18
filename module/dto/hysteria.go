@@ -9,7 +9,7 @@ type HysteriaConfigDto struct {
 	DownMbps int
 }
 
-// HysteriaAutoDto hysteria api端口
-type HysteriaAutoDto struct {
+// HysteriaAuthDto hysteria api端口
+type HysteriaAuthDto struct {
 	Payload *string `json:"payload" validate:"required"`
 }

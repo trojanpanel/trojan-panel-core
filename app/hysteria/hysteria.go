@@ -67,6 +67,17 @@ func StopHysteria(apiPort uint) error {
 	return nil
 }
 
+// RestartHysteria 重启Hysteria
+func RestartHysteria(apiPort uint) error {
+	if err := StopHysteria(apiPort); err != nil {
+		return err
+	}
+	if err := StartHysteria(dto.HysteriaConfigDto{ApiPort: apiPort}); err != nil {
+		return err
+	}
+	return nil
+}
+
 // 初始化Hysteria文件
 func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	// 初始化文件夹

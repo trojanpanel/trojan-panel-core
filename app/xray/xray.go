@@ -64,6 +64,17 @@ func StopXray(apiPort uint) error {
 	return nil
 }
 
+// RestartXray 重启Xray
+func RestartXray(apiPort uint) error {
+	if err := StopXray(apiPort); err != nil {
+		return err
+	}
+	if err := StartXray(apiPort); err != nil {
+		return err
+	}
+	return nil
+}
+
 // 初始化Xray文件
 func initXray(apiPort uint) error {
 	// 初始化文件夹
