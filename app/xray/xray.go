@@ -11,7 +11,6 @@ import (
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
-	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
 )
 
@@ -45,12 +44,12 @@ func syncXrayData(apiPort uint) error {
 }
 
 // StartXray 启动Xray
-func StartXray(xrayConfigDto dto.XrayConfigDto) error {
+func StartXray(apiPort uint) error {
 	var err error
-	if err = initXray(xrayConfigDto); err != nil {
+	if err = initXray(apiPort); err != nil {
 		return err
 	}
-	if err = process.NewXrayProcess().StartXray(xrayConfigDto.ApiPort); err != nil {
+	if err = process.NewXrayProcess().StartXray(apiPort); err != nil {
 		return err
 	}
 	return nil
@@ -66,7 +65,7 @@ func StopXray(apiPort uint) error {
 }
 
 // 初始化Xray文件
-func initXray(xrayConfigDto dto.XrayConfigDto) error {
+func initXray(apiPort uint) error {
 	// 初始化文件夹
 	xrayPath := constant.XrayPath
 	if !util.Exists(xrayPath) {
@@ -90,7 +89,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	}
 
 	// 初始化配置
-	xrayConfigFilePath, err := util.GetConfigFilePath(1, xrayConfigDto.ApiPort)
+	xrayConfigFilePath, err := util.GetConfigFilePath(1, apiPort)
 	if err != nil {
 		return err
 	}
@@ -157,7 +156,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
   }
 }
 `
-		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(xrayConfigDto.ApiPort), 10))
+		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(apiPort), 10))
 		_, err = file.WriteString(configContent)
 		if err != nil {
 			logrus.Errorf("xray config.json文件写入异常 err: %v\n", err)

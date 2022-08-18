@@ -2,6 +2,7 @@ package util
 
 import (
 	"archive/zip"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -15,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 	"trojan-panel-core/module/constant"
+	"trojan-panel-core/module/dto"
 )
 
 var configFileNameReg = regexp.MustCompile("^config-[1-9]\\d*\\.json$")
@@ -221,4 +223,22 @@ func GetConfigApiPorts(dirPth string) ([]uint, error) {
 		}
 	}
 	return apiPorts, nil
+}
+
+func GetXrayConfig(apiPort uint) (*dto.XrayConfigDto, error) {
+	xrayConfigDto := &dto.XrayConfigDto{}
+	configFilePath, err := GetConfigFile(1, apiPort)
+	if err != nil {
+		return nil, err
+	}
+	configFileByte, err := ioutil.ReadFile(configFilePath)
+	if err != nil {
+		logrus.Errorf("Xray配置文件读取失败 err: %v\n", err)
+		return nil, err
+	}
+	if err = json.Unmarshal(configFileByte, xrayConfigDto); err != nil {
+		logrus.Errorf("Xray配置文件读取失败 err: %v\n", err)
+		return nil, err
+	}
+	return xrayConfigDto, nil
 }
