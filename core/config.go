@@ -18,6 +18,7 @@ func InitConfig() {
 
 type AppConfig struct {
 	MySQLConfig `ini:"mysql"`
+	CertConfig  `ini:"cert"`
 	LogConfig   `ini:"log"`
 }
 
@@ -30,6 +31,11 @@ type MySQLConfig struct {
 	Database     string `ini:"database"`
 	AccountTable string `ini:"account_table"`
 	UsersTable   string `ini:"users_table"`
+}
+
+type CertConfig struct {
+	CrtPath string `ini:"crt_path"`
+	KeyPath string `ini:"key_path"`
 }
 
 // LogConfig log

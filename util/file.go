@@ -60,6 +60,8 @@ func InitConfigFile() {
 			database     string
 			accountTable string
 			usersTable   string
+			crtPath      string
+			keyPath      string
 		)
 		flag.StringVar(&host, "host", "localhost", "数据库地址")
 		flag.StringVar(&user, "user", "root", "数据库用户名")
@@ -68,6 +70,8 @@ func InitConfigFile() {
 		flag.StringVar(&database, "database", "trojan_panel_db", "数据库名称")
 		flag.StringVar(&accountTable, "account-table", "account", "traffic表名称")
 		flag.StringVar(&usersTable, "users-table", "users", "users表名称")
+		flag.StringVar(&crtPath, "crt-path", "", "crt秘钥")
+		flag.StringVar(&keyPath, "key-path", "", "key秘钥")
 		flag.Parse()
 		_, err = file.WriteString(fmt.Sprintf(
 			`[mysql]
@@ -78,13 +82,16 @@ port=%s
 database=%s
 account_table=%s
 users_table=%s
+[cert]
+crt_path=%s
+key_path=%s
 [log]
 filename=logs/trojan-panel-core.log
 max_size=1
 max_backups=5
 max_age=30
 compress=true
-`, host, user, password, port, database, accountTable, usersTable))
+`, host, user, password, port, database, accountTable, usersTable, crtPath, keyPath))
 		if err != nil {
 			logrus.Errorf("config.ini文件写入异常 err: %v\n", err)
 			panic(err)
@@ -94,8 +101,8 @@ compress=true
 }
 
 func usage() {
-	_, _ = fmt.Fprintf(os.Stderr, `xray manage help
-Usage: xraymanage [-host] [-password] [-port] [-database] [-account-table] [-users-table] [-h]
+	_, _ = fmt.Fprintf(os.Stderr, `trojan panel core manage help
+Usage: trojan-panel-core [-host] [-password] [-port] [-database] [-account-table] [-users-table] [-crt-path] [-key-path] [-h]
 
 Options:
 -host            database host
@@ -105,6 +112,8 @@ Options:
 -database        database name
 -account-table   account table name
 -users-table	 users table name
+-crt-path	 	 cert crt file path
+-key-path	 	 cert key file path
 -h               help
 `)
 }

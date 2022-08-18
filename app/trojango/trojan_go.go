@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"trojan-panel-core/core"
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
@@ -122,6 +123,8 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 		}
 		defer file.Close()
 
+		certConfig := core.Config.CertConfig
+
 		configContent := `{
   "run_type": "server",
   "local_addr": "0.0.0.0",
@@ -136,8 +139,8 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
   "ssl": {
     "verify": true,
     "verify_hostname": true,
-    "cert": "/tpdata/caddy/acme/${ip}/${ip}.crt",
-    "key": "/tpdata/caddy/acme/${ip}/${ip}.key",
+    "cert": "${crt_path}",
+    "key": "${key_path}",
     "key_password": "",
     "cipher": "",
     "curves": "",
@@ -181,7 +184,8 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 }
 `
 		configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(trojanGoConfigDto.Port), 10))
-		configContent = strings.ReplaceAll(configContent, "${ip}", trojanGoConfigDto.Ip)
+		configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
+		configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
 		configContent = strings.ReplaceAll(configContent, "${sni}", trojanGoConfigDto.Sni)
 		configContent = strings.ReplaceAll(configContent, "${mux_enable}", trojanGoConfigDto.MuxEnable)
 		configContent = strings.ReplaceAll(configContent, "${websocket_enable}", trojanGoConfigDto.WebsocketEnable)
