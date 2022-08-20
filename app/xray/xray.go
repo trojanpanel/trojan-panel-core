@@ -11,6 +11,7 @@ import (
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
+	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
 )
 
@@ -36,9 +37,43 @@ func InitXrayApp() error {
 
 // 数据库同步至应用
 func syncXrayData(apiPort uint) error {
-	_, err := dao.SelectUsersToApi(true)
+	nodeXrays, err := dao.SelectNodeXrayByProtocol()
 	if err != nil {
 		return err
+	}
+	api := NewXrayApi(apiPort)
+	for _, nodeXray := range nodeXrays {
+		apiAddUserVos, err := dao.SelectUsersToApi(true)
+		if err != nil {
+			return err
+		}
+		for _, apiUser := range apiAddUserVos {
+			userDto := dto.XrayAddUserDto{
+				Protocol:       *nodeXray.Protocol,
+				Email:          apiUser.Password,
+				SSMethod:       *nodeXray.SSMethod,
+				SSPassword:     apiUser.Password,
+				TrojanPassword: apiUser.Password,
+				VlessId:        *nodeXray.VlessId,
+				VmessId:        *nodeXray.VmessId,
+				VmessAlterId:   *nodeXray.VmessAlterId,
+			}
+			if err = api.AddUser(userDto); err != nil {
+				logrus.Errorf("数据库同步至应用 xray api用户添加失败 err:%v\n", err)
+				continue
+			}
+		}
+	}
+
+	apiRemoveUserVos, err := dao.SelectUsersToApi(false)
+	if err != nil {
+		return err
+	}
+	for _, apiUser := range apiRemoveUserVos {
+		if err := api.DeleteUser(apiUser.Password); err != nil {
+			logrus.Errorf("数据库同步至应用 xray api用户删除失败 err:%v\n", err)
+			continue
+		}
 	}
 	return nil
 }

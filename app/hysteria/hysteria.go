@@ -30,9 +30,9 @@ func InitHysteriaApp() error {
 		if err = hysteriaProcess.StartHysteria(apiPort); err != nil {
 			return err
 		}
-		if err = syncHysteriaData(apiPort); err != nil {
-			return err
-		}
+		//if err = syncHysteriaData(apiPort); err != nil {
+		//	return err
+		//}
 	}
 	return nil
 }

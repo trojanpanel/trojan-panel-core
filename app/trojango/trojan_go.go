@@ -37,11 +37,11 @@ func InitTrojanGoApp() error {
 // 数据库同步至应用
 func syncTrojanGoData(apiPort uint) error {
 	api := NewTrojanGoApi(apiPort)
-	apiUserVos, err := dao.SelectUsersToApi(true)
+	apiAddUserVos, err := dao.SelectUsersToApi(true)
 	if err != nil {
 		return err
 	}
-	for _, apiUser := range apiUserVos {
+	for _, apiUser := range apiAddUserVos {
 		userDto := dto.TrojanGoAddUserDto{
 			Password:        apiUser.Password,
 			DownloadTraffic: apiUser.Download,
@@ -52,11 +52,11 @@ func syncTrojanGoData(apiPort uint) error {
 			continue
 		}
 	}
-	apiUserVos, err = dao.SelectUsersToApi(false)
+	apiRemoveUserVos, err := dao.SelectUsersToApi(false)
 	if err != nil {
 		return err
 	}
-	for _, apiUser := range apiUserVos {
+	for _, apiUser := range apiRemoveUserVos {
 		if err := api.DeleteUser(apiUser.Password); err != nil {
 			logrus.Errorf("数据库同步至应用 trojan go api用户删除失败 err:%v\n", err)
 			continue

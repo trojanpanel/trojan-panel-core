@@ -27,11 +27,13 @@ type Inbound struct {
 
 type XrayAddUserDto struct {
 	Protocol       string // 协议
-	Email          string
-	SSPassword     string // ss
-	SSMethod       string // ss
+	Email          string // 唯一标识
+	SSMethod       string // ss method
+	SSPassword     string // ss password
 	TrojanPassword string // trojan
-	VId            string // vless & vmess
+	VlessId        string // vless
+	VmessId        string // vmess
+	VmessAlterId   string // vmess alter id
 }
 
 type XrayAddBoundDto struct {
