@@ -55,15 +55,16 @@ func InitConfigFile() {
 		defer file.Close()
 
 		var (
-			host         string
-			user         string
-			password     string
-			port         string
-			database     string
-			accountTable string
-			usersTable   string
-			crtPath      string
-			keyPath      string
+			host          string
+			user          string
+			password      string
+			port          string
+			database      string
+			accountTable  string
+			usersTable    string
+			nodeXrayTable string
+			crtPath       string
+			keyPath       string
 		)
 		flag.StringVar(&host, "host", "localhost", "数据库地址")
 		flag.StringVar(&user, "user", "root", "数据库用户名")
@@ -72,6 +73,7 @@ func InitConfigFile() {
 		flag.StringVar(&database, "database", "trojan_panel_db", "数据库名称")
 		flag.StringVar(&accountTable, "account-table", "account", "traffic表名称")
 		flag.StringVar(&usersTable, "users-table", "users", "users表名称")
+		flag.StringVar(&nodeXrayTable, "node-xray-table", "node_xray", "node_xray表名称")
 		flag.StringVar(&crtPath, "crt-path", "", "crt秘钥")
 		flag.StringVar(&keyPath, "key-path", "", "key秘钥")
 		flag.Parse()
@@ -84,6 +86,7 @@ port=%s
 database=%s
 account_table=%s
 users_table=%s
+node_xray_table=%s
 [cert]
 crt_path=%s
 key_path=%s
@@ -93,7 +96,7 @@ max_size=1
 max_backups=5
 max_age=30
 compress=true
-`, host, user, password, port, database, accountTable, usersTable, crtPath, keyPath))
+`, host, user, password, port, database, accountTable, usersTable, nodeXrayTable, crtPath, keyPath))
 		if err != nil {
 			logrus.Errorf("config.ini文件写入异常 err: %v\n", err)
 			panic(err)
@@ -114,6 +117,7 @@ Options:
 -database        database name
 -account-table   account table name
 -users-table	 users table name
+-node-xray-table node xray table name
 -crt-path	 	 cert crt file path
 -key-path	 	 cert key file path
 -h               help

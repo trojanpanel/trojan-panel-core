@@ -50,19 +50,15 @@ func GetConfigFile(binaryType int, apiPort uint) (string, error) {
 
 func GetConfigFilePath(binaryType int, apiPort uint) (string, error) {
 	var configPath string
-	var configName string
 	switch binaryType {
 	case 1:
-		configName = "config.json"
 		configPath = constant.XrayPath
 	case 2:
-		configName = fmt.Sprintf("config-%d.json", apiPort)
 		configPath = constant.TrojanGoPath
 	case 3:
-		configName = fmt.Sprintf("config-%d.json", apiPort)
 		configPath = constant.HysteriaPath
 	default:
 		return "", errors.New(constant.ConfigFileNotExist)
 	}
-	return fmt.Sprintf("%s/%s", configPath, configName), nil
+	return fmt.Sprintf("%s/%s", configPath, fmt.Sprintf("config-%d.json", apiPort)), nil
 }

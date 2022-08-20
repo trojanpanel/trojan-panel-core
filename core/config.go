@@ -31,6 +31,7 @@ type MySQLConfig struct {
 	Database     string `ini:"database"`
 	AccountTable string `ini:"account_table"`
 	UsersTable   string `ini:"users_table"`
+	NodeXray     string `ini:"node_xray"`
 }
 
 type CertConfig struct {

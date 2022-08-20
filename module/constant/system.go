@@ -16,5 +16,4 @@ const (
 	TrojanGoPath    string = "bin/trojango"
 	HysteriaPath    string = "bin/hysteria"
 	DownloadBaseUrl string = "https://github.com/trojanpanel/install-script/releases/download/v1.2.0"
-	ApiPortXray     string = "60001"
 )
