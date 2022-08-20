@@ -33,7 +33,7 @@ type XrayAddUserDto struct {
 	TrojanPassword string // trojan
 	VlessId        string // vless
 	VmessId        string // vmess
-	VmessAlterId   string // vmess alter id
+	VmessAlterId   uint32 // vmess alter id
 }
 
 type XrayAddBoundDto struct {

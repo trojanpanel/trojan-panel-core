@@ -5,17 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"github.com/xtls/xray-core/app/proxyman"
 	"github.com/xtls/xray-core/app/proxyman/command"
 	statscmd "github.com/xtls/xray-core/app/stats/command"
-	"github.com/xtls/xray-core/common/net"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/common/serial"
-	"github.com/xtls/xray-core/core"
 	"github.com/xtls/xray-core/proxy/shadowsocks"
 	"github.com/xtls/xray-core/proxy/trojan"
 	"github.com/xtls/xray-core/proxy/vless"
-	"github.com/xtls/xray-core/proxy/vless/inbound"
 	"github.com/xtls/xray-core/proxy/vmess"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -124,47 +120,6 @@ func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayS
 	return &statsVo, nil
 }
 
-// AddInboundHandler 添加入站
-func (x *xrayApi) AddInboundHandler(dto dto.XrayAddBoundDto) error {
-	conn, ctx, clo, err := apiClient(x.apiPort)
-	defer clo()
-	if err != nil {
-		return err
-	}
-	handlerServiceClient := command.NewHandlerServiceClient(conn)
-	addInboundResponse, err := handlerServiceClient.AddInbound(ctx, &command.AddInboundRequest{
-		Inbound: &core.InboundHandlerConfig{
-			Tag: dto.Tag,
-			ReceiverSettings: serial.ToTypedMessage(&proxyman.ReceiverConfig{
-				PortList: &net.PortList{Range: []*net.PortRange{net.SinglePortRange(net.Port(dto.Port))}},
-				Listen:   net.NewIPOrDomain(net.LocalHostIP),
-			}),
-			ProxySettings: serial.ToTypedMessage(&inbound.Config{
-				Clients: []*protocol.User{
-					{
-						Level: 0,
-						Account: serial.ToTypedMessage(&vmess.Account{
-							Id: "0cdf8a45-303d-4fed-9780-29aa7f54175e",
-							SecuritySettings: &protocol.SecurityConfig{
-								Type: protocol.SecurityType_AES128_GCM,
-							},
-						}),
-					},
-				},
-			}),
-		},
-	})
-	if err != nil {
-		logrus.Errorf("xray add inbound err: %v\n", err)
-		return errors.New(constant.GrpcError)
-	}
-	if addInboundResponse == nil {
-		logrus.Errorf("xray add inbound unexpected nil response")
-		return errors.New(constant.GrpcError)
-	}
-	return nil
-}
-
 // AddUser 添加用户
 func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 	conn, ctx, clo, err := apiClient(x.apiPort)
@@ -172,12 +127,12 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 	if err != nil {
 		return nil
 	}
-	hsClient := command.NewHandlerServiceClient(conn)
+	handlerServiceClient := command.NewHandlerServiceClient(conn)
 	var resp *command.AlterInboundResponse
 
 	switch dto.Protocol {
 	case constant.ProtocolShadowsocks:
-		resp, _ = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
+		resp, _ = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
@@ -190,7 +145,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 				}),
 		})
 	case constant.ProtocolTrojan:
-		resp, _ = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
+		resp, _ = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
@@ -198,32 +153,35 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Email: dto.Email,
 						Account: serial.ToTypedMessage(&trojan.Account{
 							Password: dto.TrojanPassword,
+							Flow:     "xtls-rprx-direct",
 						}),
 					},
 				}),
 		})
 	case constant.ProtocolVless:
-		resp, _ = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
+		resp, _ = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
 						Email: dto.Email,
 						Account: serial.ToTypedMessage(&vless.Account{
-							Id: dto.VId,
+							Id:   dto.VlessId,
+							Flow: "xtls-rprx-direct",
 						}),
 					},
 				}),
 		})
 	case constant.ProtocolVmess:
-		resp, _ = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
+		resp, _ = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
 						Email: dto.Email,
 						Account: serial.ToTypedMessage(&vmess.Account{
-							Id: dto.VId,
+							Id:      dto.VmessId,
+							AlterId: dto.VmessAlterId,
 						}),
 					},
 				}),
