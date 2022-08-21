@@ -37,16 +37,20 @@ func InitXrayApp() error {
 
 // 数据库同步至应用
 func syncXrayData(apiPort uint) error {
-	nodeXrays, err := dao.SelectNodeXrayByProtocol()
+	xrayProcess := process.NewXrayProcess()
+	if !xrayProcess.IsRunning(apiPort) {
+		logrus.Errorf("数据库同步至Xray apiPort: %d xray not running\n", apiPort)
+		return errors.New(constant.XrayNotStart)
+	}
+	nodeXray, err := dao.SelectNodeXrayByApiPort(apiPort)
 	if err != nil {
 		return err
 	}
 	api := NewXrayApi(apiPort)
-	for _, nodeXray := range nodeXrays {
-		apiAddUserVos, err := dao.SelectUsersToApi(true)
-		if err != nil {
-			return err
-		}
+	apiAddUserVos, err := dao.SelectUsersToApi(true)
+	if err != nil {
+		logrus.Errorf("数据库同步至Xray apiPort: %d 查询用户失败 err: %v\n", apiPort, err)
+	} else {
 		for _, apiUser := range apiAddUserVos {
 			userDto := dto.XrayAddUserDto{
 				Protocol:       *nodeXray.Protocol,
@@ -64,15 +68,15 @@ func syncXrayData(apiPort uint) error {
 			}
 		}
 	}
-
 	apiRemoveUserVos, err := dao.SelectUsersToApi(false)
 	if err != nil {
-		return err
-	}
-	for _, apiUser := range apiRemoveUserVos {
-		if err := api.DeleteUser(apiUser.Password); err != nil {
-			logrus.Errorf("数据库同步至应用 xray api用户删除失败 err:%v\n", err)
-			continue
+		logrus.Errorf("数据库同步至Xray apiPort: %d 查询用户失败 err: %v\n", apiPort, err)
+	} else {
+		for _, apiUser := range apiRemoveUserVos {
+			if err := api.DeleteUser(apiUser.Password); err != nil {
+				logrus.Errorf("数据库同步至应用 xray api用户删除失败 err:%v\n", err)
+				continue
+			}
 		}
 	}
 	return nil

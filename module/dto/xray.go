@@ -35,9 +35,3 @@ type XrayAddUserDto struct {
 	VmessId        string // vmess
 	VmessAlterId   uint32 // vmess alter id
 }
-
-type XrayAddBoundDto struct {
-	Tag          string
-	Port         uint
-	ProtocolName string
-}
