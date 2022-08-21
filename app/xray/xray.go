@@ -42,7 +42,7 @@ func syncXrayData(apiPort uint) error {
 		logrus.Errorf("数据库同步至Xray apiPort: %d xray not running\n", apiPort)
 		return errors.New(constant.XrayNotStart)
 	}
-	nodeXray, err := dao.SelectNodeXrayByApiPort(apiPort)
+	protocol, err := util.GetXrayProtocolByApiPort(apiPort)
 	if err != nil {
 		return err
 	}
@@ -53,14 +53,8 @@ func syncXrayData(apiPort uint) error {
 	} else {
 		for _, apiUser := range apiAddUserVos {
 			userDto := dto.XrayAddUserDto{
-				Protocol:       *nodeXray.Protocol,
-				Email:          apiUser.Password,
-				SSMethod:       *nodeXray.SSMethod,
-				SSPassword:     apiUser.Password,
-				TrojanPassword: apiUser.Password,
-				VlessId:        *nodeXray.VlessId,
-				VmessId:        *nodeXray.VmessId,
-				VmessAlterId:   *nodeXray.VmessAlterId,
+				Protocol: protocol,
+				Password: apiUser.Password,
 			}
 			if err = api.AddUser(userDto); err != nil {
 				logrus.Errorf("数据库同步至应用 xray api用户添加失败 err:%v\n", err)
@@ -83,9 +77,9 @@ func syncXrayData(apiPort uint) error {
 }
 
 // StartXray 启动Xray
-func StartXray(apiPort uint) error {
+func StartXray(apiPort uint, protocol string) error {
 	var err error
-	if err = initXray(apiPort); err != nil {
+	if err = initXray(apiPort, protocol); err != nil {
 		return err
 	}
 	if err = process.NewXrayProcess().StartXray(apiPort); err != nil {
@@ -115,7 +109,7 @@ func RestartXray(apiPort uint) error {
 }
 
 // 初始化Xray文件
-func initXray(apiPort uint) error {
+func initXray(apiPort uint, protocol string) error {
 	// 初始化文件夹
 	xrayPath := constant.XrayPath
 	if !util.Exists(xrayPath) {
@@ -139,7 +133,7 @@ func initXray(apiPort uint) error {
 	}
 
 	// 初始化配置
-	xrayConfigFilePath, err := util.GetConfigFilePath(1, apiPort)
+	xrayConfigFilePath, err := util.GetConfigFilePath(1, apiPort, protocol)
 	if err != nil {
 		return err
 	}

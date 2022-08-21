@@ -48,17 +48,25 @@ func GetConfigFile(binaryType int, apiPort uint) (string, error) {
 	return configFile, nil
 }
 
-func GetConfigFilePath(binaryType int, apiPort uint) (string, error) {
+func GetConfigFilePath(binaryType int, apiPort uint, protocol string) (string, error) {
 	var configPath string
+	var configFileName string
 	switch binaryType {
 	case 1:
 		configPath = constant.XrayPath
+		var err error
+		configFileName, err = GetXrayConfigFileNameByApiPort(apiPort, protocol)
+		if err != nil {
+			return "", err
+		}
 	case 2:
 		configPath = constant.TrojanGoPath
+		configFileName = fmt.Sprintf("config-%d.json", apiPort)
 	case 3:
 		configPath = constant.HysteriaPath
+		configFileName = fmt.Sprintf("config-%d.json", apiPort)
 	default:
 		return "", errors.New(constant.ConfigFileNotExist)
 	}
-	return fmt.Sprintf("%s/%s", configPath, fmt.Sprintf("config-%d.json", apiPort)), nil
+	return fmt.Sprintf("%s/%s", configPath, configFileName), nil
 }

@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"runtime"
 	"trojan-panel-core/app/xray"
-	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/service"
@@ -55,7 +54,7 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 
 // 将数据库中的用户同步至应用
 func (x *XrayProcess) handlerUserUploadAndDownload(apiPort uint) {
-	nodeXray, err := dao.SelectNodeXrayByApiPort(apiPort)
+	protocol, err := util.GetXrayProtocolByApiPort(apiPort)
 	if err != nil {
 		return
 	}
@@ -76,14 +75,8 @@ func (x *XrayProcess) handlerUserUploadAndDownload(apiPort uint) {
 					continue
 				}
 				userDto := dto.XrayAddUserDto{
-					Protocol:       *nodeXray.Protocol,
-					Email:          apiUserVo.Password,
-					SSMethod:       *nodeXray.SSMethod,
-					SSPassword:     apiUserVo.Password,
-					TrojanPassword: apiUserVo.Password,
-					VlessId:        *nodeXray.VlessId,
-					VmessId:        *nodeXray.VmessId,
-					VmessAlterId:   *nodeXray.VmessAlterId,
+					Protocol: protocol,
+					Password: apiUserVo.Password,
 				}
 				if err := api.AddUser(userDto); err != nil {
 					logrus.Errorf("数据库同步至Xray apiPort: %d 添加用户失败 err: %v", apiPort, err)

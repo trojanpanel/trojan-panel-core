@@ -19,6 +19,7 @@ import (
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
+	"trojan-panel-core/util"
 )
 
 type xrayApi struct {
@@ -137,9 +138,9 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
-						Email: dto.Email,
+						Email: dto.Password,
 						Account: serial.ToTypedMessage(&shadowsocks.Account{
-							Password: dto.SSPassword,
+							Password: dto.Password,
 						}),
 					},
 				}),
@@ -150,9 +151,9 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
-						Email: dto.Email,
+						Email: dto.Password,
 						Account: serial.ToTypedMessage(&trojan.Account{
-							Password: dto.TrojanPassword,
+							Password: dto.Password,
 							Flow:     "xtls-rprx-direct",
 						}),
 					},
@@ -164,9 +165,9 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
-						Email: dto.Email,
+						Email: dto.Password,
 						Account: serial.ToTypedMessage(&vless.Account{
-							Id:   dto.VlessId,
+							Id:   util.GenerateUUID(dto.Password),
 							Flow: "xtls-rprx-direct",
 						}),
 					},
@@ -178,10 +179,10 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
-						Email: dto.Email,
+						Email: dto.Password,
 						Account: serial.ToTypedMessage(&vmess.Account{
-							Id:      dto.VmessId,
-							AlterId: dto.VmessAlterId,
+							Id:      util.GenerateUUID(dto.Password),
+							AlterId: 0,
 						}),
 					},
 				}),

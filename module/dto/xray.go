@@ -26,12 +26,6 @@ type Inbound struct {
 }
 
 type XrayAddUserDto struct {
-	Protocol       string // 协议
-	Email          string // 唯一标识
-	SSMethod       string // ss method
-	SSPassword     string // ss password
-	TrojanPassword string // trojan
-	VlessId        string // vless
-	VmessId        string // vmess
-	VmessAlterId   uint32 // vmess alter id
+	Protocol string // 协议
+	Password string
 }
