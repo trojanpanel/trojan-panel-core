@@ -48,14 +48,14 @@ func GetConfigFile(binaryType int, apiPort uint) (string, error) {
 	return configFile, nil
 }
 
-func GetConfigFilePath(binaryType int, apiPort uint, protocol string) (string, error) {
+func GetConfigFilePath(binaryType int, apiPort uint) (string, error) {
 	var configPath string
 	var configFileName string
 	switch binaryType {
 	case 1:
 		configPath = constant.XrayPath
 		var err error
-		configFileName, err = GetXrayConfigFileNameByApiPort(apiPort, protocol)
+		configFileName, err = GetXrayConfigFileNameByApiPort(apiPort)
 		if err != nil {
 			return "", err
 		}

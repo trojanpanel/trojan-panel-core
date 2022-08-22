@@ -8,7 +8,7 @@ import (
 	"trojan-panel-core/module/constant"
 )
 
-func GetXrayConfigFileNameByApiPort(apiPort uint, protocol string) (string, error) {
+func GetXrayConfigFileNameByApiPort(apiPort uint) (string, error) {
 	fileNamePrefix := fmt.Sprintf("config-%d", apiPort)
 	dir, err := ioutil.ReadDir(constant.XrayPath)
 	if err != nil {

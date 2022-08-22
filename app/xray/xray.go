@@ -98,11 +98,11 @@ func StopXray(apiPort uint) error {
 }
 
 // RestartXray 重启Xray
-func RestartXray(apiPort uint) error {
+func RestartXray(apiPort uint, protocol string) error {
 	if err := StopXray(apiPort); err != nil {
 		return err
 	}
-	if err := StartXray(apiPort); err != nil {
+	if err := StartXray(apiPort, protocol); err != nil {
 		return err
 	}
 	return nil
@@ -132,11 +132,8 @@ func initXray(apiPort uint, protocol string) error {
 		}
 	}
 
-	// 初始化配置
-	xrayConfigFilePath, err := util.GetConfigFilePath(1, apiPort, protocol)
-	if err != nil {
-		return err
-	}
+	// 初始化配置 文件名称格式：config-[apiPort]-[protocol].json
+	xrayConfigFilePath := fmt.Sprintf("%s/config-%d-%s.json", constant.XrayPath, apiPort, protocol)
 	if !util.Exists(xrayConfigFilePath) {
 		file, err := os.Create(xrayConfigFilePath)
 		if err != nil {
