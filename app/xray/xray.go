@@ -208,7 +208,16 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 			panic(err)
 		}
 		// 添加入站协议
-		xrayConfig.Inbounds = append(xrayConfig.Inbounds, handleXrayInbound(xrayConfigDto))
+		xrayConfig.Inbounds = append(xrayConfig.Inbounds, bo.InboundBo{
+			Listen:         bo.TypeMessage("127.0.0.1"),
+			Port:           xrayConfigDto.Port,
+			Protocol:       xrayConfigDto.Protocol,
+			Settings:       bo.TypeMessage(xrayConfigDto.Settings),
+			StreamSettings: bo.TypeMessage(xrayConfigDto.StreamSettings),
+			Tag:            xrayConfigDto.Tag,
+			Sniffing:       bo.TypeMessage(xrayConfigDto.Sniffing),
+			Allocate:       bo.TypeMessage(xrayConfigDto.Allocate),
+		})
 		configContentByte, err := json.Marshal(xrayConfig)
 		if err != nil {
 			logrus.Errorf("xray template config反序列化异常 err: %v\n", err)
@@ -221,38 +230,4 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 		}
 	}
 	return nil
-}
-
-func handleXrayInbound(xrayConfigDto dto.XrayConfigDto) bo.InboundBo {
-	var inboundBo bo.InboundBo
-	switch xrayConfigDto.Protocol {
-	case constant.ProtocolShadowsocks:
-		//inboundBo = bo.InboundBo{
-		//	Listen:   bo.TypeMessage("0.0.0.0"),
-		//	Port:     xrayConfigDto.Port,
-		//	Protocol: xrayConfigDto.Protocol,
-		//	StreamSettings: bo.TypeMessage(internet.StreamConfig{
-		//		Protocol: internet.TransportProtocol_MKCP,
-		//	}),
-		//}
-	case constant.ProtocolTrojan:
-		inboundBo = bo.InboundBo{
-			Listen:   bo.TypeMessage("0.0.0.0"),
-			Port:     xrayConfigDto.Port,
-			Protocol: xrayConfigDto.Protocol,
-		}
-	case constant.ProtocolVless:
-		inboundBo = bo.InboundBo{
-			Listen:   bo.TypeMessage("0.0.0.0"),
-			Port:     xrayConfigDto.Port,
-			Protocol: xrayConfigDto.Protocol,
-		}
-	case constant.ProtocolVmess:
-		inboundBo = bo.InboundBo{
-			Listen:   bo.TypeMessage("0.0.0.0"),
-			Port:     xrayConfigDto.Port,
-			Protocol: xrayConfigDto.Protocol,
-		}
-	}
-	return inboundBo
 }
