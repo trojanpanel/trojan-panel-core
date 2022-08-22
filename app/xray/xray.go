@@ -1,6 +1,7 @@
 package xray
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -10,6 +11,7 @@ import (
 	"strings"
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/dao"
+	"trojan-panel-core/module/bo"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
@@ -77,12 +79,12 @@ func syncXrayData(apiPort uint) error {
 }
 
 // StartXray 启动Xray
-func StartXray(apiPort uint, protocol string) error {
+func StartXray(xrayConfigDto dto.XrayConfigDto) error {
 	var err error
-	if err = initXray(apiPort, protocol); err != nil {
+	if err = initXray(xrayConfigDto); err != nil {
 		return err
 	}
-	if err = process.NewXrayProcess().StartXray(apiPort); err != nil {
+	if err = process.NewXrayProcess().StartXray(xrayConfigDto.ApiPort); err != nil {
 		return err
 	}
 	return nil
@@ -98,18 +100,18 @@ func StopXray(apiPort uint) error {
 }
 
 // RestartXray 重启Xray
-func RestartXray(apiPort uint, protocol string) error {
-	if err := StopXray(apiPort); err != nil {
+func RestartXray(xrayConfigDto dto.XrayConfigDto) error {
+	if err := StopXray(xrayConfigDto.ApiPort); err != nil {
 		return err
 	}
-	if err := StartXray(apiPort, protocol); err != nil {
+	if err := StartXray(xrayConfigDto); err != nil {
 		return err
 	}
 	return nil
 }
 
 // 初始化Xray文件
-func initXray(apiPort uint, protocol string) error {
+func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	// 初始化文件夹
 	xrayPath := constant.XrayPath
 	if !util.Exists(xrayPath) {
@@ -133,7 +135,7 @@ func initXray(apiPort uint, protocol string) error {
 	}
 
 	// 初始化配置 文件名称格式：config-[apiPort]-[protocol].json
-	xrayConfigFilePath := fmt.Sprintf("%s/config-%d-%s.json", constant.XrayPath, apiPort, protocol)
+	xrayConfigFilePath := fmt.Sprintf("%s/config-%d-%s.json", constant.XrayPath, xrayConfigDto.ApiPort, xrayConfigDto.Protocol)
 	if !util.Exists(xrayConfigFilePath) {
 		file, err := os.Create(xrayConfigFilePath)
 		if err != nil {
@@ -142,7 +144,8 @@ func initXray(apiPort uint, protocol string) error {
 		}
 		defer file.Close()
 
-		configContent := `{
+		// 根据不同的协议生成对应的配置文件，用户信息通过新建同步协程
+		configTemplateContent := `{
   "stats": {},
   "api": {
     "services": [
@@ -197,12 +200,59 @@ func initXray(apiPort uint, protocol string) error {
   }
 }
 `
-		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(apiPort), 10))
-		_, err = file.WriteString(configContent)
+		configTemplateContent = strings.ReplaceAll(configTemplateContent, "${api_port}", strconv.FormatInt(int64(xrayConfigDto.ApiPort), 10))
+		xrayConfig := &bo.XrayConfigBo{}
+		// 将json字符串映射到模板对象
+		if err = json.Unmarshal([]byte(configTemplateContent), xrayConfig); err != nil {
+			logrus.Errorf("xray template config序列化异常 err: %v\n", err)
+			panic(err)
+		}
+		// 添加入站协议
+		xrayConfig.Inbounds = append(xrayConfig.Inbounds, handleXrayInbound(xrayConfigDto))
+		configContentByte, err := json.Marshal(xrayConfig)
+		if err != nil {
+			logrus.Errorf("xray template config反序列化异常 err: %v\n", err)
+			panic(err)
+		}
+		_, err = file.Write(configContentByte)
 		if err != nil {
 			logrus.Errorf("xray config.json文件写入异常 err: %v\n", err)
 			panic(err)
 		}
 	}
 	return nil
+}
+
+func handleXrayInbound(xrayConfigDto dto.XrayConfigDto) bo.InboundBo {
+	var inboundBo bo.InboundBo
+	switch xrayConfigDto.Protocol {
+	case constant.ProtocolShadowsocks:
+		//inboundBo = bo.InboundBo{
+		//	Listen:   bo.TypeMessage("0.0.0.0"),
+		//	Port:     xrayConfigDto.Port,
+		//	Protocol: xrayConfigDto.Protocol,
+		//	StreamSettings: bo.TypeMessage(internet.StreamConfig{
+		//		Protocol: internet.TransportProtocol_MKCP,
+		//	}),
+		//}
+	case constant.ProtocolTrojan:
+		inboundBo = bo.InboundBo{
+			Listen:   bo.TypeMessage("0.0.0.0"),
+			Port:     xrayConfigDto.Port,
+			Protocol: xrayConfigDto.Protocol,
+		}
+	case constant.ProtocolVless:
+		inboundBo = bo.InboundBo{
+			Listen:   bo.TypeMessage("0.0.0.0"),
+			Port:     xrayConfigDto.Port,
+			Protocol: xrayConfigDto.Protocol,
+		}
+	case constant.ProtocolVmess:
+		inboundBo = bo.InboundBo{
+			Listen:   bo.TypeMessage("0.0.0.0"),
+			Port:     xrayConfigDto.Port,
+			Protocol: xrayConfigDto.Protocol,
+		}
+	}
+	return inboundBo
 }
