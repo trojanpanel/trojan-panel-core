@@ -30,7 +30,6 @@ type MySQLConfig struct {
 	Port         int    `ini:"port"`
 	Database     string `ini:"database"`
 	AccountTable string `ini:"account_table"`
-	UsersTable   string `ini:"users_table"`
 }
 
 type CertConfig struct {

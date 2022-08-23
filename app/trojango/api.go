@@ -137,6 +137,23 @@ func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
 	return nil
 }
 
+// ReSetUserTraffic 重设用户流量
+func (t *trojanGoApi) ReSetUserTraffic(password string) error {
+	req := &service.SetUsersRequest{
+		Status: &service.UserStatus{
+			User: &service.User{
+				Password: password,
+			},
+			TrafficTotal: &service.Traffic{
+				DownloadTraffic: 0,
+				UploadTraffic:   0,
+			},
+		},
+		Operation: service.SetUsersRequest_Modify,
+	}
+	return t.setUser(req)
+}
+
 // SetUserIpLimit 节点上设置用户设备数
 func (t *trojanGoApi) SetUserIpLimit(password string, ipLimit uint) error {
 	req := &service.SetUsersRequest{

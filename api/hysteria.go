@@ -23,14 +23,14 @@ func HysteriaApi(c *gin.Context) {
 		return
 	}
 	usernameAndPass := strings.Split(string(decodeString), "&")
-	accountVo, err := service.SelectAccountByUsernameAndPass(&usernameAndPass[0], &usernameAndPass[1])
-	if err != nil {
+	if len(usernameAndPass) != 2 || len(usernameAndPass[0]) == 0 || len(usernameAndPass[1]) == 0 {
 		vo.HysteriaApiFail(err.Error(), c)
 		return
 	}
-	if accountVo != nil {
-		vo.HysteriaApiSuccess(accountVo.Username, c)
+	accountVo, err := service.SelectAccountByUsernameAndPass(usernameAndPass[0], usernameAndPass[1])
+	if err != nil || accountVo == nil {
+		vo.HysteriaApiFail(constant.UsernameOrPassError, c)
 		return
 	}
-	vo.HysteriaApiFail(constant.UsernameOrPassError, c)
+	vo.HysteriaApiSuccess(accountVo.Username, c)
 }

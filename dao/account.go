@@ -11,68 +11,53 @@ import (
 	"trojan-panel-core/util"
 )
 
-func UpdateAccountById(id *uint, quota *int, download *int, upload *int) error {
-	where := map[string]interface{}{"id": *id}
+func UpdateAccountFlowByUsername(username string, download int, upload int) error {
+	where := map[string]interface{}{"username": username}
 	update := map[string]interface{}{}
-	if quota != nil {
-		update["quota"] = *quota
+	if download > 0 {
+		update["download = download +"] = download
 	}
-	if download != nil {
-		update["download"] = *download
+	if upload > 0 {
+		update["upload = upload +"] = upload
 	}
-	if upload != nil {
-		update["upload"] = *upload
-	}
-	buildUpdate, values, err := builder.BuildUpdate(mySQLConfig.AccountTable, where, update)
-	if err != nil {
-		logrus.Errorln(err.Error())
-		return errors.New(constant.SysError)
-	}
+	if len(update) > 0 {
+		buildUpdate, values, err := builder.BuildUpdate(mySQLConfig.AccountTable, where, update)
+		if err != nil {
+			logrus.Errorln(err.Error())
+			return errors.New(constant.SysError)
+		}
 
-	_, err = db.Exec(buildUpdate, values...)
-	if err != nil {
-		logrus.Errorln(err.Error())
-		return errors.New(constant.SysError)
+		_, err = db.Exec(buildUpdate, values...)
+		if err != nil {
+			logrus.Errorln(err.Error())
+			return errors.New(constant.SysError)
+		}
 	}
 	return nil
 }
 
-// SelectAccountActive 查询正常状态的账户 全量
-func SelectAccountActive() ([]module.Account, error) {
+// SelectAccounts 查询正常状态的账户 全量
+func SelectAccounts(ban bool) ([]module.Account, error) {
 	var accounts []module.Account
-	selectFields := []string{"id"}
-	where := map[string]interface{}{"quota <>": 0}
-	buildSelect, values, err := builder.BuildSelect(mySQLConfig.AccountTable, where, selectFields)
-	if err != nil {
-		logrus.Errorln(err.Error())
-		return nil, errors.New(constant.SysError)
-	}
-	rows, err := db.Query(buildSelect, values...)
-	if err != nil {
-		logrus.Errorln(err.Error())
-		return nil, errors.New(constant.SysError)
-	}
-	defer rows.Close()
 
-	if err := scanner.Scan(rows, &accounts); err != nil {
-		logrus.Errorln(err.Error())
-		return nil, errors.New(constant.SysError)
-	}
-	return accounts, nil
-}
-
-func BanUsers() ([]module.Account, error) {
-	var accounts []module.Account
+	var (
+		buildSelect string
+		values      []interface{}
+		err         error
+	)
 
 	data := map[string]interface{}{
 		"account_table": mySQLConfig.AccountTable,
-		"expire_time":   util.NowMilli,
 	}
-	buildSelect, values, err := builder.NamedQuery(`select id
+	if ban {
+		buildSelect, values, err = builder.NamedQuery(`select id, username, pass
 from {{ account_table }}
-where (quota >= 0 and quota <= download + upload)
-   or deleted = 1
-   or expire_time < {{ expire_time }}`, data)
+where quota >= 0 and quota <= download + upload`, data)
+	} else {
+		buildSelect, values, err = builder.NamedQuery(`select id, username, pass
+from {{ account_table }}
+where quota < 0 || quota > download + upload`, data)
+	}
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
@@ -91,21 +76,21 @@ where (quota >= 0 and quota <= download + upload)
 	return accounts, nil
 }
 
-func SelectAccountByUsernameAndPass(username *string, pass *string) (*vo.AccountVo, error) {
+func SelectAccountByUsernameAndPass(username string, pass string) (*vo.AccountVo, error) {
 	var account module.Account
 
-	passEncode, err := util.AesEncode(*pass)
+	passEncode, err := util.AesEncode(pass)
 	if err != nil {
 		return nil, err
 	}
-	data := map[string]interface{}{
-		"account_table": mySQLConfig.AccountTable,
-		"username":      *username,
-		"pass":          passEncode,
-	}
+
 	buildSelect, values, err := builder.NamedQuery(`select id,username
 from {{ account_table }}
-where quota != 0 and username = {{ username }} and pass = {{ pass }}`, data)
+where quota != 0 and username = {{ username }} and pass = {{ pass }}`, map[string]interface{}{
+		"account_table": mySQLConfig.AccountTable,
+		"username":      username,
+		"pass":          passEncode,
+	})
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)

@@ -10,7 +10,6 @@ import (
 	"strings"
 	"trojan-panel-core/core"
 	"trojan-panel-core/core/process"
-	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
@@ -30,18 +29,6 @@ func InitHysteriaApp() error {
 		if err = hysteriaProcess.StartHysteria(apiPort); err != nil {
 			return err
 		}
-		//if err = syncHysteriaData(apiPort); err != nil {
-		//	return err
-		//}
-	}
-	return nil
-}
-
-// 数据库同步至应用
-func syncHysteriaData(apiPort uint) error {
-	_, err := dao.SelectUsersToApi(true)
-	if err != nil {
-		return err
 	}
 	return nil
 }

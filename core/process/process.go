@@ -18,6 +18,10 @@ type process struct {
 	binaryType int // 1/xray 2/trojan-go 3/hysteria
 }
 
+func (p *process) GetCmdMap() *sync.Map {
+	return p.cmdMap
+}
+
 func (p *process) IsRunning(apiPort uint) bool {
 	cmd, ok := p.cmdMap.Load(apiPort)
 	if ok {

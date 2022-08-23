@@ -10,7 +10,6 @@ import (
 	"strings"
 	"trojan-panel-core/core"
 	"trojan-panel-core/core/process"
-	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
@@ -26,50 +25,6 @@ func InitTrojanGoApp() error {
 	for _, apiPort := range apiPorts {
 		if err = trojanGoInstance.StartTrojanGo(apiPort); err != nil {
 			return err
-		}
-		if err = syncTrojanGoData(apiPort); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// 数据库同步至应用
-func syncTrojanGoData(apiPort uint) error {
-	trojanGoInstance := process.NewTrojanGoInstance()
-	if !trojanGoInstance.IsRunning(apiPort) {
-		logrus.Errorf("数据库同步至Trojan Go apiPort: %d trojan go not running\n", apiPort)
-		return errors.New(constant.TrojanGoNotStart)
-	}
-	api := NewTrojanGoApi(apiPort)
-	apiAddUserVos, err := dao.SelectUsersToApi(true)
-	if err != nil {
-		logrus.Errorf("数据库同步至Trojan Go apiPort: %d 查询用户失败 err: %v\n", apiPort, err)
-	} else {
-		for _, apiUser := range apiAddUserVos {
-			userDto := dto.TrojanGoAddUserDto{
-				Password:           apiUser.Password,
-				DownloadTraffic:    apiUser.Download,
-				UploadTraffic:      apiUser.Upload,
-				IpLimit:            0,
-				DownloadSpeedLimit: 0,
-				UploadSpeedLimit:   0,
-			}
-			if err := api.AddUser(userDto); err != nil {
-				logrus.Errorf("数据库同步至应用 trojan go api用户添加失败 err:%v\n", err)
-				continue
-			}
-		}
-	}
-	apiRemoveUserVos, err := dao.SelectUsersToApi(false)
-	if err != nil {
-		logrus.Errorf("数据库同步至Trojan Go apiPort: %d 查询用户失败 err: %v\n", apiPort, err)
-	} else {
-		for _, apiUser := range apiRemoveUserVos {
-			if err := api.DeleteUser(apiUser.Password); err != nil {
-				logrus.Errorf("数据库同步至应用 trojan go api用户删除失败 err:%v\n", err)
-				continue
-			}
 		}
 	}
 	return nil
