@@ -70,7 +70,9 @@ func CronHandlerUser() {
 			}
 		}
 		protocol, err := util.GetXrayProtocolByApiPort(apiPort.(uint))
-		if err == nil {
+		if err != nil {
+			logrus.Errorf("调用api查询Xray协议错误 err: %v\n", err)
+		} else {
 			for _, item := range addPasswords {
 				if err := xrayApi.AddUser(dto.XrayAddUserDto{
 					Protocol: protocol,
@@ -124,7 +126,7 @@ func CronHandlerDownloadAndUpload() {
 			for _, stat := range stats {
 				submatch := userLinkRegex.FindStringSubmatch(stat.Name)
 				accountUpdateBo := bo.AccountUpdateBo{}
-				if len(submatch) > 0 {
+				if len(submatch) == 2 {
 					email := submatch[0]
 					isDown := submatch[1] == "downlink"
 					emailSplit := strings.Split(email, "&")
