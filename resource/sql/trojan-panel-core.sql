@@ -24,23 +24,22 @@ DROP TABLE IF EXISTS `account`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `account` (
   `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `role_id` bigint(20) unsigned NOT NULL DEFAULT '3' COMMENT '角色id',
-  `username` varchar(32) NOT NULL DEFAULT '' COMMENT '用户名',
-  `pass` varchar(32) NOT NULL DEFAULT '' COMMENT '密码',
+  `username` varchar(64) NOT NULL DEFAULT '' COMMENT '登录用户名',
+  `pass` varchar(64) NOT NULL DEFAULT '' COMMENT '登录密码',
+  `role_id` bigint(20) unsigned NOT NULL DEFAULT '3' COMMENT '角色id 1/系统管理员 3/普通用户',
   `email` varchar(64) NOT NULL DEFAULT '' COMMENT '邮箱',
   `expire_time` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '过期时间',
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否禁用 0/正常 1/禁用',
   `quota` bigint(20) NOT NULL DEFAULT '0' COMMENT '配额 单位/byte',
-  `download` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '全量下载 单位/byte',
-  `upload` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '全量上传 单位/byte',
+  `download` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '下载 单位/byte',
+  `upload` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '上传 单位/byte',
   `ip_limit` tinyint(2) unsigned NOT NULL DEFAULT '3' COMMENT '限制IP设备数',
-  `download_speed_limit` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '下载限速 单位/byte',
   `upload_speed_limit` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '上传限速 单位/byte',
+  `download_speed_limit` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '下载限速 单位/byte',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `users_tp_username_uindex` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='账户';
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='账户';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -49,7 +48,6 @@ CREATE TABLE `account` (
 
 LOCK TABLES `account` WRITE;
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` VALUES (1,1,'sysadmin','eWTgjy8ZBnXL/U2lm08xLg==','',32472115200000,0,0,0,0,3,0,0,'2022-04-01 00:00:00','2022-04-01 00:00:00');
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -149,7 +147,6 @@ CREATE TABLE `node` (
   `name` varchar(64) NOT NULL DEFAULT '' COMMENT '名称',
   `ip` varchar(64) NOT NULL DEFAULT '' COMMENT 'IP地址',
   `port` int(10) unsigned NOT NULL DEFAULT '443' COMMENT '端口',
-  `api_port` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'api端口',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
@@ -259,10 +256,11 @@ DROP TABLE IF EXISTS `node_xray`;
 CREATE TABLE `node_xray` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `protocol` varchar(32) NOT NULL DEFAULT '' COMMENT '协议名称',
-  `ss_method` varchar(32) NOT NULL DEFAULT '' COMMENT 'ss加密方式',
-  `vless_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'vless id',
-  `vmess_id` varchar(64) NOT NULL DEFAULT '' COMMENT 'vmess id',
-  `vmess_alter_id` int(11) NOT NULL DEFAULT '0' COMMENT 'vmess alter id',
+  `settings` varchar(256) NOT NULL DEFAULT '' COMMENT 'settings',
+  `stream_settings` varchar(256) NOT NULL DEFAULT '' COMMENT 'streamSettings',
+  `tag` varchar(64) NOT NULL DEFAULT '' COMMENT 'tag',
+  `sniffing` varchar(256) NOT NULL DEFAULT '' COMMENT 'sniffing',
+  `allocate` varchar(256) NOT NULL DEFAULT '' COMMENT 'allocate',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
@@ -344,36 +342,6 @@ LOCK TABLES `system` WRITE;
 INSERT INTO `system` VALUES (1,'trojan-panel',1,0,0,0,0,0,'',0,'','','2022-04-01 00:00:00','2022-04-01 00:00:00');
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Table structure for table `users`
---
-
-DROP TABLE IF EXISTS `users`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `users` (
-  `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `account_id` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '账户id',
-  `api_port` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'api端口',
-  `password` varchar(32) NOT NULL DEFAULT '' COMMENT '连接密码',
-  `download` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '下载 单位/byte',
-  `upload` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '上传 单位/byte',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COMMENT='用户';
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `users`
---
-
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,0,0,'u7eqW8tHa51KYZF4nLK7+w==',0,0,'2022-04-01 00:00:00','2022-04-01 00:00:00');
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -384,4 +352,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-18  0:09:03
+-- Dump completed on 2022-08-23 13:50:10
