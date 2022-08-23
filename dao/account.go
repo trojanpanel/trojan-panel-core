@@ -2,6 +2,7 @@ package dao
 
 import (
 	"errors"
+	"fmt"
 	"github.com/didi/gendry/builder"
 	"github.com/didi/gendry/scanner"
 	"github.com/sirupsen/logrus"
@@ -36,10 +37,9 @@ func UpdateAccountFlowByUsername(username string, download int, upload int) erro
 	return nil
 }
 
-// SelectAccounts 查询正常状态的账户 全量
-func SelectAccounts(ban bool) ([]module.Account, error) {
+// SelectAccountPasswords 查询全量账户
+func SelectAccountPasswords(ban bool) ([]string, error) {
 	var accounts []module.Account
-
 	var (
 		buildSelect string
 		values      []interface{}
@@ -50,7 +50,7 @@ func SelectAccounts(ban bool) ([]module.Account, error) {
 		"account_table": mySQLConfig.AccountTable,
 	}
 	if ban {
-		buildSelect, values, err = builder.NamedQuery(`select id, username, pass
+		buildSelect, values, err = builder.NamedQuery(`select username, pass
 from {{ account_table }}
 where quota >= 0 and quota <= download + upload`, data)
 	} else {
@@ -73,10 +73,18 @@ where quota < 0 || quota > download + upload`, data)
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
 	}
-	return accounts, nil
+	passwords := make([]string, 0)
+	for _, item := range accounts {
+		passDecode, err := util.AesDecode(*item.Pass)
+		if err != nil {
+			continue
+		}
+		passwords = append(passwords, fmt.Sprintf("%s&%s", *item.Username, passDecode))
+	}
+	return passwords, nil
 }
 
-func SelectAccountByUsernameAndPass(username string, pass string) (*vo.AccountVo, error) {
+func SelectAccountByUsernameAndPass(username string, pass string) (*vo.AccountHysteriaVo, error) {
 	var account module.Account
 
 	passEncode, err := util.AesEncode(pass)
@@ -110,9 +118,9 @@ where quota != 0 and username = {{ username }} and pass = {{ pass }}`, map[strin
 		return nil, errors.New(constant.SysError)
 	}
 
-	accountVo := vo.AccountVo{
+	AccountHysteriaVo := vo.AccountHysteriaVo{
 		Id:       *account.Id,
 		Username: *account.Username,
 	}
-	return &accountVo, nil
+	return &AccountHysteriaVo, nil
 }

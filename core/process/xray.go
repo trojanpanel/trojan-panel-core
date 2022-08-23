@@ -2,7 +2,6 @@ package process
 
 import (
 	"errors"
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"os/exec"
 	"runtime"
@@ -63,20 +62,19 @@ func (x *XrayProcess) handlerUserUploadAndDownload(apiPort uint) {
 			break
 		}
 
-		addAccounts, err := service.SelectAccounts(false)
+		addPasswords, err := service.SelectAccountPasswords(false)
 		if err != nil {
 			logrus.Errorf("数据库同步至Xray apiPort: %d 查询用户失败 err: %v\n", apiPort, err)
 		} else {
-			for _, addAccount := range addAccounts {
+			for _, item := range addPasswords {
 				// 如果应用中存在则跳过
-				password := fmt.Sprintf("%s&%s", *addAccount.Username, *addAccount.Pass)
-				stats, err := api.GetUserStats(password, "downlink", true)
+				stats, err := api.GetUserStats(item, "downlink", true)
 				if err != nil || stats != nil {
 					continue
 				}
 				userDto := dto.XrayAddUserDto{
 					Protocol: protocol,
-					Password: password,
+					Password: item,
 				}
 				if err := api.AddUser(userDto); err != nil {
 					logrus.Errorf("数据库同步至Xray apiPort: %d 添加用户失败 err: %v", apiPort, err)

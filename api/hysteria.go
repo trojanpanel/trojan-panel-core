@@ -27,10 +27,10 @@ func HysteriaApi(c *gin.Context) {
 		vo.HysteriaApiFail(err.Error(), c)
 		return
 	}
-	accountVo, err := service.SelectAccountByUsernameAndPass(usernameAndPass[0], usernameAndPass[1])
-	if err != nil || accountVo == nil {
+	accountHysteriaVo, err := service.SelectAccountByUsernameAndPass(usernameAndPass[0], usernameAndPass[1])
+	if err != nil || accountHysteriaVo == nil {
 		vo.HysteriaApiFail(constant.UsernameOrPassError, c)
 		return
 	}
-	vo.HysteriaApiSuccess(accountVo.Username, c)
+	vo.HysteriaApiSuccess(accountHysteriaVo.Username, c)
 }
