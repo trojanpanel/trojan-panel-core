@@ -33,7 +33,7 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
 		}
 		cmd := exec.Command(binaryFilePath, "-config", configFilePath)
 		t.cmdMap.Store(apiPort, cmd)
-		runtime.SetFinalizer(t, t.Stop(apiPort))
+		runtime.SetFinalizer(t, t.Stop(apiPort, true))
 		if err := cmd.Start(); err != nil {
 			logrus.Errorf("start trojan-go error err: %v\n", err)
 			return errors.New(constant.TrojanGoStartError)

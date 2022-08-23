@@ -45,8 +45,8 @@ func StartXray(xrayConfigDto dto.XrayConfigDto) error {
 }
 
 // StopXray 暂停Xray
-func StopXray(apiPort uint) error {
-	if err := process.NewXrayProcess().Stop(apiPort); err != nil {
+func StopXray(apiPort uint, removeFile bool) error {
+	if err := process.NewXrayProcess().Stop(apiPort, removeFile); err != nil {
 		logrus.Errorf("xray stop err: %v\n", err)
 		return err
 	}
@@ -54,11 +54,13 @@ func StopXray(apiPort uint) error {
 }
 
 // RestartXray 重启Xray
-func RestartXray(xrayConfigDto dto.XrayConfigDto) error {
-	if err := StopXray(xrayConfigDto.ApiPort); err != nil {
+func RestartXray(apiPort uint) error {
+	if err := StopXray(apiPort, false); err != nil {
 		return err
 	}
-	if err := StartXray(xrayConfigDto); err != nil {
+	if err := StartXray(dto.XrayConfigDto{
+		ApiPort: apiPort,
+	}); err != nil {
 		return err
 	}
 	return nil

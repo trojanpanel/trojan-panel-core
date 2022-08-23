@@ -35,7 +35,7 @@ func (p *process) IsRunning(apiPort uint) bool {
 	return false
 }
 
-func (p *process) Stop(apiPort uint) error {
+func (p *process) Stop(apiPort uint, removeFile bool) error {
 	defer p.mutex.Unlock()
 	if p.mutex.TryLock() {
 		if !p.IsRunning(apiPort) {
@@ -49,12 +49,14 @@ func (p *process) Stop(apiPort uint) error {
 				return errors.New(constant.ProcessStopError)
 			}
 			p.cmdMap.Delete(apiPort)
-			configFile, err := util.GetConfigFile(p.binaryType, apiPort)
-			if err != nil {
-				return err
-			}
-			if err = util.RemoveFile(configFile); err != nil {
-				return err
+			if removeFile {
+				configFile, err := util.GetConfigFile(p.binaryType, apiPort)
+				if err != nil {
+					return err
+				}
+				if err = util.RemoveFile(configFile); err != nil {
+					return err
+				}
 			}
 			return nil
 		}

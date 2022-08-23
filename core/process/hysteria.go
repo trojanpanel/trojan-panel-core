@@ -33,7 +33,7 @@ func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
 		}
 		cmd := exec.Command(binaryFilePath, "-c", configFilePath, "server")
 		h.cmdMap.Store(apiPort, cmd)
-		runtime.SetFinalizer(h, h.Stop(apiPort))
+		runtime.SetFinalizer(h, h.Stop(apiPort, true))
 		if err := cmd.Start(); err != nil {
 			logrus.Errorf("start hysteria error err: %v\n", err)
 			return errors.New(constant.HysteriaStartError)

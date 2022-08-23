@@ -18,6 +18,7 @@ func InitConfig() {
 
 type AppConfig struct {
 	MySQLConfig `ini:"mysql"`
+	RedisConfig `ini:"redis"`
 	CertConfig  `ini:"cert"`
 	LogConfig   `ini:"log"`
 }
@@ -30,6 +31,16 @@ type MySQLConfig struct {
 	Port         int    `ini:"port"`
 	Database     string `ini:"database"`
 	AccountTable string `ini:"account_table"`
+}
+
+type RedisConfig struct {
+	Host      string `ini:"host"`
+	Port      int    `ini:"port"`
+	Password  string `ini:"password"`
+	Db        int    `ini:"db"`
+	MaxIdle   int    `ini:"max_idle"`
+	MaxActive int    `ini:"max_active"`
+	Wait      bool   `ini:"wait"`
 }
 
 type CertConfig struct {

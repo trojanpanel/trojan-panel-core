@@ -46,8 +46,8 @@ func StartHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 }
 
 // StopHysteria 暂停Hysteria
-func StopHysteria(apiPort uint) error {
-	if err := process.NewHysteriaInstance().Stop(apiPort); err != nil {
+func StopHysteria(apiPort uint, removeFile bool) error {
+	if err := process.NewHysteriaInstance().Stop(apiPort, removeFile); err != nil {
 		logrus.Errorf("hysteria stop err: %v\n", err)
 		return err
 	}
@@ -56,7 +56,7 @@ func StopHysteria(apiPort uint) error {
 
 // RestartHysteria 重启Hysteria
 func RestartHysteria(apiPort uint) error {
-	if err := StopHysteria(apiPort); err != nil {
+	if err := StopHysteria(apiPort, false); err != nil {
 		return err
 	}
 	if err := StartHysteria(dto.HysteriaConfigDto{ApiPort: apiPort}); err != nil {

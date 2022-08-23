@@ -43,8 +43,8 @@ func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 }
 
 // StopTrojanGo 暂停TrojanGo
-func StopTrojanGo(apiPort uint) error {
-	if err := process.NewTrojanGoInstance().Stop(apiPort); err != nil {
+func StopTrojanGo(apiPort uint, removeFile bool) error {
+	if err := process.NewTrojanGoInstance().Stop(apiPort, removeFile); err != nil {
 		logrus.Errorf("trojan go stop err: %v\n", err)
 		return err
 	}
@@ -53,7 +53,7 @@ func StopTrojanGo(apiPort uint) error {
 
 // RestartTrojanGo 重启TrojanGo
 func RestartTrojanGo(apiPort uint) error {
-	if err := StopTrojanGo(apiPort); err != nil {
+	if err := StopTrojanGo(apiPort, false); err != nil {
 		return err
 	}
 	if err := StartTrojanGo(dto.TrojanGoConfigDto{ApiPort: apiPort}); err != nil {
