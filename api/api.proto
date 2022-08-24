@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+option go_package = ".;api";
+
+service ApiNodeService {
+  rpc AddNode(NodeAddDto) returns (NodeResponse) {}
+  rpc RemoveNode(NodeRemoveDto) returns (NodeResponse) {}
+}
+
+message NodeAddDto {
+  uint64 nodeType = 1;
+
+  uint64 XrayPort = 2;
+  string XrayProtocol = 3;
+  string XraySettings = 4;
+  string XrayStreamSettings = 5;
+  string XrayTag = 6;
+  string XraySniffing = 7;
+  string XrayAllocate = 8;
+
+  uint64 TrojanGoPort = 9;
+  string TrojanGoIp = 10;
+  string TrojanGoSni = 11;
+  string TrojanGoMuxEnable = 12;
+  string TrojanGoWebsocketEnable = 13;
+  string TrojanGoWebsocketPath = 14;
+  string TrojanGoWebsocketHost = 15;
+  string TrojanGoSSEnable = 16;
+  string TrojanGoSSMethod = 17;
+  string TrojanGoSSPassword = 18;
+
+  uint64 HysteriaPort = 19;
+  string HysteriaProtocol = 20;
+  string HysteriaIp = 21;
+  int64 HysteriaUpMbps = 22;
+  int64 HysteriaDownMbps = 23;
+}
+
+message NodeRemoveDto {
+  uint64 nodeType = 1;
+  uint64 port = 2;
+}
+
+message NodeResponse {
+  bool success = 1;
+  string msg = 2;
+}

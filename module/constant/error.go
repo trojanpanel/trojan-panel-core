@@ -21,4 +21,6 @@ const (
 	RemoveFileError    string = "删除文件失败"
 	BinaryFileNotExist string = "二进制文件不存在"
 	ConfigFileNotExist string = "配置文件不存在"
+
+	PortExceed string = "端口必须在10000到10100之间"
 )

@@ -7,13 +7,19 @@ import (
 	"trojan-panel-core/app/xray"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
+	"trojan-panel-core/util"
 )
 
 func StartApp(nodeAddDto dto.NodeAddDto) error {
+	port, err := util.GetPortAvailBetween()
+	if err != nil {
+		return err
+	}
 	switch nodeAddDto.NodeType {
 	case 1:
 		if err := xray.StartXray(dto.XrayConfigDto{
-			Port:           nodeAddDto.XrayPort,
+			ApiPort:        port + 100,
+			Port:           port,
 			Protocol:       nodeAddDto.XrayProtocol,
 			Settings:       nodeAddDto.XraySettings,
 			StreamSettings: nodeAddDto.XrayStreamSettings,
@@ -25,7 +31,8 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		}
 	case 2:
 		if err := trojango.StartTrojanGo(dto.TrojanGoConfigDto{
-			Port:            nodeAddDto.TrojanGoPort,
+			ApiPort:         port + 100,
+			Port:            port,
 			Ip:              nodeAddDto.TrojanGoIp,
 			Sni:             nodeAddDto.TrojanGoSni,
 			MuxEnable:       nodeAddDto.TrojanGoMuxEnable,
@@ -40,7 +47,8 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		}
 	case 3:
 		if err := hysteria.StartHysteria(dto.HysteriaConfigDto{
-			Port:     nodeAddDto.HysteriaPort,
+			ApiPort:  port + 100,
+			Port:     port,
 			Protocol: nodeAddDto.HysteriaProtocol,
 			Ip:       nodeAddDto.HysteriaIp,
 			UpMbps:   nodeAddDto.HysteriaUpMbps,

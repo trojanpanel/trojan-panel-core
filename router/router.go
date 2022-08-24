@@ -13,10 +13,10 @@ func Router(router *gin.Engine) {
 		// Hysteria api
 		auth.POST("/hysteria", api.HysteriaApi)
 	}
-	router.Use(middleware.JWTHandler())
-	node := router.Group("/api/node")
-	{
-		node.POST("/add", api.AddNode)
-		node.POST("/remove", api.RemoveNode)
-	}
+	//router.Use(middleware.JWTHandler())
+	//node := router.Group("/api/node")
+	//{
+	//	node.POST("/add", api.AddNode)
+	//	node.POST("/remove", api.RemoveNode)
+	//}
 }
