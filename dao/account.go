@@ -79,7 +79,11 @@ where quota < 0 || quota > download + upload`, data)
 		if err != nil {
 			continue
 		}
-		passwords = append(passwords, fmt.Sprintf("%s&%s", *item.Username, passDecode))
+		password, err := util.AesEncode(fmt.Sprintf("%s%s", *item.Username, passDecode))
+		if err != nil {
+			continue
+		}
+		passwords = append(passwords, password)
 	}
 	return passwords, nil
 }

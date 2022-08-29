@@ -15,7 +15,7 @@ type XrayConfigBo struct {
 }
 
 type InboundBo struct {
-	Listen         TypeMessage `json:"listen"`
+	Listen         string      `json:"listen"`
 	Port           uint        `json:"port"`
 	Protocol       string      `json:"protocol"`
 	Settings       TypeMessage `json:"settings"`
