@@ -77,7 +77,7 @@ func authRequest(ctx context.Context) error {
 		return errors.New(constant.UnauthorizedError)
 	}
 	get := redis.Client.String.
-		Get(fmt.Sprintf("trojan-panel:token:%s", myClaims.UserVo.Username))
+		Get(fmt.Sprintf("trojan-panel:token:%s", myClaims.AccountVo.Username))
 	result, err := get.String()
 	if err != nil || result == "" {
 		return errors.New(constant.IllegalTokenError)

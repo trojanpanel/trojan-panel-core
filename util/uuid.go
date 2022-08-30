@@ -3,7 +3,6 @@ package util
 import (
 	"crypto/sha1"
 	"encoding/hex"
-	"fmt"
 )
 
 func GenerateUUID(str string) string {
@@ -16,8 +15,6 @@ func GenerateUUID(str string) string {
 	u := h.Sum(nil)[:16]
 	u[6] = (u[6] & 0x0f) | (5 << 4)
 	u[8] = u[8]&(0xff>>2) | (0x02 << 6)
-
-	fmt.Println("UUIDv5:", u)
 
 	buf := make([]byte, 36)
 

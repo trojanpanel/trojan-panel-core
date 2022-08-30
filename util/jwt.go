@@ -10,7 +10,7 @@ import (
 var MySecret = []byte("4eb01fa4acef754ad4fa94f4467fd343")
 
 type MyClaims struct {
-	UserVo vo.AccountVo `json:"accountVo"`
+	AccountVo vo.AccountVo `json:"accountVo"`
 	jwt.StandardClaims
 }
 
