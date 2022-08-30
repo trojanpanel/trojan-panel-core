@@ -21,11 +21,11 @@ message NodeAddDto {
   uint64 TrojanGoPort = 9;
   string TrojanGoIp = 10;
   string TrojanGoSni = 11;
-  string TrojanGoMuxEnable = 12;
-  string TrojanGoWebsocketEnable = 13;
+  uint64 TrojanGoMuxEnable = 12;
+  uint64 TrojanGoWebsocketEnable = 13;
   string TrojanGoWebsocketPath = 14;
   string TrojanGoWebsocketHost = 15;
-  string TrojanGoSSEnable = 16;
+  uint64 TrojanGoSSEnable = 16;
   string TrojanGoSSMethod = 17;
   string TrojanGoSSPassword = 18;
 

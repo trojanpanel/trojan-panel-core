@@ -4,11 +4,11 @@ type TrojanGoConfigDto struct {
 	Port            uint
 	Ip              string
 	Sni             string
-	MuxEnable       string
-	WebsocketEnable string
+	MuxEnable       uint
+	WebsocketEnable uint
 	WebsocketPath   string
 	WebsocketHost   string
-	SSEnable        string
+	SSEnable        uint
 	SSMethod        string
 	SSPassword      string
 	ApiPort         uint

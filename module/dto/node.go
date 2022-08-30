@@ -14,11 +14,11 @@ type NodeAddDto struct {
 	TrojanGoPort            uint   `json:"trojanGoPort" form:"trojanGoPort" validate:"omitempty"`
 	TrojanGoIp              string `json:"trojanGoIp" form:"trojanGoIp" validate:"omitempty"`
 	TrojanGoSni             string `json:"trojanGoSni" form:"trojanGoSni" validate:"omitempty"`
-	TrojanGoMuxEnable       string `json:"trojanGoMuxEnable" form:"trojanGoMuxEnable" validate:"omitempty"`
-	TrojanGoWebsocketEnable string `json:"trojanGoWebsocketEnable" form:"trojanGoWebsocketEnable" validate:"omitempty"`
+	TrojanGoMuxEnable       uint   `json:"trojanGoMuxEnable" form:"trojanGoMuxEnable" validate:"omitempty"`
+	TrojanGoWebsocketEnable uint   `json:"trojanGoWebsocketEnable" form:"trojanGoWebsocketEnable" validate:"omitempty"`
 	TrojanGoWebsocketPath   string `json:"trojanGoWebsocketPath" form:"trojanGoWebsocketPath" validate:"omitempty"`
 	TrojanGoWebsocketHost   string `json:"trojanGoWebsocketHost" form:"trojanGoWebsocketHost" validate:"omitempty"`
-	TrojanGoSSEnable        string `json:"trojanGoSSEnable" form:"trojanGoSSEnable" validate:"omitempty"`
+	TrojanGoSSEnable        uint   `json:"trojanGoSSEnable" form:"trojanGoSSEnable" validate:"omitempty"`
 	TrojanGoSSMethod        string `json:"trojanGoSSMethod" form:"trojanGoSSMethod" validate:"omitempty"`
 	TrojanGoSSPassword      string `json:"trojanGoSSPassword" form:"trojanGoSSPassword" validate:"omitempty"`
 

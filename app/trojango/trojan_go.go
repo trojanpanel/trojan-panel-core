@@ -163,11 +163,29 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 		configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 		configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
 		configContent = strings.ReplaceAll(configContent, "${sni}", trojanGoConfigDto.Sni)
-		configContent = strings.ReplaceAll(configContent, "${mux_enable}", trojanGoConfigDto.MuxEnable)
-		configContent = strings.ReplaceAll(configContent, "${websocket_enable}", trojanGoConfigDto.WebsocketEnable)
+		var muxEnableStr string
+		if trojanGoConfigDto.MuxEnable == 1 {
+			muxEnableStr = "true"
+		} else {
+			muxEnableStr = "false"
+		}
+		configContent = strings.ReplaceAll(configContent, "${mux_enable}", muxEnableStr)
+		var websocketEnableStr string
+		if trojanGoConfigDto.WebsocketEnable == 1 {
+			websocketEnableStr = "true"
+		} else {
+			websocketEnableStr = "false"
+		}
+		configContent = strings.ReplaceAll(configContent, "${websocket_enable}", websocketEnableStr)
 		configContent = strings.ReplaceAll(configContent, "${websocket_path}", trojanGoConfigDto.WebsocketPath)
 		configContent = strings.ReplaceAll(configContent, "${websocket_host}", trojanGoConfigDto.WebsocketHost)
-		configContent = strings.ReplaceAll(configContent, "${ss_enable}", trojanGoConfigDto.SSEnable)
+		var ssEnableStr string
+		if trojanGoConfigDto.SSEnable == 1 {
+			ssEnableStr = "true"
+		} else {
+			ssEnableStr = "false"
+		}
+		configContent = strings.ReplaceAll(configContent, "${ss_enable}", ssEnableStr)
 		configContent = strings.ReplaceAll(configContent, "${ss_method}", trojanGoConfigDto.SSMethod)
 		configContent = strings.ReplaceAll(configContent, "${ss_password}", trojanGoConfigDto.SSPassword)
 		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(trojanGoConfigDto.ApiPort), 10))
