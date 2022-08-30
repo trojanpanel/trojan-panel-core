@@ -21,8 +21,7 @@ func init() {
 	core.InitConfig()
 	middleware.InitLog()
 	dao.InitMySQL()
-	//middleware.InitCron()
-	//app.InitApp()
+	middleware.InitCron()
 	middleware.InitRateLimiter()
 	api.InitValidator()
 }
