@@ -31,6 +31,10 @@ Trojan Panel核心
 |--------------|-------------------|--------|-----------|----------|
 | v1.2.0       | v1.2.0            | v1.5.5 | v1.10.6   | v1.1.0   |
 
+# Author
+
+[@jonssonyan](https://twitter.com/jonssonyan)
+
 # Community
 
 - Telegram Channel: [Trojan Panel](https://t.me/TrojanPanel)
