@@ -12,10 +12,9 @@ import (
 
 var db *sql.DB
 
-var mySQLConfig = core.Config.MySQLConfig
-
 // InitMySQL 初始化数据库
 func InitMySQL() {
+	mySQLConfig := core.Config.MySQLConfig
 	var err error
 
 	db, err = manager.
