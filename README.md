@@ -21,15 +21,15 @@ Trojan Panel核心
       account.quota || account.quota < 0
 2. 定时更新account.download,account.upload
 
-# 编译命令
-
-[compile.bat](./compile.bat)
-
 ## 版本对应关系
 
 | Trojan Panel | Trojan Panel Core | Xray   | Trojan Go | Hysteria |
 |--------------|-------------------|--------|-----------|----------|
 | v1.2.0       | v1.2.0            | v1.5.5 | v1.10.6   | v1.1.0   |
+
+# 编译命令
+
+[compile.bat](./compile.bat)
 
 # Author
 
