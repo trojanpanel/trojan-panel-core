@@ -6,6 +6,7 @@ import (
 	"github.com/didi/gendry/builder"
 	"github.com/didi/gendry/scanner"
 	"github.com/sirupsen/logrus"
+	"trojan-panel-core/core"
 	"trojan-panel-core/module"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/vo"
@@ -13,6 +14,7 @@ import (
 )
 
 func UpdateAccountFlowByUsername(username string, download int, upload int) error {
+	mySQLConfig := core.Config.MySQLConfig
 	where := map[string]interface{}{"username": username}
 	update := map[string]interface{}{}
 	if download > 0 {
@@ -39,6 +41,7 @@ func UpdateAccountFlowByUsername(username string, download int, upload int) erro
 
 // SelectAccountPasswords 查询全量账户
 func SelectAccountPasswords(ban bool) ([]string, error) {
+	mySQLConfig := core.Config.MySQLConfig
 	var accounts []module.Account
 	var (
 		buildSelect string
@@ -89,6 +92,7 @@ where quota < 0 || quota > download + upload`, data)
 }
 
 func SelectAccountByUsernameAndPass(username string, pass string) (*vo.AccountHysteriaVo, error) {
+	mySQLConfig := core.Config.MySQLConfig
 	var account module.Account
 
 	passEncode, err := util.AesEncode(pass)

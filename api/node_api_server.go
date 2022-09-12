@@ -8,7 +8,6 @@ import (
 	"trojan-panel-core/app"
 	"trojan-panel-core/dao/redis"
 	"trojan-panel-core/module/constant"
-	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
 )
 
@@ -22,33 +21,34 @@ func (s *ServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*NodeR
 	if err := authRequest(ctx); err != nil {
 		return &NodeResponse{Success: false, Msg: err.Error()}, nil
 	}
-	if err := app.StartApp(dto.NodeAddDto{
-		NodeType:                uint(nodeAddDto.NodeType),
-		XrayPort:                uint(nodeAddDto.XrayPort),
-		XrayProtocol:            nodeAddDto.XrayProtocol,
-		XraySettings:            nodeAddDto.XraySettings,
-		XrayStreamSettings:      nodeAddDto.XrayStreamSettings,
-		XrayTag:                 nodeAddDto.XrayTag,
-		XraySniffing:            nodeAddDto.XraySniffing,
-		XrayAllocate:            nodeAddDto.XrayAllocate,
-		TrojanGoPort:            uint(nodeAddDto.TrojanGoPort),
-		TrojanGoIp:              nodeAddDto.TrojanGoIp,
-		TrojanGoSni:             nodeAddDto.TrojanGoSni,
-		TrojanGoMuxEnable:       uint(nodeAddDto.TrojanGoMuxEnable),
-		TrojanGoWebsocketEnable: uint(nodeAddDto.TrojanGoWebsocketEnable),
-		TrojanGoWebsocketPath:   nodeAddDto.TrojanGoWebsocketPath,
-		TrojanGoWebsocketHost:   nodeAddDto.TrojanGoWebsocketHost,
-		TrojanGoSSEnable:        uint(nodeAddDto.TrojanGoSSEnable),
-		TrojanGoSSMethod:        nodeAddDto.TrojanGoSSMethod,
-		TrojanGoSSPassword:      nodeAddDto.TrojanGoSSPassword,
-		HysteriaPort:            uint(nodeAddDto.HysteriaPort),
-		HysteriaProtocol:        nodeAddDto.HysteriaProtocol,
-		HysteriaIp:              nodeAddDto.HysteriaIp,
-		HysteriaUpMbps:          int(nodeAddDto.HysteriaUpMbps),
-		HysteriaDownMbps:        int(nodeAddDto.HysteriaDownMbps),
-	}); err != nil {
-		return &NodeResponse{Success: false, Msg: err.Error()}, nil
-	}
+	//if err := app.StartApp(dto.NodeAddDto{
+	//	NodeType:                uint(nodeAddDto.NodeType),
+	//	XrayPort:                uint(nodeAddDto.XrayPort),
+	//	XrayProtocol:            nodeAddDto.XrayProtocol,
+	//	XraySettings:            nodeAddDto.XraySettings,
+	//	XrayStreamSettings:      nodeAddDto.XrayStreamSettings,
+	//	XrayTag:                 nodeAddDto.XrayTag,
+	//	XraySniffing:            nodeAddDto.XraySniffing,
+	//	XrayAllocate:            nodeAddDto.XrayAllocate,
+	//	TrojanGoPort:            uint(nodeAddDto.TrojanGoPort),
+	//	TrojanGoIp:              nodeAddDto.TrojanGoIp,
+	//	TrojanGoSni:             nodeAddDto.TrojanGoSni,
+	//	TrojanGoMuxEnable:       uint(nodeAddDto.TrojanGoMuxEnable),
+	//	TrojanGoWebsocketEnable: uint(nodeAddDto.TrojanGoWebsocketEnable),
+	//	TrojanGoWebsocketPath:   nodeAddDto.TrojanGoWebsocketPath,
+	//	TrojanGoWebsocketHost:   nodeAddDto.TrojanGoWebsocketHost,
+	//	TrojanGoSSEnable:        uint(nodeAddDto.TrojanGoSSEnable),
+	//	TrojanGoSSMethod:        nodeAddDto.TrojanGoSSMethod,
+	//	TrojanGoSSPassword:      nodeAddDto.TrojanGoSSPassword,
+	//	HysteriaPort:            uint(nodeAddDto.HysteriaPort),
+	//	HysteriaProtocol:        nodeAddDto.HysteriaProtocol,
+	//	HysteriaIp:              nodeAddDto.HysteriaIp,
+	//	HysteriaUpMbps:          int(nodeAddDto.HysteriaUpMbps),
+	//	HysteriaDownMbps:        int(nodeAddDto.HysteriaDownMbps),
+	//}); err != nil {
+	//	return &NodeResponse{Success: false, Msg: err.Error()}, nil
+	//}
+	fmt.Println("1222222222222222222")
 	return &NodeResponse{Success: true, Msg: ""}, nil
 }
 
