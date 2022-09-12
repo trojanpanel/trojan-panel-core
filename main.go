@@ -14,13 +14,15 @@ import (
 )
 
 func main() {
-	rpcServer := grpc.NewServer()
-	api.RegisterApiNodeServiceServer(rpcServer, new(api.ServerApi))
-	listener, err := net.Listen("tcp", ":8100")
-	if err != nil {
-		panic(fmt.Sprintf("gRPC服务监听端口失败%v", err))
-	}
-	_ = rpcServer.Serve(listener)
+	go func() {
+		rpcServer := grpc.NewServer()
+		api.RegisterApiNodeServiceServer(rpcServer, new(api.ServerApi))
+		listener, err := net.Listen("tcp", ":8100")
+		if err != nil {
+			panic(fmt.Sprintf("gRPC服务监听端口失败%v", err))
+		}
+		_ = rpcServer.Serve(listener)
+	}()
 	r := gin.Default()
 	router.Router(r)
 	_ = r.Run(":8082")
