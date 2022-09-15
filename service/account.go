@@ -74,7 +74,7 @@ func CronHandlerUser() {
 			logrus.Errorf("调用api查询Xray协议错误 err: %v\n", err)
 		} else {
 			for _, item := range addPasswords {
-				if err := xrayApi.AddUser(dto.XrayAddUserDto{
+				if err = xrayApi.AddUser(dto.XrayAddUserDto{
 					Protocol: protocol,
 					Password: item,
 				}); err != nil {
@@ -106,7 +106,11 @@ func CronHandlerDownloadAndUpload() {
 				if len(passwordSplit) != 2 || len(passwordSplit[0]) == 0 {
 					continue
 				}
-				if err := dao.UpdateAccountFlowByUsername(passwordSplit[0], downloadTraffic,
+				if err = trojanGoApi.ReSetUserTraffic(password); err != nil {
+					logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 重设TrojanGo用户流量失败 err: %v", apiPort, err)
+					continue
+				}
+				if err = dao.UpdateAccountFlowByUsername(passwordSplit[0], downloadTraffic,
 					uploadTraffic); err != nil {
 					logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
 					continue
@@ -143,7 +147,7 @@ func CronHandlerDownloadAndUpload() {
 				}
 			}
 			for _, account := range accountUpdateBos {
-				if err := dao.UpdateAccountFlowByUsername(account.Username, account.Download, account.Upload); err != nil {
+				if err = dao.UpdateAccountFlowByUsername(account.Username, account.Download, account.Upload); err != nil {
 					logrus.Errorf("Xray同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
 					continue
 				}
