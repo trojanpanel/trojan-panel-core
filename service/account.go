@@ -107,7 +107,7 @@ func CronHandlerDownloadAndUpload() {
 					continue
 				}
 				if err = trojanGoApi.ReSetUserTraffic(password); err != nil {
-					logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 重设TrojanGo用户流量失败 err: %v", apiPort, err)
+					logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 重设Trojan Go用户流量失败 err: %v", apiPort, err)
 					continue
 				}
 				if err = dao.UpdateAccountFlowByUsername(passwordSplit[0], downloadTraffic,
