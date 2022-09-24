@@ -1,7 +1,7 @@
 package dto
 
 type NodeAddDto struct {
-	NodeType uint `json:"nodeType" form:"nodeType" validate:"required"`
+	NodeTypeId uint `json:"nodeType" form:"nodeType" validate:"required"`
 
 	XrayPort           uint   `json:"XrayPort" form:"XrayPort" validate:"omitempty"`
 	XrayProtocol       string `json:"XrayProtocol" form:"XrayProtocol" validate:"omitempty"`

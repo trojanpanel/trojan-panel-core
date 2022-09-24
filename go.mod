@@ -12,7 +12,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/xtls/xray-core v1.5.9
-	google.golang.org/grpc v1.48.0
+	google.golang.org/grpc v1.49.0
 	gopkg.in/ini.v1 v1.66.6
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

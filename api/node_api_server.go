@@ -23,7 +23,7 @@ func (s *ServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*NodeR
 		return &NodeResponse{Success: false, Msg: err.Error()}, nil
 	}
 	if err := app.StartApp(dto.NodeAddDto{
-		NodeType: uint(nodeAddDto.NodeType),
+		NodeTypeId: uint(nodeAddDto.NodeTypeId),
 		// Xray
 		XrayPort:           uint(nodeAddDto.XrayPort),
 		XrayProtocol:       nodeAddDto.XrayProtocol,

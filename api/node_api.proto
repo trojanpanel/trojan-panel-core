@@ -8,7 +8,7 @@ service ApiNodeService {
 }
 
 message NodeAddDto {
-  uint64 nodeType = 1;
+  uint64 nodeTypeId = 1;
 
   uint64 XrayPort = 2;
   string XrayProtocol = 3;

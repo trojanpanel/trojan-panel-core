@@ -15,7 +15,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 	if err != nil {
 		return err
 	}
-	switch nodeAddDto.NodeType {
+	switch nodeAddDto.NodeTypeId {
 	case 1:
 		if err = xray.StartXray(dto.XrayConfigDto{
 			ApiPort:        port + 100,
