@@ -5,6 +5,7 @@ import (
 	"trojan-panel-core/api"
 	"trojan-panel-core/core"
 	"trojan-panel-core/dao"
+	"trojan-panel-core/dao/redis"
 	"trojan-panel-core/middleware"
 	"trojan-panel-core/router"
 	"trojan-panel-core/util"
@@ -21,6 +22,7 @@ func init() {
 	core.InitConfig()
 	middleware.InitLog()
 	dao.InitMySQL()
+	redis.InitRedis()
 	middleware.InitCron()
 	middleware.InitRateLimiter()
 	api.InitValidator()
