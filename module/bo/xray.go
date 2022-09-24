@@ -24,3 +24,18 @@ type InboundBo struct {
 	Sniffing       TypeMessage `json:"sniffing"`
 	Allocate       TypeMessage `json:"allocate"`
 }
+
+type StreamSettings struct {
+	Network      string       `json:"network"`
+	Security     string       `json:"security"`
+	XtlsSettings XtlsSettings `json:"xtlsSettings"`
+}
+
+type XtlsSettings struct {
+	Certificates []Certificate `json:"certificates"`
+}
+
+type Certificate struct {
+	CertificateFile string `json:"certificateFile"`
+	KeyFile         string `json:"keyFile"`
+}

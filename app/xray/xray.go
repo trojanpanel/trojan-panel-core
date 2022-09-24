@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"trojan-panel-core/core"
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/module/bo"
 	"trojan-panel-core/module/constant"
@@ -160,7 +161,23 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 		xrayConfig := &bo.XrayConfigBo{}
 		// 将json字符串映射到模板对象
 		if err = json.Unmarshal([]byte(configTemplateContent), xrayConfig); err != nil {
-			logrus.Errorf("xray template config序列化异常 err: %v\n", err)
+			logrus.Errorf("xray template config反序列化异常 err: %v\n", err)
+			panic(err)
+		}
+
+		streamSettings := &bo.StreamSettings{}
+		if err = json.Unmarshal([]byte(xrayConfigDto.StreamSettings), streamSettings); err != nil {
+			logrus.Errorf("xray StreamSettings反序列化异常 err: %v\n", err)
+			panic(err)
+		}
+		if len(streamSettings.XtlsSettings.Certificates) > 0 {
+			certConfig := core.Config.CertConfig
+			streamSettings.XtlsSettings.Certificates[0].CertificateFile = certConfig.CrtPath
+			streamSettings.XtlsSettings.Certificates[0].KeyFile = certConfig.KeyPath
+		}
+		streamSettingsStr, err := json.Marshal(streamSettings)
+		if err != nil {
+			logrus.Errorf("xray StreamSettings序列化异常 err: %v\n", err)
 			panic(err)
 		}
 		// 添加入站协议
@@ -169,7 +186,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 			Port:           xrayConfigDto.Port,
 			Protocol:       xrayConfigDto.Protocol,
 			Settings:       bo.TypeMessage(xrayConfigDto.Settings),
-			StreamSettings: bo.TypeMessage(xrayConfigDto.StreamSettings),
+			StreamSettings: streamSettingsStr,
 			Tag:            xrayConfigDto.Tag,
 			Sniffing:       bo.TypeMessage(xrayConfigDto.Sniffing),
 			Allocate:       bo.TypeMessage(xrayConfigDto.Allocate),
