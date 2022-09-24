@@ -87,7 +87,7 @@ func CronHandlerUser() {
 	})
 }
 
-// CronHandlerDownloadAndUpload 定时任务 更新数据库中用户的下载和上传流量
+// CronHandlerDownloadAndUpload 定时任务 更新数据库中用户的下载和上传流量 Hysteria暂不支持流量统计
 func CronHandlerDownloadAndUpload() {
 	trojanGoInstance := process.NewTrojanGoInstance()
 	xrayInstance := process.NewXrayProcess()
