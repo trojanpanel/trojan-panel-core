@@ -9,7 +9,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"trojan-panel-core/core"
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/module/bo"
 	"trojan-panel-core/module/constant"
@@ -165,28 +164,28 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 			panic(err)
 		}
 
-		streamSettings := &bo.StreamSettings{}
-		if err = json.Unmarshal([]byte(xrayConfigDto.StreamSettings), streamSettings); err != nil {
-			logrus.Errorf("xray StreamSettings反序列化异常 err: %v\n", err)
-			panic(err)
-		}
-		if len(streamSettings.XtlsSettings.Certificates) > 0 {
-			certConfig := core.Config.CertConfig
-			streamSettings.XtlsSettings.Certificates[0].CertificateFile = certConfig.CrtPath
-			streamSettings.XtlsSettings.Certificates[0].KeyFile = certConfig.KeyPath
-		}
-		streamSettingsStr, err := json.Marshal(streamSettings)
-		if err != nil {
-			logrus.Errorf("xray StreamSettings序列化异常 err: %v\n", err)
-			panic(err)
-		}
+		//streamSettings := &bo.StreamSettings{}
+		//if err = json.Unmarshal([]byte(xrayConfigDto.StreamSettings), streamSettings); err != nil {
+		//	logrus.Errorf("xray StreamSettings反序列化异常 err: %v\n", err)
+		//	panic(err)
+		//}
+		//if len(streamSettings.XtlsSettings.Certificates) > 0 {
+		//	certConfig := core.Config.CertConfig
+		//	streamSettings.XtlsSettings.Certificates[0].CertificateFile = certConfig.CrtPath
+		//	streamSettings.XtlsSettings.Certificates[0].KeyFile = certConfig.KeyPath
+		//}
+		//streamSettingsStr, err := json.Marshal(streamSettings)
+		//if err != nil {
+		//	logrus.Errorf("xray StreamSettings序列化异常 err: %v\n", err)
+		//	panic(err)
+		//}
 		// 添加入站协议
 		xrayConfig.Inbounds = append(xrayConfig.Inbounds, bo.InboundBo{
 			Listen:         "127.0.0.1",
 			Port:           xrayConfigDto.Port,
 			Protocol:       xrayConfigDto.Protocol,
 			Settings:       bo.TypeMessage(xrayConfigDto.Settings),
-			StreamSettings: streamSettingsStr,
+			StreamSettings: bo.TypeMessage(xrayConfigDto.StreamSettings),
 			Tag:            xrayConfigDto.Tag,
 			Sniffing:       bo.TypeMessage(xrayConfigDto.Sniffing),
 			Allocate:       bo.TypeMessage(xrayConfigDto.Allocate),
