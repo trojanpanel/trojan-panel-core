@@ -33,32 +33,9 @@ func CronHandlerUser() {
 	}
 
 	trojanGoInstance := process.NewTrojanGoInstance()
-	xrayInstance := process.NewXrayProcess()
 	trojanGoCmdMaps := trojanGoInstance.GetCmdMap()
+	xrayInstance := process.NewXrayProcess()
 	xrayCmdMaps := xrayInstance.GetCmdMap()
-
-	// trojan go
-	trojanGoCmdMaps.Range(func(apiPort, cmd any) bool {
-		trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
-		for _, item := range banPasswords {
-			// 调用api删除用户
-			if err = trojanGoApi.DeleteUser(item); err != nil {
-				logrus.Errorf("调用api删除用户错误 err: %v\n", err)
-				continue
-			}
-		}
-
-		for _, item := range addPasswords {
-			// 调用api添加用户
-			if err = trojanGoApi.AddUser(dto.TrojanGoAddUserDto{
-				Password: item,
-			}); err != nil {
-				logrus.Errorf("调用api添加用户错误 err: %v\n", err)
-				continue
-			}
-		}
-		return true
-	})
 
 	// xray
 	xrayCmdMaps.Range(func(apiPort, cmd any) bool {
@@ -85,40 +62,37 @@ func CronHandlerUser() {
 		}
 		return true
 	})
-}
 
-// CronHandlerDownloadAndUpload 定时任务 更新数据库中用户的下载和上传流量 Hysteria暂不支持流量统计
-func CronHandlerDownloadAndUpload() {
-	trojanGoInstance := process.NewTrojanGoInstance()
-	xrayInstance := process.NewXrayProcess()
-	trojanGoCmdMaps := trojanGoInstance.GetCmdMap()
-	xrayCmdMaps := xrayInstance.GetCmdMap()
-
+	// trojan go
 	trojanGoCmdMaps.Range(func(apiPort, cmd any) bool {
 		trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
-		users, err := trojanGoApi.ListUsers()
-		if err == nil {
-			for _, user := range users {
-				downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
-				uploadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
-				password := user.GetUser().GetPassword()
-				passwordSplit := strings.Split(password, "&")
-				if len(passwordSplit) != 2 || len(passwordSplit[0]) == 0 {
-					continue
-				}
-				if err = trojanGoApi.ReSetUserTraffic(password); err != nil {
-					logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 重设Trojan Go用户流量失败 err: %v", apiPort, err)
-					continue
-				}
-				if err = dao.UpdateAccountFlowByUsername(passwordSplit[0], downloadTraffic,
-					uploadTraffic); err != nil {
-					logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
-					continue
-				}
+		for _, item := range banPasswords {
+			// 调用api删除用户
+			if err = trojanGoApi.DeleteUser(item); err != nil {
+				logrus.Errorf("调用api删除用户错误 err: %v\n", err)
+				continue
+			}
+		}
+
+		for _, item := range addPasswords {
+			// 调用api添加用户
+			if err = trojanGoApi.AddUser(dto.TrojanGoAddUserDto{
+				Password: item,
+			}); err != nil {
+				logrus.Errorf("调用api添加用户错误 err: %v\n", err)
+				continue
 			}
 		}
 		return true
 	})
+}
+
+// CronHandlerDownloadAndUpload 定时任务 更新数据库中用户的下载和上传流量 Hysteria暂不支持流量统计
+func CronHandlerDownloadAndUpload() {
+	xrayInstance := process.NewXrayProcess()
+	xrayCmdMaps := xrayInstance.GetCmdMap()
+	trojanGoInstance := process.NewTrojanGoInstance()
+	trojanGoCmdMaps := trojanGoInstance.GetCmdMap()
 
 	xrayCmdMaps.Range(func(apiPort, cmd any) bool {
 		xrayApi := xray.NewXrayApi(apiPort.(uint))
@@ -155,6 +129,32 @@ func CronHandlerDownloadAndUpload() {
 		}
 		return true
 	})
+
+	trojanGoCmdMaps.Range(func(apiPort, cmd any) bool {
+		trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
+		users, err := trojanGoApi.ListUsers()
+		if err == nil {
+			for _, user := range users {
+				downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
+				uploadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
+				password := user.GetUser().GetPassword()
+				passwordSplit := strings.Split(password, "&")
+				if len(passwordSplit) != 2 || len(passwordSplit[0]) == 0 {
+					continue
+				}
+				if err = trojanGoApi.ReSetUserTraffic(password); err != nil {
+					logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 重设Trojan Go用户流量失败 err: %v", apiPort, err)
+					continue
+				}
+				if err = dao.UpdateAccountFlowByUsername(passwordSplit[0], downloadTraffic,
+					uploadTraffic); err != nil {
+					logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
+					continue
+				}
+			}
+		}
+		return true
+	})
 }
 
 // SelectAccountByUsernameAndPass 用户认证 hysteria
@@ -168,4 +168,31 @@ func UpdateAccountFlowByUsername(username string, download int, upload int) erro
 
 func SelectAccountPasswords(ban bool) ([]string, error) {
 	return dao.SelectAccountPasswords(ban)
+}
+
+func RemoveAccount(password string) error {
+	xrayInstance := process.NewXrayProcess()
+	xrayCmdMaps := xrayInstance.GetCmdMap()
+	trojanGoInstance := process.NewTrojanGoInstance()
+	trojanGoCmdMaps := trojanGoInstance.GetCmdMap()
+
+	// xray
+	xrayCmdMaps.Range(func(apiPort, cmd any) bool {
+		xrayApi := xray.NewXrayApi(apiPort.(uint))
+		if err := xrayApi.DeleteUser(password); err != nil {
+			logrus.Errorf("调用api删除用户错误 err: %v\n", err)
+		}
+		return true
+	})
+
+	// trojan go
+	trojanGoCmdMaps.Range(func(apiPort, cmd any) bool {
+		trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
+		// 调用api删除用户
+		if err := trojanGoApi.DeleteUser(password); err != nil {
+			logrus.Errorf("调用api删除用户错误 err: %v\n", err)
+		}
+		return true
+	})
+	return nil
 }

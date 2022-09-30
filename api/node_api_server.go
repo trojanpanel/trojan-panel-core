@@ -9,6 +9,7 @@ import (
 	"trojan-panel-core/dao/redis"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
+	"trojan-panel-core/service"
 	"trojan-panel-core/util"
 )
 
@@ -18,9 +19,9 @@ type ServerApi struct {
 func (s *ServerApi) mustEmbedUnimplementedApiNodeServiceServer() {
 }
 
-func (s *ServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*NodeResponse, error) {
+func (s *ServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*Response, error) {
 	if err := authRequest(ctx); err != nil {
-		return &NodeResponse{Success: false, Msg: err.Error()}, nil
+		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 	if err := app.StartApp(dto.NodeAddDto{
 		NodeTypeId: uint(nodeAddDto.NodeTypeId),
@@ -50,19 +51,29 @@ func (s *ServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*NodeR
 		HysteriaUpMbps:   int(nodeAddDto.HysteriaUpMbps),
 		HysteriaDownMbps: int(nodeAddDto.HysteriaDownMbps),
 	}); err != nil {
-		return &NodeResponse{Success: false, Msg: err.Error()}, nil
+		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-	return &NodeResponse{Success: true, Msg: ""}, nil
+	return &Response{Success: true, Msg: ""}, nil
 }
 
-func (s *ServerApi) RemoveNode(ctx context.Context, nodeRemoveDto *NodeRemoveDto) (*NodeResponse, error) {
+func (s *ServerApi) RemoveNode(ctx context.Context, nodeRemoveDto *NodeRemoveDto) (*Response, error) {
 	if err := authRequest(ctx); err != nil {
-		return &NodeResponse{Success: false, Msg: err.Error()}, nil
+		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 	if err := app.StopApp(uint(nodeRemoveDto.Port)+100, uint(nodeRemoveDto.NodeType)); err != nil {
-		return &NodeResponse{Success: false, Msg: err.Error()}, nil
+		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-	return &NodeResponse{Success: true, Msg: ""}, nil
+	return &Response{Success: true, Msg: ""}, nil
+}
+
+func (s *ServerApi) RemoveAccount(ctx context.Context, accountRemoveDto *AccountRemoveDto) (*Response, error) {
+	if err := authRequest(ctx); err != nil {
+		return &Response{Success: false, Msg: err.Error()}, nil
+	}
+	if err := service.RemoveAccount(accountRemoveDto.Password); err != nil {
+		return &Response{Success: false, Msg: err.Error()}, nil
+	}
+	return &Response{Success: true, Msg: ""}, nil
 }
 
 // token认证

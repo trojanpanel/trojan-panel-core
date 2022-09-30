@@ -3,8 +3,9 @@ syntax = "proto3";
 option go_package = ".;api";
 
 service ApiNodeService {
-  rpc AddNode(NodeAddDto) returns (NodeResponse) {}
-  rpc RemoveNode(NodeRemoveDto) returns (NodeResponse) {}
+  rpc AddNode(NodeAddDto) returns (Response) {}
+  rpc RemoveNode(NodeRemoveDto) returns (Response) {}
+  rpc RemoveAccount(AccountRemoveDto) returns (Response) {}
 }
 
 message NodeAddDto {
@@ -41,7 +42,11 @@ message NodeRemoveDto {
   uint64 port = 2;
 }
 
-message NodeResponse {
+message AccountRemoveDto {
+  string password = 1;
+}
+
+message Response {
   bool success = 1;
   string msg = 2;
 }
