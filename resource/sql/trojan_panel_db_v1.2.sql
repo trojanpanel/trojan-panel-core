@@ -148,7 +148,6 @@ CREATE TABLE `node` (
   `name` varchar(64) NOT NULL DEFAULT '' COMMENT '名称',
   `ip` varchar(64) NOT NULL DEFAULT '' COMMENT 'IP地址',
   `port` int(10) unsigned NOT NULL DEFAULT '443' COMMENT '端口',
-  `api_port` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'api端口',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
@@ -355,4 +354,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-09-30 14:51:12
+-- Dump completed on 2022-09-04 15:33:15
