@@ -5,6 +5,9 @@ option go_package = ".;api";
 service ApiNodeService {
   rpc AddNode(NodeAddDto) returns (Response) {}
   rpc RemoveNode(NodeRemoveDto) returns (Response) {}
+}
+
+service ApiAccountService {
   rpc RemoveAccount(AccountRemoveDto) returns (Response) {}
 }
 

@@ -2,24 +2,17 @@ package api
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"google.golang.org/grpc/metadata"
 	"trojan-panel-core/app"
-	"trojan-panel-core/dao/redis"
-	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
-	"trojan-panel-core/service"
-	"trojan-panel-core/util"
 )
 
-type ServerApi struct {
+type NodeServerApi struct {
 }
 
-func (s *ServerApi) mustEmbedUnimplementedApiNodeServiceServer() {
+func (s *NodeServerApi) mustEmbedUnimplementedApiNodeServiceServer() {
 }
 
-func (s *ServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*Response, error) {
+func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*Response, error) {
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
@@ -56,7 +49,7 @@ func (s *ServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*Respo
 	return &Response{Success: true, Msg: ""}, nil
 }
 
-func (s *ServerApi) RemoveNode(ctx context.Context, nodeRemoveDto *NodeRemoveDto) (*Response, error) {
+func (s *NodeServerApi) RemoveNode(ctx context.Context, nodeRemoveDto *NodeRemoveDto) (*Response, error) {
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
@@ -64,37 +57,4 @@ func (s *ServerApi) RemoveNode(ctx context.Context, nodeRemoveDto *NodeRemoveDto
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 	return &Response{Success: true, Msg: ""}, nil
-}
-
-func (s *ServerApi) RemoveAccount(ctx context.Context, accountRemoveDto *AccountRemoveDto) (*Response, error) {
-	if err := authRequest(ctx); err != nil {
-		return &Response{Success: false, Msg: err.Error()}, nil
-	}
-	if err := service.RemoveAccount(accountRemoveDto.Password); err != nil {
-		return &Response{Success: false, Msg: err.Error()}, nil
-	}
-	return &Response{Success: true, Msg: ""}, nil
-}
-
-// token认证
-func authRequest(ctx context.Context) error {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return errors.New(constant.UnauthorizedError)
-	}
-	var token string
-	if val, ok := md["token"]; ok {
-		token = val[0]
-	}
-	myClaims, err := util.ParseToken(token)
-	if err != nil {
-		return errors.New(constant.UnauthorizedError)
-	}
-	get := redis.Client.String.
-		Get(fmt.Sprintf("trojan-panel:token:%s", myClaims.AccountVo.Username))
-	result, err := get.String()
-	if err != nil || result == "" {
-		return errors.New(constant.IllegalTokenError)
-	}
-	return nil
 }

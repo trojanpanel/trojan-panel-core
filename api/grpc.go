@@ -9,7 +9,8 @@ import (
 func InitGrpcServer() {
 	go func() {
 		rpcServer := grpc.NewServer()
-		RegisterApiNodeServiceServer(rpcServer, new(ServerApi))
+		RegisterApiNodeServiceServer(rpcServer, new(NodeServerApi))
+		RegisterApiAccountServiceServer(rpcServer, new(AccountApiServer))
 		listener, err := net.Listen("tcp", ":8100")
 		if err != nil {
 			panic(fmt.Sprintf("gRPC服务监听端口失败%v", err))
