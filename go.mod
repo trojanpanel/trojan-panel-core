@@ -3,7 +3,7 @@ module trojan-panel-core
 go 1.18
 
 require (
-	github.com/didi/gendry v1.7.0
+	github.com/didi/gendry v1.8.0
 	github.com/didip/tollbooth v4.0.2+incompatible
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-playground/validator/v10 v10.11.0
