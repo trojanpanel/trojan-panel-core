@@ -49,16 +49,14 @@ func SelectAccountPasswords(ban bool) ([]string, error) {
 		err         error
 	)
 
-	data := map[string]interface{}{
-		"account_table": mySQLConfig.AccountTable,
-	}
+	var where map[string]interface{}
 	if ban {
-		buildSelect, values, err = builder.NamedQuery(
-			"select username, pass from {{account_table}} where quota >= 0 and quota <= download + upload", data)
+		where = map[string]interface{}{"quota >=": 0, "quota <=": "download + upload"}
 	} else {
-		buildSelect, values, err = builder.NamedQuery(
-			"select id, username, pass from {{account_table}} where quota < 0 or quota > download + upload", data)
+		orMap := map[string]interface{}{"quota >": "download + upload"}
+		where = map[string]interface{}{"quota <": 0, "_or": []map[string]interface{}{orMap}}
 	}
+	buildSelect, values, err = builder.BuildSelect(mySQLConfig.AccountTable, where, []string{"id", "username", "pass"})
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
@@ -100,12 +98,13 @@ func SelectAccountByUsernameAndPass(username string, pass string) (*vo.AccountHy
 		return nil, err
 	}
 
-	buildSelect, values, err := builder.NamedQuery(
-		"select id, username from {{account_table}} where quota != 0 and username = {{username}} and pass = {{pass}}", map[string]interface{}{
-			"account_table": mySQLConfig.AccountTable,
-			"username":      username,
-			"pass":          passEncode,
-		})
+	selectFields := []string{"id", "username"}
+	where := map[string]interface{}{
+		"quota <>": 0,
+		"username": username,
+		"pass":     passEncode,
+	}
+	buildSelect, values, err := builder.BuildSelect(mySQLConfig.AccountTable, where, selectFields)
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
