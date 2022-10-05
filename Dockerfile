@@ -6,6 +6,8 @@ ENV mariadb_ip=trojan-panel-mariadb \
     mariadb_port=3306 \
     mariadb_user=root \
     mariadb_pas=123456 \
+    database=trojan_panel_db \
+    account_table=account \
     redis_host=trojan-panel-redis \
     redis_port=6379 \
     redis_pass=123456
@@ -21,6 +23,8 @@ ENTRYPOINT chmod 777 ./trojan-panel-core && \
     -port=${mariadb_port} \
     -user=${mariadb_user} \
     -password=${mariadb_pas} \
+    -database=${database} \
+    -account-table=${account_table} \
     -redisHost=${redis_host} \
     -redisPort=${redis_port} \
     -redisPassword=${redis_pass}
