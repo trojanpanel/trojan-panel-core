@@ -157,7 +157,7 @@ func DownloadFile(url string, fileName string) error {
 	if err != nil {
 		return err
 	}
-	if err = ioutil.WriteFile(fileName, data, 0644); err != nil {
+	if err = ioutil.WriteFile(fileName, data, 0755); err != nil {
 		return err
 	}
 	return nil
