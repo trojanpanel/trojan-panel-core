@@ -54,10 +54,10 @@ func SelectAccountPasswords(ban bool) ([]string, error) {
 	}
 	if ban {
 		buildSelect, values, err = builder.NamedQuery(
-			`select username, pass from {{account_table}} where quota >= 0 and quota <= download + upload`, data)
+			"select username, pass from {{account_table}} where quota >= 0 and quota <= download + upload", data)
 	} else {
 		buildSelect, values, err = builder.NamedQuery(
-			`select id, username, pass from {{account_table}} where quota < 0 or quota > download + upload`, data)
+			"select id, username, pass from {{account_table}} where quota < 0 or quota > download + upload", data)
 	}
 	if err != nil {
 		logrus.Errorln(err.Error())
@@ -101,7 +101,7 @@ func SelectAccountByUsernameAndPass(username string, pass string) (*vo.AccountHy
 	}
 
 	buildSelect, values, err := builder.NamedQuery(
-		`select id, username from {{account_table}} where quota != 0 and username = {{username}} and pass = {{pass}}`, map[string]interface{}{
+		"select id, username from {{account_table}} where quota != 0 and username = {{username}} and pass = {{pass}}", map[string]interface{}{
 			"account_table": mySQLConfig.AccountTable,
 			"username":      username,
 			"pass":          passEncode,
