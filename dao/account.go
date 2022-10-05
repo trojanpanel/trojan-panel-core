@@ -53,13 +53,11 @@ func SelectAccountPasswords(ban bool) ([]string, error) {
 		"account_table": mySQLConfig.AccountTable,
 	}
 	if ban {
-		buildSelect, values, err = builder.NamedQuery(`select username, pass
-from {{ account_table }}
-where quota >= 0 and quota <= download + upload`, data)
+		buildSelect, values, err = builder.NamedQuery(
+			`select username, pass from {{account_table}} where quota >= 0 and quota <= download + upload`, data)
 	} else {
-		buildSelect, values, err = builder.NamedQuery(`select id, username, pass
-from {{ account_table }}
-where quota < 0 || quota > download + upload`, data)
+		buildSelect, values, err = builder.NamedQuery(
+			`select id, username, pass from {{account_table}} where quota < 0 or quota > download + upload`, data)
 	}
 	if err != nil {
 		logrus.Errorln(err.Error())
@@ -72,21 +70,23 @@ where quota < 0 || quota > download + upload`, data)
 	}
 	defer rows.Close()
 
-	if err := scanner.Scan(rows, &accounts); err != nil {
+	if err = scanner.Scan(rows, &accounts); err != nil && err != scanner.ErrEmptyResult {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
 	}
 	passwords := make([]string, 0)
-	for _, item := range accounts {
-		passDecode, err := util.AesDecode(*item.Pass)
-		if err != nil {
-			continue
+	if len(accounts) > 0 {
+		for _, item := range accounts {
+			passDecode, err := util.AesDecode(*item.Pass)
+			if err != nil {
+				continue
+			}
+			password, err := util.AesEncode(fmt.Sprintf("%s%s", *item.Username, passDecode))
+			if err != nil {
+				continue
+			}
+			passwords = append(passwords, password)
 		}
-		password, err := util.AesEncode(fmt.Sprintf("%s%s", *item.Username, passDecode))
-		if err != nil {
-			continue
-		}
-		passwords = append(passwords, password)
 	}
 	return passwords, nil
 }
@@ -100,13 +100,12 @@ func SelectAccountByUsernameAndPass(username string, pass string) (*vo.AccountHy
 		return nil, err
 	}
 
-	buildSelect, values, err := builder.NamedQuery(`select id,username
-from {{ account_table }}
-where quota != 0 and username = {{ username }} and pass = {{ pass }}`, map[string]interface{}{
-		"account_table": mySQLConfig.AccountTable,
-		"username":      username,
-		"pass":          passEncode,
-	})
+	buildSelect, values, err := builder.NamedQuery(
+		`select id, username from {{account_table}} where quota != 0 and username = {{username}} and pass = {{pass}}`, map[string]interface{}{
+			"account_table": mySQLConfig.AccountTable,
+			"username":      username,
+			"pass":          passEncode,
+		})
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
