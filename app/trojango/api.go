@@ -47,7 +47,8 @@ func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 	if err != nil {
 		return nil, err
 	}
-	stream, err := client.ListUsers(ctx, &service.ListUsersRequest{})
+	listUsersRequest := service.ListUsersRequest{}
+	stream, err := client.ListUsers(ctx, &listUsersRequest)
 	defer func() {
 		stream.CloseSend()
 		clo()

@@ -14,7 +14,22 @@ type HysteriaProcess struct {
 }
 
 func NewHysteriaInstance() *HysteriaProcess {
-	return &HysteriaProcess{process{mutex: &mutex, binaryType: 3, cmdMap: &cmdMap}}
+	h := &HysteriaProcess{process{mutex: &mutex, binaryType: 3, cmdMap: &cmdMap}}
+	runtime.SetFinalizer(h, h.StopHysteriaInstance)
+	return h
+}
+
+func (h *HysteriaProcess) StopHysteriaInstance() error {
+	apiPorts, err := util.GetConfigApiPorts(constant.HysteriaPath)
+	if err != nil {
+		return err
+	}
+	for _, apiPort := range apiPorts {
+		if err = h.Stop(apiPort, true); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
@@ -33,7 +48,6 @@ func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
 		}
 		cmd := exec.Command(binaryFilePath, "-c", configFilePath, "server")
 		h.cmdMap.Store(apiPort, cmd)
-		runtime.SetFinalizer(h, h.Stop(apiPort, true))
 		if err := cmd.Start(); err != nil {
 			logrus.Errorf("start hysteria error err: %v\n", err)
 			return errors.New(constant.HysteriaStartError)

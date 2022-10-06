@@ -14,7 +14,22 @@ type TrojanGoProcess struct {
 }
 
 func NewTrojanGoInstance() *TrojanGoProcess {
-	return &TrojanGoProcess{process{mutex: &mutex, binaryType: 2, cmdMap: &cmdMap}}
+	t := &TrojanGoProcess{process{mutex: &mutex, binaryType: 2, cmdMap: &cmdMap}}
+	runtime.SetFinalizer(t, t.StopTrojanGoInstance())
+	return t
+}
+
+func (t *TrojanGoProcess) StopTrojanGoInstance() error {
+	apiPorts, err := util.GetConfigApiPorts(constant.TrojanGoPath)
+	if err != nil {
+		return err
+	}
+	for _, apiPort := range apiPorts {
+		if err = t.Stop(apiPort, true); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
@@ -33,7 +48,6 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
 		}
 		cmd := exec.Command(binaryFilePath, "-config", configFilePath)
 		t.cmdMap.Store(apiPort, cmd)
-		runtime.SetFinalizer(t, t.Stop(apiPort, true))
 		if err := cmd.Start(); err != nil {
 			logrus.Errorf("start trojan-go error err: %v\n", err)
 			return errors.New(constant.TrojanGoStartError)

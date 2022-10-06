@@ -14,7 +14,22 @@ type XrayProcess struct {
 }
 
 func NewXrayProcess() *XrayProcess {
-	return &XrayProcess{process{mutex: &mutex, binaryType: 1, cmdMap: &cmdMap}}
+	x := &XrayProcess{process{mutex: &mutex, binaryType: 1, cmdMap: &cmdMap}}
+	runtime.SetFinalizer(x, x.StopXrayProcess())
+	return x
+}
+
+func (x *XrayProcess) StopXrayProcess() error {
+	apiPorts, err := util.GetConfigApiPorts(constant.XrayPath)
+	if err != nil {
+		return err
+	}
+	for _, apiPort := range apiPorts {
+		if err = x.Stop(apiPort, true); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (x *XrayProcess) StartXray(apiPort uint) error {
@@ -33,7 +48,6 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 		}
 		cmd := exec.Command(binaryFilePath, "-c", configFilePath)
 		x.cmdMap.Store(0, cmd)
-		runtime.SetFinalizer(x, x.Stop(apiPort, true))
 		if err := cmd.Start(); err != nil {
 			logrus.Errorf("start xray error err: %v\n", err)
 			return errors.New(constant.XrayStartError)
