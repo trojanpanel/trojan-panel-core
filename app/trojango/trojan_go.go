@@ -154,7 +154,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
   },
   "api": {
 	"enabled": true,
-	"api_addr": "",
+	"api_addr": "127.0.0.1",
 	"api_port": ${api_port}
   }
 }
