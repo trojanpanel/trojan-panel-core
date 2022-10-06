@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"trojan-panel-core/api"
+	"trojan-panel-core/app"
 	"trojan-panel-core/core"
 	"trojan-panel-core/dao"
 	"trojan-panel-core/dao/redis"
@@ -27,4 +28,5 @@ func init() {
 	middleware.InitRateLimiter()
 	api.InitValidator()
 	api.InitGrpcServer()
+	app.InitApp()
 }

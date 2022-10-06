@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"github.com/sirupsen/logrus"
 	"trojan-panel-core/app/hysteria"
 	"trojan-panel-core/app/trojango"
 	"trojan-panel-core/app/xray"
@@ -100,4 +101,16 @@ func RestartApp(apiPort uint, nodeType uint) error {
 		return errors.New(constant.NodeTypeNotExist)
 	}
 	return nil
+}
+
+func InitApp() {
+	if err := xray.InitXrayApp(); err != nil {
+		logrus.Errorf("Xray app 初始化失败\n")
+	}
+	if err := trojango.InitTrojanGoApp(); err != nil {
+		logrus.Errorf("TrojanGo app 初始化失败\n")
+	}
+	if err := hysteria.InitHysteriaApp(); err != nil {
+		logrus.Errorf("Hysteria app 初始化失败\n")
+	}
 }
