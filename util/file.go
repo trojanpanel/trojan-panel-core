@@ -19,7 +19,7 @@ import (
 	"trojan-panel-core/module/dto"
 )
 
-var configFileNameReg = regexp.MustCompile("^config-[1-9]\\d*\\.json$")
+var configFileNameReg = regexp.MustCompile("^config-([1-9]\\d*)\\.json$")
 
 func InitFile() {
 	// 初始化日志
@@ -240,7 +240,7 @@ func GetConfigApiPorts(dirPth string) ([]uint, error) {
 		// 过滤指定格式
 		finds := configFileNameReg.FindStringSubmatch(fi.Name())
 		if len(finds) > 0 {
-			apiPort, err := strconv.Atoi(finds[0])
+			apiPort, err := strconv.Atoi(finds[1])
 			if err != nil {
 				logrus.Errorf("类型转换异常 err: %v\n", err)
 				continue
