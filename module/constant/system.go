@@ -15,5 +15,5 @@ const (
 	XrayPath        string = "bin/xray"
 	TrojanGoPath    string = "bin/trojango"
 	HysteriaPath    string = "bin/hysteria"
-	DownloadBaseUrl string = "https://github.com/trojanpanel/install-script/releases/download/v1.2.0"
+	DownloadBaseUrl string = "https://github.com/trojanpanel/install-script/releases/download/v1.0.0"
 )
