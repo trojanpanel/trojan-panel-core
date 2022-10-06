@@ -2,7 +2,6 @@ package util
 
 import (
 	"archive/zip"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -16,7 +15,6 @@ import (
 	"strconv"
 	"strings"
 	"trojan-panel-core/module/constant"
-	"trojan-panel-core/module/dto"
 )
 
 var configFileNameReg = regexp.MustCompile("^config-([1-9]\\d*)\\.json$")
@@ -30,6 +28,9 @@ func InitFile() {
 			panic(err)
 		}
 	}
+
+	// 初始化bin文件夹
+	InitBinFilePath()
 
 	// 初始化全局配置文件
 	InitConfigFile()
@@ -251,20 +252,26 @@ func GetConfigApiPorts(dirPth string) ([]uint, error) {
 	return apiPorts, nil
 }
 
-func GetXrayConfig(apiPort uint) (*dto.XrayConfigDto, error) {
-	xrayConfigDto := &dto.XrayConfigDto{}
-	configFilePath, err := GetConfigFile(1, apiPort)
-	if err != nil {
-		return nil, err
+func InitBinFilePath() {
+	xrayPath := constant.XrayPath
+	if !Exists(xrayPath) {
+		if err := os.MkdirAll(xrayPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建/bin/xray文件夹异常 err: %v\n", err)
+			panic(err)
+		}
 	}
-	configFileByte, err := ioutil.ReadFile(configFilePath)
-	if err != nil {
-		logrus.Errorf("Xray配置文件读取失败 err: %v\n", err)
-		return nil, err
+	trojanGoPath := constant.TrojanGoPath
+	if !Exists(trojanGoPath) {
+		if err := os.MkdirAll(trojanGoPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建/bin/trojango文件夹异常 err: %v\n", err)
+			panic(err)
+		}
 	}
-	if err = json.Unmarshal(configFileByte, xrayConfigDto); err != nil {
-		logrus.Errorf("Xray配置文件读取失败 err: %v\n", err)
-		return nil, err
+	hysteriaPath := constant.HysteriaPath
+	if !Exists(xrayPath) {
+		if err := os.MkdirAll(hysteriaPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建/bin/hysteriaPath文件夹异常 err: %v\n", err)
+			panic(err)
+		}
 	}
-	return xrayConfigDto, nil
 }
