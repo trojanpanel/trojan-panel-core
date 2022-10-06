@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/sirupsen/logrus"
 	"os/exec"
-	"runtime"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/util"
 )
@@ -14,9 +13,7 @@ type XrayProcess struct {
 }
 
 func NewXrayProcess() *XrayProcess {
-	x := &XrayProcess{process{mutex: &mutex, binaryType: 1, cmdMap: &cmdMap}}
-	runtime.SetFinalizer(x, x.StopXrayProcess())
-	return x
+	return &XrayProcess{process{mutex: &mutex, binaryType: 1, cmdMap: &cmdMap}}
 }
 
 func (x *XrayProcess) StopXrayProcess() error {

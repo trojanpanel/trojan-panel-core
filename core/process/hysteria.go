@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/sirupsen/logrus"
 	"os/exec"
-	"runtime"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/util"
 )
@@ -14,9 +13,7 @@ type HysteriaProcess struct {
 }
 
 func NewHysteriaInstance() *HysteriaProcess {
-	h := &HysteriaProcess{process{mutex: &mutex, binaryType: 3, cmdMap: &cmdMap}}
-	runtime.SetFinalizer(h, h.StopHysteriaInstance)
-	return h
+	return &HysteriaProcess{process{mutex: &mutex, binaryType: 3, cmdMap: &cmdMap}}
 }
 
 func (h *HysteriaProcess) StopHysteriaInstance() error {

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/sirupsen/logrus"
 	"os/exec"
-	"runtime"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/util"
 )
@@ -14,9 +13,7 @@ type TrojanGoProcess struct {
 }
 
 func NewTrojanGoInstance() *TrojanGoProcess {
-	t := &TrojanGoProcess{process{mutex: &mutex, binaryType: 2, cmdMap: &cmdMap}}
-	runtime.SetFinalizer(t, t.StopTrojanGoInstance())
-	return t
+	return &TrojanGoProcess{process{mutex: &mutex, binaryType: 2, cmdMap: &cmdMap}}
 }
 
 func (t *TrojanGoProcess) StopTrojanGoInstance() error {
