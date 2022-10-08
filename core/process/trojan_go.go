@@ -4,16 +4,20 @@ import (
 	"errors"
 	"github.com/sirupsen/logrus"
 	"os/exec"
+	"sync"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/util"
 )
+
+var mutexTrojanGo sync.Mutex
+var cmdMapTrojanGo sync.Map
 
 type TrojanGoProcess struct {
 	process
 }
 
 func NewTrojanGoInstance() *TrojanGoProcess {
-	return &TrojanGoProcess{process{mutex: &mutex, binaryType: 2, cmdMap: &cmdMap}}
+	return &TrojanGoProcess{process{mutex: &mutexTrojanGo, binaryType: 2, cmdMap: &cmdMapTrojanGo}}
 }
 
 func (t *TrojanGoProcess) StopTrojanGoInstance() error {

@@ -4,16 +4,20 @@ import (
 	"errors"
 	"github.com/sirupsen/logrus"
 	"os/exec"
+	"sync"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/util"
 )
+
+var mutexXray sync.Mutex
+var cmdMapXray sync.Map
 
 type XrayProcess struct {
 	process
 }
 
 func NewXrayProcess() *XrayProcess {
-	return &XrayProcess{process{mutex: &mutex, binaryType: 1, cmdMap: &cmdMap}}
+	return &XrayProcess{process{mutex: &mutexXray, binaryType: 1, cmdMap: &cmdMapXray}}
 }
 
 func (x *XrayProcess) StopXrayProcess() error {

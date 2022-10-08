@@ -9,9 +9,6 @@ import (
 	"trojan-panel-core/util"
 )
 
-var mutex sync.Mutex
-var cmdMap sync.Map
-
 type process struct {
 	mutex      *sync.Mutex
 	cmdMap     *sync.Map
