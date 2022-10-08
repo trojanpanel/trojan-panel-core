@@ -12,7 +12,7 @@ ENV mariadb_ip=trojan-panel-mariadb \
     redis_port=6379 \
     redis_pass=123456 \
     crt_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.crt \
-    key_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.key \
+    key_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.key
 ARG TARGETPLATFORM
 COPY build/trojan-panel-core-${TARGETPLATFORM} trojan-panel-core
 # 国内环境开启以下注释 设置apk国内镜像
