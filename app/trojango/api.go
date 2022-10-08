@@ -48,14 +48,14 @@ func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 		return nil, err
 	}
 	stream, err := client.ListUsers(ctx, &service.ListUsersRequest{})
-	defer func() {
-		stream.CloseSend()
-		clo()
-	}()
 	if err != nil {
 		logrus.Errorf("trojan go list users stream err: %v\n", err)
 		return nil, errors.New(constant.GrpcError)
 	}
+	defer func() {
+		stream.CloseSend()
+		clo()
+	}()
 	var userStatus []*service.UserStatus
 	for {
 		resp, err := stream.Recv()
@@ -77,15 +77,14 @@ func (t *trojanGoApi) GetUser(password string) (*service.UserStatus, error) {
 		return nil, err
 	}
 	stream, err := client.GetUsers(ctx)
-	defer func() {
-		stream.CloseSend()
-		clo()
-	}()
 	if err != nil {
 		logrus.Errorf("trojan go get user stream err: %v\n", err)
 		return nil, errors.New(constant.GrpcError)
 	}
-
+	defer func() {
+		stream.CloseSend()
+		clo()
+	}()
 	err = stream.Send(&service.GetUsersRequest{
 		User: &service.User{
 			Password: password,
@@ -110,15 +109,14 @@ func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
 		return err
 	}
 	stream, err := client.SetUsers(ctx)
-	defer func() {
-		stream.CloseSend()
-		clo()
-	}()
 	if err != nil {
 		logrus.Errorf("trojan go set users stream err: %v\n", err)
 		return errors.New(constant.GrpcError)
 	}
-
+	defer func() {
+		stream.CloseSend()
+		clo()
+	}()
 	err = stream.Send(setUsersRequest)
 	if err != nil {
 		logrus.Errorf("trojan go set user stream send err: %v\n", err)
