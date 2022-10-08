@@ -26,7 +26,7 @@ func NewTrojanGoApi(apiPort uint) *trojanGoApi {
 }
 
 func apiClient(apiPort uint) (clent service.TrojanServerServiceClient, ctx context.Context, clo func(), err error) {
-	conn, err := grpc.Dial(fmt.Sprintf("0.0.0.0:%d", apiPort),
+	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%d", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	clent = service.NewTrojanServerServiceClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
