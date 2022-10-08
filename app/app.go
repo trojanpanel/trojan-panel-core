@@ -12,15 +12,14 @@ import (
 )
 
 func StartApp(nodeAddDto dto.NodeAddDto) error {
-	port, err := util.GetPortAvailBetween()
-	if err != nil {
-		return err
-	}
 	switch nodeAddDto.NodeTypeId {
 	case 1:
-		if err = xray.StartXray(dto.XrayConfigDto{
-			ApiPort:        port + 100,
-			Port:           port,
+		if !util.IsPortAvailable(int(nodeAddDto.XrayPort)) || !util.IsPortAvailable(int(nodeAddDto.XrayPort+100)) {
+			return errors.New(constant.PortUnavailable)
+		}
+		if err := xray.StartXray(dto.XrayConfigDto{
+			ApiPort:        nodeAddDto.XrayPort + 100,
+			Port:           nodeAddDto.XrayPort,
 			Protocol:       nodeAddDto.XrayProtocol,
 			Settings:       nodeAddDto.XraySettings,
 			StreamSettings: nodeAddDto.XrayStreamSettings,
@@ -31,9 +30,12 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 			return err
 		}
 	case 2:
-		if err = trojango.StartTrojanGo(dto.TrojanGoConfigDto{
-			ApiPort:         port + 100,
-			Port:            port,
+		if !util.IsPortAvailable(int(nodeAddDto.TrojanGoPort)) || !util.IsPortAvailable(int(nodeAddDto.TrojanGoPort+100)) {
+			return errors.New(constant.PortUnavailable)
+		}
+		if err := trojango.StartTrojanGo(dto.TrojanGoConfigDto{
+			ApiPort:         nodeAddDto.TrojanGoPort + 100,
+			Port:            nodeAddDto.TrojanGoPort,
 			Ip:              nodeAddDto.TrojanGoIp,
 			Sni:             nodeAddDto.TrojanGoSni,
 			MuxEnable:       nodeAddDto.TrojanGoMuxEnable,
@@ -47,9 +49,12 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 			return err
 		}
 	case 3:
-		if err = hysteria.StartHysteria(dto.HysteriaConfigDto{
-			ApiPort:  port + 100,
-			Port:     port,
+		if !util.IsPortAvailable(int(nodeAddDto.HysteriaPort)) || !util.IsPortAvailable(int(nodeAddDto.HysteriaPort+100)) {
+			return errors.New(constant.PortUnavailable)
+		}
+		if err := hysteria.StartHysteria(dto.HysteriaConfigDto{
+			ApiPort:  nodeAddDto.HysteriaPort + 100,
+			Port:     nodeAddDto.HysteriaPort,
 			Protocol: nodeAddDto.HysteriaProtocol,
 			Ip:       nodeAddDto.HysteriaIp,
 			UpMbps:   nodeAddDto.HysteriaUpMbps,
