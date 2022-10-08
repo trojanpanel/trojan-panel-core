@@ -268,7 +268,7 @@ func InitBinFilePath() {
 		}
 	}
 	hysteriaPath := constant.HysteriaPath
-	if !Exists(xrayPath) {
+	if !Exists(hysteriaPath) {
 		if err := os.MkdirAll(hysteriaPath, os.ModePerm); err != nil {
 			logrus.Errorf("创建/bin/hysteriaPath文件夹异常 err: %v\n", err)
 			panic(err)
