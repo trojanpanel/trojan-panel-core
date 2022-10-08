@@ -53,8 +53,7 @@ func SelectAccountPasswords(ban bool) ([]string, error) {
 	if ban {
 		where = map[string]interface{}{"quota >=": 0, "quota <=": "download + upload"}
 	} else {
-		orMap := map[string]interface{}{"quota >": "download + upload"}
-		where = map[string]interface{}{"quota <": 0, "_or": []map[string]interface{}{orMap}}
+		where = map[string]interface{}{"_or": []map[string]interface{}{{"quota <": 0}, {"quota >": "download + upload"}}}
 	}
 	buildSelect, values, err = builder.BuildSelect(mySQLConfig.AccountTable, where, []string{"id", "username", "pass"})
 	if err != nil {
