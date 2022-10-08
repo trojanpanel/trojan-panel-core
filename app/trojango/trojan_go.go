@@ -144,7 +144,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
   },
   "websocket": {
     "enabled": ${websocket_enable},
-    "path": "/${websocket_path}",
+    "path": "${websocket_path}",
     "host": "${websocket_host}"
   },
   "shadowsocks": {
