@@ -92,22 +92,12 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 
 	// 初始化配置 文件名称格式：config-[apiPort]-[protocol].json
 	xrayConfigFilePath := fmt.Sprintf("%s/config-%d-%s.json", constant.XrayPath, xrayConfigDto.ApiPort, xrayConfigDto.Protocol)
-	var file *os.File
-	if !util.Exists(xrayConfigFilePath) {
-		file, err := os.Create(xrayConfigFilePath)
-		if err != nil {
-			logrus.Errorf("创建xray %s文件异常 err: %v\n", xrayConfigFilePath, err)
-			panic(err)
-		}
-		defer file.Close()
-	} else {
-		file, err := os.OpenFile(xrayConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
-		if err != nil {
-			logrus.Errorf("打开xray %s文件异常 err: %v\n", xrayConfigFilePath, err)
-			panic(err)
-		}
-		defer file.Close()
+	file, err := os.OpenFile(xrayConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
+	if err != nil {
+		logrus.Errorf("创建xray %s文件异常 err: %v\n", xrayConfigFilePath, err)
+		panic(err)
 	}
+	defer file.Close()
 
 	// 根据不同的协议生成对应的配置文件，用户信息通过新建同步协程
 	configTemplateContent := `{

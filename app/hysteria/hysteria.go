@@ -94,22 +94,12 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	if err != nil {
 		return err
 	}
-	var file *os.File
-	if !util.Exists(hysteriaConfigFilePath) {
-		file, err := os.Create(hysteriaConfigFilePath)
-		if err != nil {
-			logrus.Errorf("创建hysteria %s文件异常 err: %v\n", hysteriaConfigFilePath, err)
-			panic(err)
-		}
-		defer file.Close()
-	} else {
-		file, err := os.OpenFile(hysteriaConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
-		if err != nil {
-			logrus.Errorf("打开hysteria %s文件异常 err: %v\n", hysteriaConfigFilePath, err)
-			panic(err)
-		}
-		defer file.Close()
+	file, err := os.OpenFile(hysteriaConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
+	if err != nil {
+		logrus.Errorf("创建hysteria %s文件异常 err: %v\n", hysteriaConfigFilePath, err)
+		panic(err)
 	}
+	defer file.Close()
 
 	certConfig := core.Config.CertConfig
 	configContent := `{

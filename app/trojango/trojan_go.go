@@ -91,22 +91,12 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	if err != nil {
 		return err
 	}
-	var file *os.File
-	if !util.Exists(trojanGoConfigFilePath) {
-		file, err := os.Create(trojanGoConfigFilePath)
-		if err != nil {
-			logrus.Errorf("创建trojan go %s文件异常 err: %v\n", trojanGoConfigFilePath, err)
-			panic(err)
-		}
-		defer file.Close()
-	} else {
-		file, err := os.OpenFile(trojanGoConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
-		if err != nil {
-			logrus.Errorf("打开trojan go %s文件异常 err: %v\n", trojanGoConfigFilePath, err)
-			panic(err)
-		}
-		defer file.Close()
+	file, err := os.OpenFile(trojanGoConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
+	if err != nil {
+		logrus.Errorf("创建trojan go %s文件异常 err: %v\n", trojanGoConfigFilePath, err)
+		panic(err)
 	}
+	defer file.Close()
 
 	certConfig := core.Config.CertConfig
 
