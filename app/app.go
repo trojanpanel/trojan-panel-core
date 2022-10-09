@@ -8,15 +8,11 @@ import (
 	"trojan-panel-core/app/xray"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
-	"trojan-panel-core/util"
 )
 
 func StartApp(nodeAddDto dto.NodeAddDto) error {
 	switch nodeAddDto.NodeTypeId {
 	case 1:
-		if !util.IsPortAvailable(int(nodeAddDto.XrayPort)) || !util.IsPortAvailable(int(nodeAddDto.XrayPort+100)) {
-			return errors.New(constant.PortUnavailable)
-		}
 		if err := xray.StartXray(dto.XrayConfigDto{
 			ApiPort:        nodeAddDto.XrayPort + 100,
 			Port:           nodeAddDto.XrayPort,
@@ -30,9 +26,6 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 			return err
 		}
 	case 2:
-		if !util.IsPortAvailable(int(nodeAddDto.TrojanGoPort)) || !util.IsPortAvailable(int(nodeAddDto.TrojanGoPort+100)) {
-			return errors.New(constant.PortUnavailable)
-		}
 		if err := trojango.StartTrojanGo(dto.TrojanGoConfigDto{
 			ApiPort:         nodeAddDto.TrojanGoPort + 100,
 			Port:            nodeAddDto.TrojanGoPort,
@@ -49,9 +42,6 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 			return err
 		}
 	case 3:
-		if !util.IsPortAvailable(int(nodeAddDto.HysteriaPort)) || !util.IsPortAvailable(int(nodeAddDto.HysteriaPort+100)) {
-			return errors.New(constant.PortUnavailable)
-		}
 		if err := hysteria.StartHysteria(dto.HysteriaConfigDto{
 			ApiPort:  nodeAddDto.HysteriaPort + 100,
 			Port:     nodeAddDto.HysteriaPort,

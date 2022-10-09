@@ -25,7 +25,7 @@ func GetPortAvailBetween() (uint, error) {
 
 // IsPortAvailable 判断端口是否可用
 func IsPortAvailable(port int) bool {
-	address := fmt.Sprintf("%s:%d", "0.0.0.0", port)
+	address := fmt.Sprintf("127.0.0.1:%d", port)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		logrus.Errorf("port %s is taken: %s \n", address, err)
