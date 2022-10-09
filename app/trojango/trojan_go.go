@@ -91,6 +91,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	if err != nil {
 		return err
 	}
+	var file *os.File
 	if !util.Exists(trojanGoConfigFilePath) {
 		file, err := os.Create(trojanGoConfigFilePath)
 		if err != nil {
@@ -98,10 +99,18 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 			panic(err)
 		}
 		defer file.Close()
+	} else {
+		file, err := os.OpenFile(trojanGoConfigFilePath, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			logrus.Errorf("打开trojan go config-%d.json文件异常 err: %v\n", trojanGoConfigDto.ApiPort, err)
+			panic(err)
+		}
+		defer file.Close()
+	}
 
-		certConfig := core.Config.CertConfig
+	certConfig := core.Config.CertConfig
 
-		configContent := `{
+	configContent := `{
   "run_type": "server",
   "local_addr": "0.0.0.0",
   "local_port": ${port},
@@ -166,41 +175,40 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
   }
 }
 `
-		configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(trojanGoConfigDto.Port), 10))
-		configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
-		configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
-		configContent = strings.ReplaceAll(configContent, "${sni}", trojanGoConfigDto.Sni)
-		var muxEnableStr string
-		if trojanGoConfigDto.MuxEnable == 1 {
-			muxEnableStr = "true"
-		} else {
-			muxEnableStr = "false"
-		}
-		configContent = strings.ReplaceAll(configContent, "${mux_enable}", muxEnableStr)
-		var websocketEnableStr string
-		if trojanGoConfigDto.WebsocketEnable == 1 {
-			websocketEnableStr = "true"
-		} else {
-			websocketEnableStr = "false"
-		}
-		configContent = strings.ReplaceAll(configContent, "${websocket_enable}", websocketEnableStr)
-		configContent = strings.ReplaceAll(configContent, "${websocket_path}", trojanGoConfigDto.WebsocketPath)
-		configContent = strings.ReplaceAll(configContent, "${websocket_host}", trojanGoConfigDto.WebsocketHost)
-		var ssEnableStr string
-		if trojanGoConfigDto.SSEnable == 1 {
-			ssEnableStr = "true"
-		} else {
-			ssEnableStr = "false"
-		}
-		configContent = strings.ReplaceAll(configContent, "${ss_enable}", ssEnableStr)
-		configContent = strings.ReplaceAll(configContent, "${ss_method}", trojanGoConfigDto.SSMethod)
-		configContent = strings.ReplaceAll(configContent, "${ss_password}", trojanGoConfigDto.SSPassword)
-		configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(trojanGoConfigDto.ApiPort), 10))
-		_, err = file.WriteString(configContent)
-		if err != nil {
-			logrus.Errorf("trojan go config-%d.json文件写入异常 err: %v\n", trojanGoConfigDto.ApiPort, err)
-			panic(err)
-		}
+	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(trojanGoConfigDto.Port), 10))
+	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
+	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
+	configContent = strings.ReplaceAll(configContent, "${sni}", trojanGoConfigDto.Sni)
+	var muxEnableStr string
+	if trojanGoConfigDto.MuxEnable == 1 {
+		muxEnableStr = "true"
+	} else {
+		muxEnableStr = "false"
+	}
+	configContent = strings.ReplaceAll(configContent, "${mux_enable}", muxEnableStr)
+	var websocketEnableStr string
+	if trojanGoConfigDto.WebsocketEnable == 1 {
+		websocketEnableStr = "true"
+	} else {
+		websocketEnableStr = "false"
+	}
+	configContent = strings.ReplaceAll(configContent, "${websocket_enable}", websocketEnableStr)
+	configContent = strings.ReplaceAll(configContent, "${websocket_path}", trojanGoConfigDto.WebsocketPath)
+	configContent = strings.ReplaceAll(configContent, "${websocket_host}", trojanGoConfigDto.WebsocketHost)
+	var ssEnableStr string
+	if trojanGoConfigDto.SSEnable == 1 {
+		ssEnableStr = "true"
+	} else {
+		ssEnableStr = "false"
+	}
+	configContent = strings.ReplaceAll(configContent, "${ss_enable}", ssEnableStr)
+	configContent = strings.ReplaceAll(configContent, "${ss_method}", trojanGoConfigDto.SSMethod)
+	configContent = strings.ReplaceAll(configContent, "${ss_password}", trojanGoConfigDto.SSPassword)
+	configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(trojanGoConfigDto.ApiPort), 10))
+	_, err = file.WriteString(configContent)
+	if err != nil {
+		logrus.Errorf("trojan go config-%d.json文件写入异常 err: %v\n", trojanGoConfigDto.ApiPort, err)
+		panic(err)
 	}
 	return nil
 }

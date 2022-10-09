@@ -94,6 +94,7 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	if err != nil {
 		return err
 	}
+	var file *os.File
 	if !util.Exists(hysteriaConfigFilePath) {
 		file, err := os.Create(hysteriaConfigFilePath)
 		if err != nil {
@@ -101,9 +102,17 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 			panic(err)
 		}
 		defer file.Close()
+	} else {
+		file, err := os.OpenFile(hysteriaConfigFilePath, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			logrus.Errorf("打开hysteria config.json文件异常 err: %v\n", err)
+			panic(err)
+		}
+		defer file.Close()
+	}
 
-		certConfig := core.Config.CertConfig
-		configContent := `{
+	certConfig := core.Config.CertConfig
+	configContent := `{
   "listen": ":${port}",
   "protocol": "${protocol}",
   "cert": "${crt_path}",
@@ -117,17 +126,16 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
     }
   }
 }`
-		configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(hysteriaConfigDto.Port), 10))
-		configContent = strings.ReplaceAll(configContent, "${protocol}", hysteriaConfigDto.Protocol)
-		configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
-		configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
-		configContent = strings.ReplaceAll(configContent, "${up_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.UpMbps), 10))
-		configContent = strings.ReplaceAll(configContent, "${down_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.DownMbps), 10))
-		_, err = file.WriteString(configContent)
-		if err != nil {
-			logrus.Errorf("hysteria config.json文件写入异常 err: %v\n", err)
-			panic(err)
-		}
+	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(hysteriaConfigDto.Port), 10))
+	configContent = strings.ReplaceAll(configContent, "${protocol}", hysteriaConfigDto.Protocol)
+	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
+	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
+	configContent = strings.ReplaceAll(configContent, "${up_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.UpMbps), 10))
+	configContent = strings.ReplaceAll(configContent, "${down_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.DownMbps), 10))
+	_, err = file.WriteString(configContent)
+	if err != nil {
+		logrus.Errorf("hysteria config.json文件写入异常 err: %v\n", err)
+		panic(err)
 	}
 	return nil
 }

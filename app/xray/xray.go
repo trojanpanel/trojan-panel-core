@@ -92,6 +92,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 
 	// 初始化配置 文件名称格式：config-[apiPort]-[protocol].json
 	xrayConfigFilePath := fmt.Sprintf("%s/config-%d-%s.json", constant.XrayPath, xrayConfigDto.ApiPort, xrayConfigDto.Protocol)
+	var file *os.File
 	if !util.Exists(xrayConfigFilePath) {
 		file, err := os.Create(xrayConfigFilePath)
 		if err != nil {
@@ -99,9 +100,17 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 			panic(err)
 		}
 		defer file.Close()
+	} else {
+		file, err := os.OpenFile(xrayConfigFilePath, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			logrus.Errorf("打开xray config.json文件异常 err: %v\n", err)
+			panic(err)
+		}
+		defer file.Close()
+	}
 
-		// 根据不同的协议生成对应的配置文件，用户信息通过新建同步协程
-		configTemplateContent := `{
+	// 根据不同的协议生成对应的配置文件，用户信息通过新建同步协程
+	configTemplateContent := `{
   "stats": {},
   "api": {
     "services": [
@@ -156,50 +165,49 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
   }
 }
 `
-		configTemplateContent = strings.ReplaceAll(configTemplateContent, "${api_port}", strconv.FormatInt(int64(xrayConfigDto.ApiPort), 10))
-		xrayConfig := &bo.XrayConfigBo{}
-		// 将json字符串映射到模板对象
-		if err = json.Unmarshal([]byte(configTemplateContent), xrayConfig); err != nil {
-			logrus.Errorf("xray template config反序列化异常 err: %v\n", err)
-			panic(err)
-		}
+	configTemplateContent = strings.ReplaceAll(configTemplateContent, "${api_port}", strconv.FormatInt(int64(xrayConfigDto.ApiPort), 10))
+	xrayConfig := &bo.XrayConfigBo{}
+	// 将json字符串映射到模板对象
+	if err = json.Unmarshal([]byte(configTemplateContent), xrayConfig); err != nil {
+		logrus.Errorf("xray template config反序列化异常 err: %v\n", err)
+		panic(err)
+	}
 
-		//streamSettings := &bo.StreamSettings{}
-		//if err = json.Unmarshal([]byte(xrayConfigDto.StreamSettings), streamSettings); err != nil {
-		//	logrus.Errorf("xray StreamSettings反序列化异常 err: %v\n", err)
-		//	panic(err)
-		//}
-		//if len(streamSettings.XtlsSettings.Certificates) > 0 {
-		//	certConfig := core.Config.CertConfig
-		//	streamSettings.XtlsSettings.Certificates[0].CertificateFile = certConfig.CrtPath
-		//	streamSettings.XtlsSettings.Certificates[0].KeyFile = certConfig.KeyPath
-		//}
-		//streamSettingsStr, err := json.Marshal(streamSettings)
-		//if err != nil {
-		//	logrus.Errorf("xray StreamSettings序列化异常 err: %v\n", err)
-		//	panic(err)
-		//}
-		// 添加入站协议
-		xrayConfig.Inbounds = append(xrayConfig.Inbounds, bo.InboundBo{
-			Listen:         "127.0.0.1",
-			Port:           xrayConfigDto.Port,
-			Protocol:       xrayConfigDto.Protocol,
-			Settings:       bo.TypeMessage(xrayConfigDto.Settings),
-			StreamSettings: bo.TypeMessage(xrayConfigDto.StreamSettings),
-			Tag:            xrayConfigDto.Tag,
-			Sniffing:       bo.TypeMessage(xrayConfigDto.Sniffing),
-			Allocate:       bo.TypeMessage(xrayConfigDto.Allocate),
-		})
-		configContentByte, err := json.Marshal(xrayConfig)
-		if err != nil {
-			logrus.Errorf("xray template config反序列化异常 err: %v\n", err)
-			panic(err)
-		}
-		_, err = file.Write(configContentByte)
-		if err != nil {
-			logrus.Errorf("xray config.json文件写入异常 err: %v\n", err)
-			panic(err)
-		}
+	//streamSettings := &bo.StreamSettings{}
+	//if err = json.Unmarshal([]byte(xrayConfigDto.StreamSettings), streamSettings); err != nil {
+	//	logrus.Errorf("xray StreamSettings反序列化异常 err: %v\n", err)
+	//	panic(err)
+	//}
+	//if len(streamSettings.XtlsSettings.Certificates) > 0 {
+	//	certConfig := core.Config.CertConfig
+	//	streamSettings.XtlsSettings.Certificates[0].CertificateFile = certConfig.CrtPath
+	//	streamSettings.XtlsSettings.Certificates[0].KeyFile = certConfig.KeyPath
+	//}
+	//streamSettingsStr, err := json.Marshal(streamSettings)
+	//if err != nil {
+	//	logrus.Errorf("xray StreamSettings序列化异常 err: %v\n", err)
+	//	panic(err)
+	//}
+	// 添加入站协议
+	xrayConfig.Inbounds = append(xrayConfig.Inbounds, bo.InboundBo{
+		Listen:         "127.0.0.1",
+		Port:           xrayConfigDto.Port,
+		Protocol:       xrayConfigDto.Protocol,
+		Settings:       bo.TypeMessage(xrayConfigDto.Settings),
+		StreamSettings: bo.TypeMessage(xrayConfigDto.StreamSettings),
+		Tag:            xrayConfigDto.Tag,
+		Sniffing:       bo.TypeMessage(xrayConfigDto.Sniffing),
+		Allocate:       bo.TypeMessage(xrayConfigDto.Allocate),
+	})
+	configContentByte, err := json.Marshal(xrayConfig)
+	if err != nil {
+		logrus.Errorf("xray template config反序列化异常 err: %v\n", err)
+		panic(err)
+	}
+	_, err = file.Write(configContentByte)
+	if err != nil {
+		logrus.Errorf("xray config.json文件写入异常 err: %v\n", err)
+		panic(err)
 	}
 	return nil
 }
