@@ -88,20 +88,14 @@ func SelectAccountPasswords(ban bool) ([]string, error) {
 	return passwords, nil
 }
 
-func SelectAccountByUsernameAndPass(username string, pass string) (*vo.AccountHysteriaVo, error) {
+func SelectAccountByUsernameAndPass(usernameAndPass string) (*vo.AccountHysteriaVo, error) {
 	mySQLConfig := core.Config.MySQLConfig
 	var account module.Account
 
-	passEncode, err := util.AesEncode(pass)
-	if err != nil {
-		return nil, err
-	}
-
 	selectFields := []string{"id", "username"}
 	where := map[string]interface{}{
-		"quota <>": 0,
-		"username": username,
-		"pass":     passEncode,
+		"quota <>":               0,
+		"contact(username,pass)": usernameAndPass,
 	}
 	buildSelect, values, err := builder.BuildSelect(mySQLConfig.AccountTable, where, selectFields)
 	if err != nil {

@@ -3,11 +3,11 @@ package api
 import (
 	"encoding/base64"
 	"github.com/gin-gonic/gin"
-	"strings"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
 	"trojan-panel-core/service"
+	"trojan-panel-core/util"
 )
 
 func HysteriaApi(c *gin.Context) {
@@ -17,17 +17,17 @@ func HysteriaApi(c *gin.Context) {
 		vo.HysteriaApiFail(constant.ValidateFailed, c)
 		return
 	}
-	decodeString, err := base64.StdEncoding.DecodeString(*hysteriaAuthDto.Payload)
+	base64DecodeStr, err := base64.StdEncoding.DecodeString(*hysteriaAuthDto.Payload)
 	if err != nil {
 		vo.HysteriaApiFail(constant.ValidateFailed, c)
 		return
 	}
-	usernameAndPass := strings.Split(string(decodeString), "&")
-	if len(usernameAndPass) != 2 || len(usernameAndPass[0]) == 0 || len(usernameAndPass[1]) == 0 {
-		vo.HysteriaApiFail(err.Error(), c)
+	aesDecodeStr, err := util.AesDecode(string(base64DecodeStr))
+	if err != nil {
+		vo.HysteriaApiFail(constant.ValidateFailed, c)
 		return
 	}
-	accountHysteriaVo, err := service.SelectAccountByUsernameAndPass(usernameAndPass[0], usernameAndPass[1])
+	accountHysteriaVo, err := service.SelectAccountByUsernameAndPass(aesDecodeStr)
 	if err != nil || accountHysteriaVo == nil {
 		vo.HysteriaApiFail(constant.UsernameOrPassError, c)
 		return

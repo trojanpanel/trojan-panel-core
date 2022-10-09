@@ -170,8 +170,8 @@ func CronHandlerDownloadAndUpload() {
 }
 
 // SelectAccountByUsernameAndPass 用户认证 hysteria
-func SelectAccountByUsernameAndPass(username string, pass string) (*vo.AccountHysteriaVo, error) {
-	return dao.SelectAccountByUsernameAndPass(username, pass)
+func SelectAccountByUsernameAndPass(usernameAndPass string) (*vo.AccountHysteriaVo, error) {
+	return dao.SelectAccountByUsernameAndPass(usernameAndPass)
 }
 
 func UpdateAccountFlowByUsername(username string, download int, upload int) error {
