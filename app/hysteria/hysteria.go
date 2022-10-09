@@ -98,14 +98,14 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	if !util.Exists(hysteriaConfigFilePath) {
 		file, err := os.Create(hysteriaConfigFilePath)
 		if err != nil {
-			logrus.Errorf("创建hysteria config.json文件异常 err: %v\n", err)
+			logrus.Errorf("创建hysteria %s文件异常 err: %v\n", hysteriaConfigFilePath, err)
 			panic(err)
 		}
 		defer file.Close()
 	} else {
-		file, err := os.OpenFile(hysteriaConfigFilePath, os.O_WRONLY|os.O_CREATE, 0666)
+		file, err := os.OpenFile(hysteriaConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 		if err != nil {
-			logrus.Errorf("打开hysteria config.json文件异常 err: %v\n", err)
+			logrus.Errorf("打开hysteria %s文件异常 err: %v\n", hysteriaConfigFilePath, err)
 			panic(err)
 		}
 		defer file.Close()

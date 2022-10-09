@@ -96,14 +96,14 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	if !util.Exists(xrayConfigFilePath) {
 		file, err := os.Create(xrayConfigFilePath)
 		if err != nil {
-			logrus.Errorf("创建xray config.json文件异常 err: %v\n", err)
+			logrus.Errorf("创建xray %s文件异常 err: %v\n", xrayConfigFilePath, err)
 			panic(err)
 		}
 		defer file.Close()
 	} else {
-		file, err := os.OpenFile(xrayConfigFilePath, os.O_WRONLY|os.O_CREATE, 0666)
+		file, err := os.OpenFile(xrayConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
 		if err != nil {
-			logrus.Errorf("打开xray config.json文件异常 err: %v\n", err)
+			logrus.Errorf("打开xray %s文件异常 err: %v\n", xrayConfigFilePath, err)
 			panic(err)
 		}
 		defer file.Close()
