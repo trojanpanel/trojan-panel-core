@@ -14,7 +14,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 	switch nodeAddDto.NodeTypeId {
 	case 1:
 		if err := xray.StartXray(dto.XrayConfigDto{
-			ApiPort:        nodeAddDto.XrayPort + 100,
+			ApiPort:        nodeAddDto.XrayPort + 10000,
 			Port:           nodeAddDto.XrayPort,
 			Protocol:       nodeAddDto.XrayProtocol,
 			Settings:       nodeAddDto.XraySettings,
@@ -27,7 +27,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		}
 	case 2:
 		if err := trojango.StartTrojanGo(dto.TrojanGoConfigDto{
-			ApiPort:         nodeAddDto.TrojanGoPort + 100,
+			ApiPort:         nodeAddDto.TrojanGoPort + 10000,
 			Port:            nodeAddDto.TrojanGoPort,
 			Ip:              nodeAddDto.TrojanGoIp,
 			Sni:             nodeAddDto.TrojanGoSni,
@@ -43,7 +43,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		}
 	case 3:
 		if err := hysteria.StartHysteria(dto.HysteriaConfigDto{
-			ApiPort:  nodeAddDto.HysteriaPort + 100,
+			ApiPort:  nodeAddDto.HysteriaPort + 10000,
 			Port:     nodeAddDto.HysteriaPort,
 			Protocol: nodeAddDto.HysteriaProtocol,
 			Ip:       nodeAddDto.HysteriaIp,
