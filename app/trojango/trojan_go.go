@@ -103,7 +103,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
   "run_type": "server",
   "local_addr": "0.0.0.0",
   "local_port": ${port},
-  "remote_addr": "trojan-panel-caddy",
+  "remote_addr": "127.0.0.1",
   "remote_port": 80,
   "log_level": 1,
   "log_file": "",
