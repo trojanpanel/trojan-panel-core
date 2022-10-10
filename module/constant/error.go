@@ -17,11 +17,11 @@ const (
 	ProcessStopError   string = "进程暂停失败"
 
 	NodeTypeNotExist   string = "节点类型不存在"
-	DownloadFilError   string = "远程文件下载失败"
 	RemoveFileError    string = "删除文件失败"
 	BinaryFileNotExist string = "二进制文件不存在"
 	ConfigFileNotExist string = "配置文件不存在"
 
-	PortExceed      string = "端口必须在10000到10100之间"
-	PortUnavailable string = "端口不可用"
+	PortExceed string = "端口必须在10000到10100之间"
+
+	GetLocalIPError string = "获取本地IP失败"
 )

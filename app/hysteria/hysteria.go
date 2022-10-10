@@ -1,7 +1,6 @@
 package hysteria
 
 import (
-	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -72,7 +71,7 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	if !util.Exists(hysteriaPath) {
 		if err := os.MkdirAll(hysteriaPath, os.ModePerm); err != nil {
 			logrus.Errorf("创建Hysteria文件夹异常 err: %v\n", err)
-			panic(err)
+			return err
 		}
 	}
 
@@ -85,7 +84,7 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 		if err = util.DownloadFile(fmt.Sprintf("%s/hysteria-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
 			binaryFilePath); err != nil {
 			logrus.Errorf("Hysteria二进制文件下载失败 err: %v\n", err)
-			panic(errors.New(constant.DownloadFilError))
+			return err
 		}
 	}
 
@@ -97,7 +96,7 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	file, err := os.OpenFile(hysteriaConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {
 		logrus.Errorf("创建hysteria %s文件异常 err: %v\n", hysteriaConfigFilePath, err)
-		panic(err)
+		return err
 	}
 	defer file.Close()
 
@@ -112,20 +111,27 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
   "auth": {
     "mode": "external",
     "config": {
-      "http": "http://127.0.0.1:8082/api/auth/hysteria"
+      "http": "http://${local_ip}:8082/api/auth/hysteria"
     }
   }
 }`
+
+	localIP, err := util.GetLocalIP()
+	if err != nil {
+		logrus.Errorf("获取本机IP地址异常 err: %v\n", err)
+		return err
+	}
 	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(hysteriaConfigDto.Port), 10))
 	configContent = strings.ReplaceAll(configContent, "${protocol}", hysteriaConfigDto.Protocol)
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
 	configContent = strings.ReplaceAll(configContent, "${up_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.UpMbps), 10))
 	configContent = strings.ReplaceAll(configContent, "${down_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.DownMbps), 10))
+	configContent = strings.ReplaceAll(configContent, "${local_ip}", localIP)
 	_, err = file.WriteString(configContent)
 	if err != nil {
 		logrus.Errorf("hysteria config.json文件写入异常 err: %v\n", err)
-		panic(err)
+		return err
 	}
 	return nil
 }
