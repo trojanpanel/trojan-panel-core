@@ -111,23 +111,16 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
   "auth": {
     "mode": "external",
     "config": {
-      "http": "http://${local_ip}:8082/api/auth/hysteria"
+      "http": "http://127.0.0.1:8082/api/auth/hysteria"
     }
   }
 }`
-
-	localIP, err := util.GetLocalIP()
-	if err != nil {
-		logrus.Errorf("获取本机IP地址异常 err: %v\n", err)
-		return err
-	}
 	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(hysteriaConfigDto.Port), 10))
 	configContent = strings.ReplaceAll(configContent, "${protocol}", hysteriaConfigDto.Protocol)
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
 	configContent = strings.ReplaceAll(configContent, "${up_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.UpMbps), 10))
 	configContent = strings.ReplaceAll(configContent, "${down_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.DownMbps), 10))
-	configContent = strings.ReplaceAll(configContent, "${local_ip}", localIP)
 	_, err = file.WriteString(configContent)
 	if err != nil {
 		logrus.Errorf("hysteria config.json文件写入异常 err: %v\n", err)
