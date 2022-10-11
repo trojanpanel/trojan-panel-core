@@ -19,35 +19,37 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
+
+	// 校验端口
 	var err error
 	if (nodeAddDto.XrayPort != 0 && (nodeAddDto.XrayPort <= 100 || nodeAddDto.XrayPort >= 30000)) ||
 		(nodeAddDto.TrojanGoPort != 0 && (nodeAddDto.TrojanGoPort <= 100 || nodeAddDto.TrojanGoPort >= 30000)) ||
 		(nodeAddDto.HysteriaPort != 0 && (nodeAddDto.HysteriaPort <= 100 || nodeAddDto.HysteriaPort >= 30000)) {
 		err = errors.New(constant.PortRangeError)
-	} else {
-		if nodeAddDto.XrayPort != 0 {
-			if !util.IsPortAvailable(uint(nodeAddDto.XrayPort), "tcp") {
-				err = errors.New(constant.PortIsOccupied)
-			}
-			if !util.IsPortAvailable(uint(nodeAddDto.XrayPort+10000), "tcp") {
-				err = errors.New(constant.PortIsOccupied)
-			}
-		} else if nodeAddDto.TrojanGoPort != 0 {
-			if !util.IsPortAvailable(uint(nodeAddDto.TrojanGoPort), "tcp") {
-				err = errors.New(constant.PortIsOccupied)
-			}
-			if !util.IsPortAvailable(uint(nodeAddDto.TrojanGoPort+10000), "tcp") {
-				err = errors.New(constant.PortIsOccupied)
-			}
-		} else if nodeAddDto.HysteriaPort != 0 {
-			if !util.IsPortAvailable(uint(nodeAddDto.HysteriaPort), "udp") {
-				err = errors.New(constant.PortIsOccupied)
-			}
+	}
+	if nodeAddDto.XrayPort != 0 {
+		if !util.IsPortAvailable(uint(nodeAddDto.XrayPort), "tcp") {
+			err = errors.New(constant.PortIsOccupied)
+		}
+		if !util.IsPortAvailable(uint(nodeAddDto.XrayPort+10000), "tcp") {
+			err = errors.New(constant.PortIsOccupied)
+		}
+	} else if nodeAddDto.TrojanGoPort != 0 {
+		if !util.IsPortAvailable(uint(nodeAddDto.TrojanGoPort), "tcp") {
+			err = errors.New(constant.PortIsOccupied)
+		}
+		if !util.IsPortAvailable(uint(nodeAddDto.TrojanGoPort+10000), "tcp") {
+			err = errors.New(constant.PortIsOccupied)
+		}
+	} else if nodeAddDto.HysteriaPort != 0 {
+		if !util.IsPortAvailable(uint(nodeAddDto.HysteriaPort), "udp") {
+			err = errors.New(constant.PortIsOccupied)
 		}
 	}
 	if err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
+
 	if err := app.StartApp(dto.NodeAddDto{
 		NodeTypeId: uint(nodeAddDto.NodeTypeId),
 		// Xray
