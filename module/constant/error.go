@@ -21,7 +21,8 @@ const (
 	BinaryFileNotExist string = "二进制文件不存在"
 	ConfigFileNotExist string = "配置文件不存在"
 
-	PortExceed string = "端口必须在10000到10100之间"
-
 	GetLocalIPError string = "获取本地IP失败"
+
+	PortIsOccupied string = "端口被占用,请检查该端口或选择其他端口"
+	PortRangeError string = "端口范围在100-30000之间"
 )
