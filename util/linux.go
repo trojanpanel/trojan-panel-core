@@ -2,7 +2,6 @@ package util
 
 import (
 	"errors"
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"net"
 	"trojan-panel-core/module/constant"
@@ -10,14 +9,28 @@ import (
 
 // IsPortAvailable 判断端口是否可用
 func IsPortAvailable(port uint, network string) bool {
-	address := fmt.Sprintf("127.0.0.1:%d", port)
-	listener, err := net.Listen(network, address)
-	if err != nil {
-		logrus.Errorf("port %s is taken: %s \n", address, err)
-		return false
+	if network == "tcp" {
+		listener, err := net.ListenTCP(network, &net.TCPAddr{
+			IP:   net.IPv4(0, 0, 0, 0),
+			Port: int(port),
+		})
+		defer listener.Close()
+		if err != nil {
+			logrus.Errorf("port %d is taken err: %s\n", port, err)
+			return false
+		}
 	}
-
-	defer listener.Close()
+	if network == "udp" {
+		listener, err := net.ListenUDP("udp", &net.UDPAddr{
+			IP:   net.IPv4(0, 0, 0, 0),
+			Port: int(port),
+		})
+		defer listener.Close()
+		if err != nil {
+			logrus.Errorf("port %d is taken err: %s\n", port, err)
+			return false
+		}
+	}
 	return true
 }
 
