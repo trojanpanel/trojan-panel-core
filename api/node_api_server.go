@@ -27,21 +27,21 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		(nodeAddDto.HysteriaPort != 0 && (nodeAddDto.HysteriaPort <= 100 || nodeAddDto.HysteriaPort >= 30000)) {
 		err = errors.New(constant.PortRangeError)
 	}
-	if nodeAddDto.XrayPort != 0 {
+	if nodeAddDto.NodeTypeId == 1 {
 		if !util.IsPortAvailable(uint(nodeAddDto.XrayPort), "tcp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
 		if !util.IsPortAvailable(uint(nodeAddDto.XrayPort+10000), "tcp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
-	} else if nodeAddDto.TrojanGoPort != 0 {
+	} else if nodeAddDto.NodeTypeId == 2 {
 		if !util.IsPortAvailable(uint(nodeAddDto.TrojanGoPort), "tcp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
 		if !util.IsPortAvailable(uint(nodeAddDto.TrojanGoPort+10000), "tcp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
-	} else if nodeAddDto.HysteriaPort != 0 {
+	} else if nodeAddDto.NodeTypeId == 3 {
 		if !util.IsPortAvailable(uint(nodeAddDto.HysteriaPort), "udp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
