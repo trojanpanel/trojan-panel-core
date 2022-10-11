@@ -19,7 +19,7 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-	var err error = nil
+	var err error
 	if (nodeAddDto.XrayPort != 0 && (nodeAddDto.XrayPort <= 100 || nodeAddDto.XrayPort >= 30000)) ||
 		(nodeAddDto.TrojanGoPort != 0 && (nodeAddDto.TrojanGoPort <= 100 || nodeAddDto.TrojanGoPort >= 30000)) ||
 		(nodeAddDto.HysteriaPort != 0 && (nodeAddDto.HysteriaPort <= 100 || nodeAddDto.HysteriaPort >= 30000)) {
