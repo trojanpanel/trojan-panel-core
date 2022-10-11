@@ -85,7 +85,7 @@ func (s *NodeServerApi) RemoveNode(ctx context.Context, nodeRemoveDto *NodeRemov
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-	if err := app.StopApp(uint(nodeRemoveDto.Port)+100, uint(nodeRemoveDto.NodeType)); err != nil {
+	if err := app.StopApp(uint(nodeRemoveDto.Port)+10000, uint(nodeRemoveDto.NodeType)); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 	return &Response{Success: true, Msg: ""}, nil
