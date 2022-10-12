@@ -14,8 +14,8 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 	switch nodeAddDto.NodeTypeId {
 	case 1:
 		if err := xray.StartXray(dto.XrayConfigDto{
-			ApiPort:        nodeAddDto.XrayPort + 10000,
-			Port:           nodeAddDto.XrayPort,
+			ApiPort:        nodeAddDto.Port + 10000,
+			Port:           nodeAddDto.Port,
 			Protocol:       nodeAddDto.XrayProtocol,
 			Settings:       nodeAddDto.XraySettings,
 			StreamSettings: nodeAddDto.XrayStreamSettings,
@@ -27,8 +27,8 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		}
 	case 2:
 		if err := trojango.StartTrojanGo(dto.TrojanGoConfigDto{
-			ApiPort:         nodeAddDto.TrojanGoPort + 10000,
-			Port:            nodeAddDto.TrojanGoPort,
+			ApiPort:         nodeAddDto.Port + 10000,
+			Port:            nodeAddDto.Port,
 			Ip:              nodeAddDto.TrojanGoIp,
 			Sni:             nodeAddDto.TrojanGoSni,
 			MuxEnable:       nodeAddDto.TrojanGoMuxEnable,
@@ -43,8 +43,8 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		}
 	case 3:
 		if err := hysteria.StartHysteria(dto.HysteriaConfigDto{
-			ApiPort:  nodeAddDto.HysteriaPort + 10000,
-			Port:     nodeAddDto.HysteriaPort,
+			ApiPort:  nodeAddDto.Port + 10000,
+			Port:     nodeAddDto.Port,
 			Protocol: nodeAddDto.HysteriaProtocol,
 			Ip:       nodeAddDto.HysteriaIp,
 			UpMbps:   nodeAddDto.HysteriaUpMbps,

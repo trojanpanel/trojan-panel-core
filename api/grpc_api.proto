@@ -12,9 +12,9 @@ service ApiAccountService {
 }
 
 message NodeAddDto {
-  uint64 nodeTypeId = 1;
+  uint64 NodeTypeId = 1;
+  uint64 Port = 2;
 
-  uint64 XrayPort = 2;
   string XrayProtocol = 3;
   string XraySettings = 4;
   string XrayStreamSettings = 5;
@@ -22,34 +22,32 @@ message NodeAddDto {
   string XraySniffing = 7;
   string XrayAllocate = 8;
 
-  uint64 TrojanGoPort = 9;
-  string TrojanGoIp = 10;
-  string TrojanGoSni = 11;
-  uint64 TrojanGoMuxEnable = 12;
-  uint64 TrojanGoWebsocketEnable = 13;
-  string TrojanGoWebsocketPath = 14;
-  string TrojanGoWebsocketHost = 15;
-  uint64 TrojanGoSSEnable = 16;
-  string TrojanGoSSMethod = 17;
-  string TrojanGoSSPassword = 18;
+  string TrojanGoIp = 9;
+  string TrojanGoSni = 10;
+  uint64 TrojanGoMuxEnable = 11;
+  uint64 TrojanGoWebsocketEnable = 12;
+  string TrojanGoWebsocketPath = 13;
+  string TrojanGoWebsocketHost = 14;
+  uint64 TrojanGoSSEnable = 15;
+  string TrojanGoSSMethod = 16;
+  string TrojanGoSSPassword = 17;
 
-  uint64 HysteriaPort = 19;
-  string HysteriaProtocol = 20;
-  string HysteriaIp = 21;
-  int64 HysteriaUpMbps = 22;
-  int64 HysteriaDownMbps = 23;
+  string HysteriaProtocol = 18;
+  string HysteriaIp = 19;
+  int64 HysteriaUpMbps = 20;
+  int64 HysteriaDownMbps = 21;
 }
 
 message NodeRemoveDto {
-  uint64 nodeType = 1;
-  uint64 port = 2;
+  uint64 NodeType = 1;
+  uint64 Port = 2;
 }
 
 message AccountRemoveDto {
-  string password = 1;
+  string Password = 1;
 }
 
 message Response {
-  bool success = 1;
-  string msg = 2;
+  bool Success = 1;
+  string Msg = 2;
 }

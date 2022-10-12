@@ -22,27 +22,18 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 
 	// 校验端口
 	var err error
-	if (nodeAddDto.XrayPort != 0 && (nodeAddDto.XrayPort <= 100 || nodeAddDto.XrayPort >= 30000)) ||
-		(nodeAddDto.TrojanGoPort != 0 && (nodeAddDto.TrojanGoPort <= 100 || nodeAddDto.TrojanGoPort >= 30000)) ||
-		(nodeAddDto.HysteriaPort != 0 && (nodeAddDto.HysteriaPort <= 100 || nodeAddDto.HysteriaPort >= 30000)) {
+	if nodeAddDto.Port != 0 && (nodeAddDto.Port <= 100 || nodeAddDto.Port >= 30000) {
 		err = errors.New(constant.PortRangeError)
 	}
-	if nodeAddDto.NodeTypeId == 1 {
-		if !util.IsPortAvailable(uint(nodeAddDto.XrayPort), "tcp") {
+	if nodeAddDto.NodeTypeId == 1 || nodeAddDto.NodeTypeId == 2 {
+		if !util.IsPortAvailable(uint(nodeAddDto.Port), "tcp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
-		if !util.IsPortAvailable(uint(nodeAddDto.XrayPort+10000), "tcp") {
-			err = errors.New(constant.PortIsOccupied)
-		}
-	} else if nodeAddDto.NodeTypeId == 2 {
-		if !util.IsPortAvailable(uint(nodeAddDto.TrojanGoPort), "tcp") {
-			err = errors.New(constant.PortIsOccupied)
-		}
-		if !util.IsPortAvailable(uint(nodeAddDto.TrojanGoPort+10000), "tcp") {
+		if !util.IsPortAvailable(uint(nodeAddDto.Port+10000), "tcp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
 	} else if nodeAddDto.NodeTypeId == 3 {
-		if !util.IsPortAvailable(uint(nodeAddDto.HysteriaPort), "udp") {
+		if !util.IsPortAvailable(uint(nodeAddDto.Port), "udp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
 	}
@@ -52,8 +43,9 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 
 	if err := app.StartApp(dto.NodeAddDto{
 		NodeTypeId: uint(nodeAddDto.NodeTypeId),
+		Port:       uint(nodeAddDto.Port),
+
 		// Xray
-		XrayPort:           uint(nodeAddDto.XrayPort),
 		XrayProtocol:       nodeAddDto.XrayProtocol,
 		XraySettings:       nodeAddDto.XraySettings,
 		XrayStreamSettings: nodeAddDto.XrayStreamSettings,
@@ -61,7 +53,6 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		XraySniffing:       nodeAddDto.XraySniffing,
 		XrayAllocate:       nodeAddDto.XrayAllocate,
 		// Trojan Go
-		TrojanGoPort:            uint(nodeAddDto.TrojanGoPort),
 		TrojanGoIp:              nodeAddDto.TrojanGoIp,
 		TrojanGoSni:             nodeAddDto.TrojanGoSni,
 		TrojanGoMuxEnable:       uint(nodeAddDto.TrojanGoMuxEnable),
@@ -72,7 +63,6 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		TrojanGoSSMethod:        nodeAddDto.TrojanGoSSMethod,
 		TrojanGoSSPassword:      nodeAddDto.TrojanGoSSPassword,
 		// Hysteria
-		HysteriaPort:     uint(nodeAddDto.HysteriaPort),
 		HysteriaProtocol: nodeAddDto.HysteriaProtocol,
 		HysteriaIp:       nodeAddDto.HysteriaIp,
 		HysteriaUpMbps:   int(nodeAddDto.HysteriaUpMbps),
