@@ -127,12 +127,12 @@ func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
 		logrus.Errorf("trojan go set user recv recv err: %v\n", err)
 		return errors.New(constant.GrpcError)
 	}
-	if resp.Success {
-		return nil
+	if resp != nil && !resp.Success {
+		logrus.Errorf("trojan go set user fail err: %v\n", err)
+		// 重试
+		return errors.New(constant.GrpcError)
 	}
-	logrus.Errorf("trojan go set user fail err: %v\n", err)
-	// 重试
-	return errors.New(constant.GrpcError)
+	return nil
 }
 
 // ReSetUserTraffic 重设用户流量
