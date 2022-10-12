@@ -1,7 +1,7 @@
 package bo
 
 type AccountUpdateBo struct {
-	Username string
+	Pass     string
 	Download int
 	Upload   int
 }

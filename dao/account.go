@@ -2,7 +2,6 @@ package dao
 
 import (
 	"errors"
-	"fmt"
 	"github.com/didi/gendry/builder"
 	"github.com/didi/gendry/scanner"
 	"github.com/sirupsen/logrus"
@@ -10,12 +9,11 @@ import (
 	"trojan-panel-core/module"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/vo"
-	"trojan-panel-core/util"
 )
 
-func UpdateAccountFlowByUsername(username string, download int, upload int) error {
+func UpdateAccountFlowByPass(pass string, download int, upload int) error {
 	mySQLConfig := core.Config.MySQLConfig
-	where := map[string]interface{}{"username": username}
+	where := map[string]interface{}{"pass": pass}
 	update := map[string]interface{}{}
 	if download > 0 {
 		update["download = download +"] = download
@@ -74,34 +72,20 @@ func SelectAccountPasswords(ban bool) ([]string, error) {
 	passwords := make([]string, 0)
 	if len(accounts) > 0 {
 		for _, item := range accounts {
-			passDecode, err := util.AesDecode(*item.Pass)
-			if err != nil {
-				continue
-			}
-			password, err := util.AesEncode(fmt.Sprintf("%s&%s", *item.Username, passDecode))
-			if err != nil {
-				continue
-			}
-			passwords = append(passwords, password)
+			passwords = append(passwords, *item.Pass)
 		}
 	}
 	return passwords, nil
 }
 
-func SelectAccountByUsernameAndPass(username string, pass string) (*vo.AccountHysteriaVo, error) {
+func SelectAccountByPass(pass string) (*vo.AccountHysteriaVo, error) {
 	mySQLConfig := core.Config.MySQLConfig
 	var account module.Account
-
-	passEncode, err := util.AesEncode(pass)
-	if err != nil {
-		return nil, err
-	}
 
 	selectFields := []string{"id", "username"}
 	where := map[string]interface{}{
 		"quota <>": 0,
-		"username": username,
-		"pass":     passEncode,
+		"pass":     pass,
 	}
 	buildSelect, values, err := builder.BuildSelect(mySQLConfig.AccountTable, where, selectFields)
 	if err != nil {

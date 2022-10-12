@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/base64"
 	"github.com/gin-gonic/gin"
-	"strings"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
@@ -23,16 +22,8 @@ func HysteriaApi(c *gin.Context) {
 		vo.HysteriaApiFail(constant.ValidateFailed, c)
 		return
 	}
-	aesDecodeStr, err := util.AesDecode(string(base64DecodeStr))
-	if err != nil {
-		vo.HysteriaApiFail(constant.ValidateFailed, c)
-		return
-	}
-	usernameAndPass := strings.Split(aesDecodeStr, "&")
-	if len(usernameAndPass) != 2 || len(usernameAndPass[0]) == 0 || len(usernameAndPass[1]) == 0 {
-		vo.HysteriaApiFail(err.Error(), c)
-	}
-	accountHysteriaVo, err := service.SelectAccountByUsernameAndPass(usernameAndPass[0], usernameAndPass[1])
+	decodeStr := util.SHA224String(string(base64DecodeStr))
+	accountHysteriaVo, err := service.SelectAccountByPass(decodeStr)
 	if err != nil || accountHysteriaVo == nil {
 		vo.HysteriaApiFail(constant.UsernameOrPassError, c)
 		return

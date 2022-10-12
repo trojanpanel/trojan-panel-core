@@ -15,7 +15,7 @@ type TrojanGoConfigDto struct {
 }
 
 type TrojanGoAddUserDto struct {
-	Password           string // 无需加密
+	Hash               string
 	IpLimit            int
 	UploadTraffic      int
 	DownloadTraffic    int

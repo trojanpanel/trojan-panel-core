@@ -3,7 +3,6 @@ package service
 import (
 	"github.com/sirupsen/logrus"
 	"regexp"
-	"strings"
 	"trojan-panel-core/app/trojango"
 	"trojan-panel-core/app/xray"
 	"trojan-panel-core/core/process"
@@ -88,7 +87,7 @@ func CronHandlerUser() {
 			if userStatus == nil {
 				// 调用api添加用户
 				if err = trojanGoApi.AddUser(dto.TrojanGoAddUserDto{
-					Password: item,
+					Hash: item,
 				}); err != nil {
 					logrus.Errorf("TrojanGo调用api添加用户错误 err: %v\n", err)
 					continue
@@ -117,13 +116,8 @@ func CronHandlerDownloadAndUpload() {
 				submatch := userLinkRegex.FindStringSubmatch(stat.Name)
 				accountUpdateBo := bo.AccountUpdateBo{}
 				if len(submatch) == 2 {
-					email := submatch[0]
+					accountUpdateBo.Pass = submatch[0]
 					isDown := submatch[1] == "downlink"
-					emailSplit := strings.Split(email, "&")
-					if len(emailSplit) != 2 || len(emailSplit[0]) == 0 {
-						continue
-					}
-					accountUpdateBo.Username = emailSplit[0]
 					if isDown {
 						accountUpdateBo.Download = stat.Value
 					} else {
@@ -133,7 +127,7 @@ func CronHandlerDownloadAndUpload() {
 				}
 			}
 			for _, account := range accountUpdateBos {
-				if err = dao.UpdateAccountFlowByUsername(account.Username, account.Download, account.Upload); err != nil {
+				if err = dao.UpdateAccountFlowByPass(account.Pass, account.Download, account.Upload); err != nil {
 					logrus.Errorf("Xray同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
 					continue
 				}
@@ -149,16 +143,12 @@ func CronHandlerDownloadAndUpload() {
 			for _, user := range users {
 				downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
 				uploadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
-				password := user.GetUser().GetPassword()
-				passwordSplit := strings.Split(password, "&")
-				if len(passwordSplit) != 2 || len(passwordSplit[0]) == 0 {
-					continue
-				}
-				if err = trojanGoApi.ReSetUserTraffic(password); err != nil {
+				hash := user.GetUser().GetHash()
+				if err = trojanGoApi.ReSetUserTraffic(hash); err != nil {
 					logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 重设Trojan Go用户流量失败 err: %v", apiPort, err)
 					continue
 				}
-				if err = dao.UpdateAccountFlowByUsername(passwordSplit[0], downloadTraffic,
+				if err = dao.UpdateAccountFlowByPass(hash, downloadTraffic,
 					uploadTraffic); err != nil {
 					logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
 					continue
@@ -169,13 +159,13 @@ func CronHandlerDownloadAndUpload() {
 	})
 }
 
-// SelectAccountByUsernameAndPass 用户认证 hysteria
-func SelectAccountByUsernameAndPass(username string, pass string) (*vo.AccountHysteriaVo, error) {
-	return dao.SelectAccountByUsernameAndPass(username, pass)
+// SelectAccountByPass 用户认证 hysteria
+func SelectAccountByPass(pass string) (*vo.AccountHysteriaVo, error) {
+	return dao.SelectAccountByPass(pass)
 }
 
-func UpdateAccountFlowByUsername(username string, download int, upload int) error {
-	return dao.UpdateAccountFlowByUsername(username, download, upload)
+func UpdateAccountFlowByPass(pass string, download int, upload int) error {
+	return dao.UpdateAccountFlowByPass(pass, download, upload)
 }
 
 func SelectAccountPasswords(ban bool) ([]string, error) {
