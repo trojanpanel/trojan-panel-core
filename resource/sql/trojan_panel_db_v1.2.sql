@@ -26,6 +26,7 @@ CREATE TABLE `account` (
   `id` bigint(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `username` varchar(64) NOT NULL DEFAULT '' COMMENT '登录用户名',
   `pass` varchar(64) NOT NULL DEFAULT '' COMMENT '登录密码',
+  `hash` varchar(64) NOT NULL DEFAULT '' COMMENT 'pass的hash',
   `role_id` bigint(20) unsigned NOT NULL DEFAULT '3' COMMENT '角色id 1/系统管理员 3/普通用户',
   `email` varchar(64) NOT NULL DEFAULT '' COMMENT '邮箱',
   `expire_time` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '过期时间',
@@ -48,7 +49,7 @@ CREATE TABLE `account` (
 
 LOCK TABLES `account` WRITE;
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
-INSERT INTO `account` VALUES (1,'sysadmin','eWTgjy8ZBnXL/U2lm08xLg==',1,'',4078656000000,0,-1,0,0,3,0,0,'2022-04-01 00:00:00','2022-04-01 00:00:00');
+INSERT INTO `account` VALUES (1,'sysadmin','tFjD2X1F6i9FfWp2GDU5Vbi1conuaChDKIYbw9zMFrqvMoSz','4366294571b8b267d9cf15b56660f0a70659568a86fc270a52fdc9e5',1,'',4078656000000,0,-1,0,0,3,0,0,'2022-04-01 00:00:00','2022-04-01 00:00:00');
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -354,4 +355,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-09-04 15:33:15
+-- Dump completed on 2022-10-13 10:12:09

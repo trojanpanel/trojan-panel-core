@@ -11,9 +11,15 @@ import (
 	"trojan-panel-core/module/vo"
 )
 
-func UpdateAccountFlowByPass(pass string, download int, upload int) error {
+func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upload int) error {
 	mySQLConfig := core.Config.MySQLConfig
-	where := map[string]interface{}{"pass": pass}
+	where := map[string]interface{}{}
+	if pass != nil && *pass != "" {
+		where["pass"] = *pass
+	}
+	if hash != nil && *hash != "" {
+		where["hash"] = *hash
+	}
 	update := map[string]interface{}{}
 	if download > 0 {
 		update["download = download +"] = download

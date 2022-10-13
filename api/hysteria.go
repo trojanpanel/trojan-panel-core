@@ -7,7 +7,6 @@ import (
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
 	"trojan-panel-core/service"
-	"trojan-panel-core/util"
 )
 
 func HysteriaApi(c *gin.Context) {
@@ -22,8 +21,8 @@ func HysteriaApi(c *gin.Context) {
 		vo.HysteriaApiFail(constant.ValidateFailed, c)
 		return
 	}
-	decodeStr := util.SHA224String(string(base64DecodeStr))
-	accountHysteriaVo, err := service.SelectAccountByPass(decodeStr)
+	pass := string(base64DecodeStr)
+	accountHysteriaVo, err := service.SelectAccountByPass(pass)
 	if err != nil || accountHysteriaVo == nil {
 		vo.HysteriaApiFail(constant.UsernameOrPassError, c)
 		return

@@ -10,8 +10,8 @@ Trojan Panel核心
 
 默认数据处理：
 
-1. 读取/写入account中username、pass、quota、download、upload、ip_limit、download_speed_limit、upload_speed_limit
-   pass需要进行加盐对称加密，quota、upload、download、download_speed_limit、upload_speed_limit单位是byte
+1. 读取/写入account中username、pass、hash、quota、download、upload、ip_limit、download_speed_limit、upload_speed_limit
+   pass、hash需要进行hash，quota、upload、download、download_speed_limit、upload_speed_limit单位是byte
 
 主要逻辑：
 
