@@ -2,6 +2,7 @@ package dao
 
 import (
 	"errors"
+	"fmt"
 	"github.com/didi/gendry/builder"
 	"github.com/didi/gendry/scanner"
 	"github.com/sirupsen/logrus"
@@ -22,10 +23,10 @@ func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upl
 	}
 	update := map[string]interface{}{}
 	if download > 0 {
-		update["download = download +"] = download
+		update["download"] = fmt.Sprintf("download + %d", download)
 	}
 	if upload > 0 {
-		update["upload = upload +"] = upload
+		update["upload"] = fmt.Sprintf("upload + %d", upload)
 	}
 	if len(update) > 0 {
 		buildUpdate, values, err := builder.BuildUpdate(mySQLConfig.AccountTable, where, update)
