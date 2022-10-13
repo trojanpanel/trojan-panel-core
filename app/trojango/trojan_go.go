@@ -44,7 +44,7 @@ func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 // StopTrojanGo 暂停TrojanGo
 func StopTrojanGo(apiPort uint, removeFile bool) error {
 	if err := process.NewTrojanGoInstance().Stop(apiPort, removeFile); err != nil {
-		logrus.Errorf("trojan go stop err: %v\n", err)
+		logrus.Errorf("trojan go stop err: %v", err)
 		return err
 	}
 	return nil
@@ -67,7 +67,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	trojanGoPath := constant.TrojanGoPath
 	if !util.Exists(trojanGoPath) {
 		if err := os.MkdirAll(trojanGoPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建Trojan Go文件夹异常 err: %v\n", err)
+			logrus.Errorf("创建Trojan Go文件夹异常 err: %v", err)
 			return err
 		}
 	}
@@ -80,7 +80,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	if !util.Exists(binaryFilePath) {
 		if err = util.DownloadFile(fmt.Sprintf("%s/trojan-go-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
 			binaryFilePath); err != nil {
-			logrus.Errorf("Trojan Go二进制文件下载失败 err: %v\n", err)
+			logrus.Errorf("Trojan Go二进制文件下载失败 err: %v", err)
 			return err
 		}
 	}
@@ -92,7 +92,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	}
 	file, err := os.OpenFile(trojanGoConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
 	if err != nil {
-		logrus.Errorf("创建trojan go %s文件异常 err: %v\n", trojanGoConfigFilePath, err)
+		logrus.Errorf("创建trojan go %s文件异常 err: %v", trojanGoConfigFilePath, err)
 		return err
 	}
 	defer file.Close()
@@ -196,7 +196,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(trojanGoConfigDto.ApiPort), 10))
 	_, err = file.WriteString(configContent)
 	if err != nil {
-		logrus.Errorf("trojan go config-%d.json文件写入异常 err: %v\n", trojanGoConfigDto.ApiPort, err)
+		logrus.Errorf("trojan go config-%d.json文件写入异常 err: %v", trojanGoConfigDto.ApiPort, err)
 		return err
 	}
 	return nil

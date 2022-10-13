@@ -24,7 +24,7 @@ func InitFile() {
 	logPath := constant.LogPath
 	if !Exists(logPath) {
 		if err := os.MkdirAll(logPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建logs文件夹异常 err: %v\n", err)
+			logrus.Errorf("创建logs文件夹异常 err: %v", err)
 			panic(err)
 		}
 	}
@@ -41,7 +41,7 @@ func InitConfigFile() {
 	configPath := constant.ConfigPath
 	if !Exists(configPath) {
 		if err := os.MkdirAll(configPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建config文件夹异常 err: %v\n", err)
+			logrus.Errorf("创建config文件夹异常 err: %v", err)
 			panic(err)
 		}
 	}
@@ -50,7 +50,7 @@ func InitConfigFile() {
 	if !Exists(configFilePath) {
 		file, err := os.Create(configFilePath)
 		if err != nil {
-			logrus.Errorf("创建config.ini文件异常 err: %v\n", err)
+			logrus.Errorf("创建config.ini文件异常 err: %v", err)
 			panic(err)
 		}
 		defer file.Close()
@@ -116,7 +116,7 @@ compress=true
 `, host, user, password, port, database, accountTable, redisHost, redisPort, redisPassword, redisDb,
 			redisMaxIdle, redisMaxIdle, redisWait, crtPath, keyPath))
 		if err != nil {
-			logrus.Errorf("config.ini文件写入异常 err: %v\n", err)
+			logrus.Errorf("config.ini文件写入异常 err: %v", err)
 			panic(err)
 		}
 		flag.Usage = usage
@@ -166,7 +166,7 @@ func DownloadFile(url string, fileName string) error {
 
 func RemoveFile(fileName string) error {
 	if err := os.Remove(fileName); err != nil {
-		logrus.Errorf("删除文件失败 fileName: %s err: %v\n", fileName, err)
+		logrus.Errorf("删除文件失败 fileName: %s err: %v", fileName, err)
 		return errors.New(constant.RemoveFileError)
 	}
 	return nil
@@ -243,7 +243,7 @@ func GetConfigApiPorts(dirPth string) ([]uint, error) {
 		if len(finds) > 0 {
 			apiPort, err := strconv.Atoi(finds[1])
 			if err != nil {
-				logrus.Errorf("类型转换异常 err: %v\n", err)
+				logrus.Errorf("类型转换异常 err: %v", err)
 				continue
 			}
 			apiPorts = append(apiPorts, uint(apiPort))
@@ -256,21 +256,21 @@ func InitBinFilePath() {
 	xrayPath := constant.XrayPath
 	if !Exists(xrayPath) {
 		if err := os.MkdirAll(xrayPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建/bin/xray文件夹异常 err: %v\n", err)
+			logrus.Errorf("创建/bin/xray文件夹异常 err: %v", err)
 			panic(err)
 		}
 	}
 	trojanGoPath := constant.TrojanGoPath
 	if !Exists(trojanGoPath) {
 		if err := os.MkdirAll(trojanGoPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建/bin/trojango文件夹异常 err: %v\n", err)
+			logrus.Errorf("创建/bin/trojango文件夹异常 err: %v", err)
 			panic(err)
 		}
 	}
 	hysteriaPath := constant.HysteriaPath
 	if !Exists(hysteriaPath) {
 		if err := os.MkdirAll(hysteriaPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建/bin/hysteriaPath文件夹异常 err: %v\n", err)
+			logrus.Errorf("创建/bin/hysteriaPath文件夹异常 err: %v", err)
 			panic(err)
 		}
 	}

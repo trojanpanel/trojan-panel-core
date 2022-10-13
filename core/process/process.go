@@ -36,13 +36,13 @@ func (p *process) Stop(apiPort uint, removeFile bool) error {
 	defer p.mutex.Unlock()
 	if p.mutex.TryLock() {
 		if !p.IsRunning(apiPort) {
-			logrus.Errorf("process has been stoped. apiPort: %d\n", apiPort)
+			logrus.Errorf("process has been stoped. apiPort: %d", apiPort)
 			return nil
 		}
 		cmd, ok := p.cmdMap.Load(apiPort)
 		if ok {
 			if err := cmd.(*exec.Cmd).Process.Kill(); err != nil {
-				logrus.Errorf("stop process error. apiPort: %d err: %v\n", apiPort, err)
+				logrus.Errorf("stop process error. apiPort: %d err: %v", apiPort, err)
 				return errors.New(constant.ProcessStopError)
 			}
 			p.cmdMap.Delete(apiPort)
@@ -57,9 +57,9 @@ func (p *process) Stop(apiPort uint, removeFile bool) error {
 			}
 			return nil
 		}
-		logrus.Errorf("stop process error apiPort: %d err: process not found\n", apiPort)
+		logrus.Errorf("stop process error apiPort: %d err: process not found", apiPort)
 		return errors.New(constant.ProcessStopError)
 	}
-	logrus.Errorf("stop process error err: lock not acquired\n")
+	logrus.Errorf("stop process error err: lock not acquired")
 	return errors.New(constant.ProcessStopError)
 }

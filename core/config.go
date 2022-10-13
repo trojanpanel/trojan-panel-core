@@ -11,7 +11,7 @@ var Config = new(AppConfig)
 // InitConfig 初始化全局配置文件
 func InitConfig() {
 	if err := ini.MapTo(Config, constant.ConfigFilePath); err != nil {
-		logrus.Errorf("配置文件加载失败 err: %v\n", err)
+		logrus.Errorf("配置文件加载失败 err: %v", err)
 		panic(err)
 	}
 }

@@ -50,11 +50,11 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
 		cmd := exec.Command(binaryFilePath, "-config", configFilePath)
 		t.cmdMap.Store(apiPort, cmd)
 		if err := cmd.Start(); err != nil {
-			logrus.Errorf("start trojan-go error err: %v\n", err)
+			logrus.Errorf("start trojan-go error err: %v", err)
 			return errors.New(constant.TrojanGoStartError)
 		}
 		return nil
 	}
-	logrus.Errorf("start trojan-go error err: lock not acquired\n")
+	logrus.Errorf("start trojan-go error err: lock not acquired")
 	return errors.New(constant.TrojanGoStartError)
 }

@@ -17,7 +17,7 @@ func AesEncode(origData string) (string, error) {
 	pass := []byte(origData)
 	xPass, err := aesEncrypt(pass, aesKey)
 	if err != nil {
-		logrus.Errorf("aes 加密错误 err: %v\n", err)
+		logrus.Errorf("aes 加密错误 err: %v", err)
 		return "", errors.New(constant.SysError)
 	}
 	return base64.StdEncoding.EncodeToString(xPass), nil
@@ -27,12 +27,12 @@ func AesEncode(origData string) (string, error) {
 func AesDecode(crypted string) (string, error) {
 	bytesPass, err := base64.StdEncoding.DecodeString(crypted)
 	if err != nil {
-		logrus.Errorf("base64 解密错误 err: %v\n", err)
+		logrus.Errorf("base64 解密错误 err: %v", err)
 		return "", errors.New(constant.SysError)
 	}
 	tPass, err := aesDecrypt(bytesPass, aesKey)
 	if err != nil {
-		logrus.Errorf("aes 解密错误 err: %v\n", err)
+		logrus.Errorf("aes 解密错误 err: %v", err)
 		return "", errors.New(constant.SysError)
 	}
 	return string(tPass), nil

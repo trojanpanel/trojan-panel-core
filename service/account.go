@@ -20,14 +20,14 @@ func CronHandlerUser() {
 	// 禁用用户
 	banPasswords, err := dao.SelectAccountPasswords(true)
 	if err != nil {
-		logrus.Errorf("查询禁用用户错误 err: %v\n", err)
+		logrus.Errorf("查询禁用用户错误 err: %v", err)
 		return
 	}
 
 	// 添加用户
 	addPasswords, err := dao.SelectAccountPasswords(false)
 	if err != nil {
-		logrus.Errorf("查询添加用户错误 err: %v\n", err)
+		logrus.Errorf("查询添加用户错误 err: %v", err)
 		return
 	}
 
@@ -41,25 +41,25 @@ func CronHandlerUser() {
 		xrayApi := xray.NewXrayApi(apiPort.(uint))
 		for _, item := range banPasswords {
 			if err = xrayApi.DeleteUser(item); err != nil {
-				logrus.Errorf("Xray调用api删除用户错误 err: %v\n", err)
+				logrus.Errorf("Xray调用api删除用户错误 err: %v", err)
 				continue
 			}
 		}
 		protocol, err := util.GetXrayProtocolByApiPort(apiPort.(uint))
 		if err != nil {
-			logrus.Errorf("Xray查询协议错误 err: %v\n", err)
+			logrus.Errorf("Xray查询协议错误 err: %v", err)
 		} else {
 			for _, item := range addPasswords {
 				xrayStatsVo, err := xrayApi.GetUserStats(item, "downlink", false)
 				if err != nil {
-					logrus.Errorf("Xray调用api查询用户错误 err: %v\n", err)
+					logrus.Errorf("Xray调用api查询用户错误 err: %v", err)
 				}
 				if xrayStatsVo == nil {
 					if err = xrayApi.AddUser(dto.XrayAddUserDto{
 						Protocol: protocol,
 						Password: item,
 					}); err != nil {
-						logrus.Errorf("Xray调用api添加用户错误 err: %v\n", err)
+						logrus.Errorf("Xray调用api添加用户错误 err: %v", err)
 						continue
 					}
 				}
@@ -74,7 +74,7 @@ func CronHandlerUser() {
 		for _, item := range banPasswords {
 			// 调用api删除用户
 			if err = trojanGoApi.DeleteUser(item); err != nil {
-				logrus.Errorf("TrojanGo调用api删除用户错误 err: %v\n", err)
+				logrus.Errorf("TrojanGo调用api删除用户错误 err: %v", err)
 				continue
 			}
 		}
@@ -82,14 +82,14 @@ func CronHandlerUser() {
 		for _, item := range addPasswords {
 			userStatus, err := trojanGoApi.GetUser(item)
 			if err != nil {
-				logrus.Errorf("TrojanGo调用api查询用户错误 err: %v\n", err)
+				logrus.Errorf("TrojanGo调用api查询用户错误 err: %v", err)
 			}
 			if userStatus == nil {
 				// 调用api添加用户
 				if err = trojanGoApi.AddUser(dto.TrojanGoAddUserDto{
 					Password: item,
 				}); err != nil {
-					logrus.Errorf("TrojanGo调用api添加用户错误 err: %v\n", err)
+					logrus.Errorf("TrojanGo调用api添加用户错误 err: %v", err)
 					continue
 				}
 			}
@@ -109,7 +109,7 @@ func CronHandlerDownloadAndUpload() {
 		xrayApi := xray.NewXrayApi(apiPort.(uint))
 		stats, err := xrayApi.QueryStats("", true)
 		if err != nil {
-			logrus.Errorf("数据库同步至Xray apiPort: %d 查询用户失败 err: %v\n", apiPort, err)
+			logrus.Errorf("数据库同步至Xray apiPort: %d 查询用户失败 err: %v", apiPort, err)
 		} else {
 			accountUpdateBos := make([]bo.AccountUpdateBo, 0)
 			for _, stat := range stats {
@@ -182,7 +182,7 @@ func RemoveAccount(password string) error {
 	xrayCmdMaps.Range(func(apiPort, cmd any) bool {
 		xrayApi := xray.NewXrayApi(apiPort.(uint))
 		if err := xrayApi.DeleteUser(password); err != nil {
-			logrus.Errorf("调用api删除用户错误 err: %v\n", err)
+			logrus.Errorf("调用api删除用户错误 err: %v", err)
 		}
 		return true
 	})
@@ -192,7 +192,7 @@ func RemoveAccount(password string) error {
 		trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
 		// 调用api删除用户
 		if err := trojanGoApi.DeleteUser(password); err != nil {
-			logrus.Errorf("调用api删除用户错误 err: %v\n", err)
+			logrus.Errorf("调用api删除用户错误 err: %v", err)
 		}
 		return true
 	})

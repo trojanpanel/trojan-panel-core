@@ -23,13 +23,13 @@ func InitRedis() {
 				redis.DialDatabase(redisConfig.Db),
 			)
 			if err != nil {
-				logrus.Errorf("Redis初始化失败 err: %v\n", err)
+				logrus.Errorf("Redis初始化失败 err: %v", err)
 				panic(err)
 			}
 			result, err := redis.String(conn.Do("PING"))
 			if err != nil || result != "PONG" {
 				conn.Close()
-				logrus.Errorf("Redis连接失败 err: %v\n", err)
+				logrus.Errorf("Redis连接失败 err: %v", err)
 				panic(err)
 			}
 			return conn, nil

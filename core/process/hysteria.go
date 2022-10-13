@@ -50,11 +50,11 @@ func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
 		cmd := exec.Command(binaryFilePath, "-c", configFilePath, "server")
 		h.cmdMap.Store(apiPort, cmd)
 		if err := cmd.Start(); err != nil {
-			logrus.Errorf("start hysteria error err: %v\n", err)
+			logrus.Errorf("start hysteria error err: %v", err)
 			return errors.New(constant.HysteriaStartError)
 		}
 		return nil
 	}
-	logrus.Errorf("start hysteria error err: lock not acquired\n")
+	logrus.Errorf("start hysteria error err: lock not acquired")
 	return errors.New(constant.HysteriaStartError)
 }

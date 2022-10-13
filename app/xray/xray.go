@@ -46,7 +46,7 @@ func StartXray(xrayConfigDto dto.XrayConfigDto) error {
 // StopXray 暂停Xray
 func StopXray(apiPort uint, removeFile bool) error {
 	if err := process.NewXrayProcess().Stop(apiPort, removeFile); err != nil {
-		logrus.Errorf("xray stop err: %v\n", err)
+		logrus.Errorf("xray stop err: %v", err)
 		return err
 	}
 	return nil
@@ -71,7 +71,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	xrayPath := constant.XrayPath
 	if !util.Exists(xrayPath) {
 		if err := os.MkdirAll(xrayPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建Xray文件夹异常 err: %v\n", err)
+			logrus.Errorf("创建Xray文件夹异常 err: %v", err)
 			return err
 		}
 	}
@@ -84,7 +84,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	if !util.Exists(binaryFilePath) {
 		if err = util.DownloadFile(fmt.Sprintf("%s/xray-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
 			binaryFilePath); err != nil {
-			logrus.Errorf("Xray二进制文件下载失败 err: %v\n", err)
+			logrus.Errorf("Xray二进制文件下载失败 err: %v", err)
 			return err
 		}
 	}
@@ -93,7 +93,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	xrayConfigFilePath := fmt.Sprintf("%s/config-%d-%s.json", constant.XrayPath, xrayConfigDto.ApiPort, xrayConfigDto.Protocol)
 	file, err := os.OpenFile(xrayConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
 	if err != nil {
-		logrus.Errorf("创建xray %s文件异常 err: %v\n", xrayConfigFilePath, err)
+		logrus.Errorf("创建xray %s文件异常 err: %v", xrayConfigFilePath, err)
 		return err
 	}
 	defer file.Close()
@@ -158,13 +158,13 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	xrayConfig := &bo.XrayConfigBo{}
 	// 将json字符串映射到模板对象
 	if err = json.Unmarshal([]byte(configTemplateContent), xrayConfig); err != nil {
-		logrus.Errorf("xray template config反序列化异常 err: %v\n", err)
+		logrus.Errorf("xray template config反序列化异常 err: %v", err)
 		return err
 	}
 
 	//streamSettings := &bo.StreamSettings{}
 	//if err = json.Unmarshal([]byte(xrayConfigDto.StreamSettings), streamSettings); err != nil {
-	//	logrus.Errorf("xray StreamSettings反序列化异常 err: %v\n", err)
+	//	logrus.Errorf("xray StreamSettings反序列化异常 err: %v", err)
 	//	panic(err)
 	//}
 	//if len(streamSettings.XtlsSettings.Certificates) > 0 {
@@ -174,7 +174,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	//}
 	//streamSettingsStr, err := json.Marshal(streamSettings)
 	//if err != nil {
-	//	logrus.Errorf("xray StreamSettings序列化异常 err: %v\n", err)
+	//	logrus.Errorf("xray StreamSettings序列化异常 err: %v", err)
 	//	panic(err)
 	//}
 	// 添加入站协议
@@ -190,12 +190,12 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	})
 	configContentByte, err := json.Marshal(xrayConfig)
 	if err != nil {
-		logrus.Errorf("xray template config反序列化异常 err: %v\n", err)
+		logrus.Errorf("xray template config反序列化异常 err: %v", err)
 		return err
 	}
 	_, err = file.Write(configContentByte)
 	if err != nil {
-		logrus.Errorf("xray config.json文件写入异常 err: %v\n", err)
+		logrus.Errorf("xray config.json文件写入异常 err: %v", err)
 		return err
 	}
 	return nil

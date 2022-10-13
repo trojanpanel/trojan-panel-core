@@ -100,12 +100,12 @@ func RestartApp(apiPort uint, nodeType uint) error {
 
 func InitApp() {
 	if err := xray.InitXrayApp(); err != nil {
-		logrus.Errorf("Xray app 初始化失败 err: %s\n", err.Error())
+		logrus.Errorf("Xray app 初始化失败 err: %s", err.Error())
 	}
 	if err := trojango.InitTrojanGoApp(); err != nil {
-		logrus.Errorf("TrojanGo app 初始化失败 err: %s\n", err.Error())
+		logrus.Errorf("TrojanGo app 初始化失败 err: %s", err.Error())
 	}
 	if err := hysteria.InitHysteriaApp(); err != nil {
-		logrus.Errorf("Hysteria app 初始化失败 err: %s\n", err.Error())
+		logrus.Errorf("Hysteria app 初始化失败 err: %s", err.Error())
 	}
 }

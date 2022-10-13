@@ -29,7 +29,7 @@ func InitMySQL() {
 		Port(mySQLConfig.Port).Open(true)
 
 	if err != nil {
-		logrus.Errorf("数据库连接异常 err: %v\n", err)
+		logrus.Errorf("数据库连接异常 err: %v", err)
 		panic(err)
 	}
 }

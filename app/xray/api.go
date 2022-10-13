@@ -41,7 +41,7 @@ func apiClient(apiPort uint) (conn *grpc.ClientConn, ctx context.Context, clo fu
 		conn.Close()
 	}
 	if err != nil {
-		logrus.Errorf("gRPC初始化失败 err: %v\n", err)
+		logrus.Errorf("gRPC初始化失败 err: %v", err)
 		err = errors.New(constant.GrpcError)
 	}
 	return
@@ -60,7 +60,7 @@ func (x *xrayApi) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, erro
 		Reset_:  reset,
 	})
 	if err != nil {
-		logrus.Errorf("xray query stats err: %v\n", err)
+		logrus.Errorf("xray query stats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 
@@ -88,7 +88,7 @@ func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset boo
 		Reset_: reset,
 	})
 	if err != nil {
-		logrus.Errorf("xray get bound stats err: %v\n", err)
+		logrus.Errorf("xray get bound stats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	statsVo := vo.XrayStatsVo{
@@ -111,7 +111,7 @@ func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayS
 		Reset_: reset,
 	})
 	if err != nil {
-		logrus.Errorf("xray get user stats err: %v\n", err)
+		logrus.Errorf("xray get user stats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	statsVo := vo.XrayStatsVo{
@@ -207,7 +207,7 @@ func (x *xrayApi) RemoveInboundHandler(tag string) error {
 		Tag: tag,
 	})
 	if err != nil {
-		logrus.Errorf("xray remove inbound err: %v\n", err)
+		logrus.Errorf("xray remove inbound err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	if removeInboundResponse == nil {
@@ -230,7 +230,7 @@ func (x *xrayApi) DeleteUser(email string) error {
 		Operation: serial.ToTypedMessage(&command.RemoveUserOperation{Email: email}),
 	})
 	if err != nil {
-		logrus.Errorf("xray remove user err: %v\n", err)
+		logrus.Errorf("xray remove user err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	if resp == nil {
