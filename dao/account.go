@@ -14,32 +14,18 @@ import (
 
 func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upload int) error {
 	mySQLConfig := core.Config.MySQLConfig
-	where := map[string]interface{}{}
+
+	sql := fmt.Sprintf("update %s set download = download + ?,upload = upload + ? where", mySQLConfig.AccountTable)
 	if pass != nil && *pass != "" {
-		where["pass"] = *pass
+		sql += " pass = ?"
 	}
 	if hash != nil && *hash != "" {
-		where["hash"] = *hash
+		sql += " hash = ?"
 	}
-	update := map[string]interface{}{}
-	if download > 0 {
-		update["download"] = fmt.Sprintf("download + %d", download)
-	}
-	if upload > 0 {
-		update["upload"] = fmt.Sprintf("upload + %d", upload)
-	}
-	if len(update) > 0 {
-		buildUpdate, values, err := builder.BuildUpdate(mySQLConfig.AccountTable, where, update)
-		if err != nil {
-			logrus.Errorln(err.Error())
-			return errors.New(constant.SysError)
-		}
-
-		_, err = db.Exec(buildUpdate, values...)
-		if err != nil {
-			logrus.Errorln(err.Error())
-			return errors.New(constant.SysError)
-		}
+	_, err := db.Exec(sql, download, upload, *pass, *hash)
+	if err != nil {
+		logrus.Errorln(err.Error())
+		return errors.New(constant.SysError)
 	}
 	return nil
 }
