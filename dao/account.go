@@ -25,7 +25,7 @@ func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upl
 		sql += " hash = ?"
 		values = append(values, *hash)
 	}
-	_, err := db.Exec(sql, values)
+	_, err := db.Exec(sql, values...)
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return errors.New(constant.SysError)
