@@ -13,8 +13,15 @@ ENV mariadb_ip=127.0.0.1 \
     redis_pass=123456 \
     crt_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.crt \
     key_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.key
-ARG TARGETPLATFORM
-COPY build/trojan-panel-core-${TARGETPLATFORM} trojan-panel-core
+ARG TARGETOS
+ARG TARGETARCH
+COPY build/trojan-panel-core-${TARGETOS}-${TARGETARCH} trojan-panel-core
+ARG TROJAN_PANEL_CORE_VERSION=latest
+ENV TROJAN_PANEL_CORE_VERSION ${trojan_panel_core_version}
+ARG BASE_URL=https://github.com/trojanpanel/install-script/releases/${TROJAN_PANEL_CORE_VERSION}/download/
+ADD ${BASE_URL}/xray-${TARGETOS}-${TARGETARCH} bin/xray/xray-${TARGETOS}-${TARGETARCH}
+ADD ${BASE_URL}/trojan-go-${TARGETOS}-${TARGETARCH} bin/trojango/trojan-go-${TARGETOS}-${TARGETARCH}
+ADD ${BASE_URL}/hysteria-${TARGETOS}-${TARGETARCH} bin/hysteria/hysteria-${TARGETOS}-${TARGETARCH}
 # 国内环境开启以下注释 设置apk国内镜像
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk add bash tzdata ca-certificates && \

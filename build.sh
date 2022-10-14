@@ -39,12 +39,12 @@ echo_content() {
 main() {
   echo_content skyBlue "start build trojan-panel-core CPU架构：${arch_arr}"
 
-  docker buildx build -t jonssonyan/trojan-panel-core:latest --platform ${arch_arr} --push .
+  docker buildx build -t jonssonyan/trojan-panel-core:latest --build-arg trojan_panel_core_version=${trojan_panel_core_version} --platform ${arch_arr} --push .
   if [[ "$?" == "0" ]]; then
     echo_content green "trojan-panel-core Version：latest CPU架构：${arch_arr} build success"
 
     if [[ ${trojan_panel_core_version} != "latest" ]]; then
-      docker buildx build -t jonssonyan/trojan-panel-core:${trojan_panel_core_version} --platform ${arch_arr} --push .
+      docker buildx build -t jonssonyan/trojan-panel-core:${trojan_panel_core_version} --build-arg trojan_panel_core_version=${trojan_panel_core_version} --platform ${arch_arr} --push .
       if [[ "$?" == "0" ]]; then
         echo_content green "trojan-panel-core-linux Version：${trojan_panel_core_version} CPU架构：${arch_arr} build success"
       else
