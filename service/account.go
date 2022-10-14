@@ -142,7 +142,7 @@ func CronHandlerDownloadAndUpload() {
 		if err == nil {
 			for _, user := range users {
 				downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
-				uploadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
+				uploadTraffic := int(user.GetTrafficTotal().GetUploadTraffic())
 				hash := user.GetUser().GetHash()
 				if err = trojanGoApi.ReSetUserTrafficByHash(hash); err != nil {
 					logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 重设Trojan Go用户流量失败 err: %v", apiPort, err)
