@@ -1,8 +1,7 @@
 package vo
 
 type AccountHysteriaVo struct {
-	Id       uint   `json:"id"`
-	Username string `json:"username"`
+	Id uint `json:"id"`
 }
 
 type AccountVo struct {

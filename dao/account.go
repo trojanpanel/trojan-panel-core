@@ -49,7 +49,7 @@ func SelectAccountPasswords(ban bool) ([]string, error) {
 	} else {
 		where = map[string]interface{}{"_or": []map[string]interface{}{{"quota <": 0}, {"quota >": "download + upload"}}}
 	}
-	buildSelect, values, err = builder.BuildSelect(mySQLConfig.AccountTable, where, []string{"id", "username", "pass"})
+	buildSelect, values, err = builder.BuildSelect(mySQLConfig.AccountTable, where, []string{"id", "pass"})
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
@@ -78,7 +78,7 @@ func SelectAccountByPass(pass string) (*vo.AccountHysteriaVo, error) {
 	mySQLConfig := core.Config.MySQLConfig
 	var account module.Account
 
-	selectFields := []string{"id", "username"}
+	selectFields := []string{"id"}
 	where := map[string]interface{}{
 		"quota <>": 0,
 		"pass":     pass,
@@ -104,8 +104,7 @@ func SelectAccountByPass(pass string) (*vo.AccountHysteriaVo, error) {
 	}
 
 	AccountHysteriaVo := vo.AccountHysteriaVo{
-		Id:       *account.Id,
-		Username: *account.Username,
+		Id: *account.Id,
 	}
 	return &AccountHysteriaVo, nil
 }

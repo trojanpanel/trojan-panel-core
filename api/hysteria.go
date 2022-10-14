@@ -27,5 +27,5 @@ func HysteriaApi(c *gin.Context) {
 		vo.HysteriaApiFail(constant.UsernameOrPassError, c)
 		return
 	}
-	vo.HysteriaApiSuccess(accountHysteriaVo.Username, c)
+	vo.HysteriaApiSuccess("success", c)
 }
