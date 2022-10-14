@@ -47,21 +47,15 @@ func CronHandlerUser() {
 		}
 		protocol, err := util.GetXrayProtocolByApiPort(apiPort.(uint))
 		if err != nil {
-			logrus.Errorf("Xray查询协议错误 err: %v", err)
+			logrus.Errorf("Xray查询协议错误 apiPort: %s err: %v", apiPort, err)
 		} else {
 			for _, item := range addPasswords {
-				xrayStatsVo, err := xrayApi.GetUserStats(item, "downlink", false)
-				if err != nil {
-					logrus.Errorf("Xray调用api查询用户错误 err: %v", err)
-				}
-				if xrayStatsVo == nil {
-					if err = xrayApi.AddUser(dto.XrayAddUserDto{
-						Protocol: protocol,
-						Password: item,
-					}); err != nil {
-						logrus.Errorf("Xray调用api添加用户错误 err: %v", err)
-						continue
-					}
+				if err = xrayApi.AddUser(dto.XrayAddUserDto{
+					Protocol: protocol,
+					Password: item,
+				}); err != nil {
+					logrus.Errorf("Xray调用api添加用户错误 err: %v", err)
+					continue
 				}
 			}
 		}
@@ -80,18 +74,12 @@ func CronHandlerUser() {
 		}
 
 		for _, item := range addPasswords {
-			userStatus, err := trojanGoApi.GetUser(item)
-			if err != nil {
-				logrus.Errorf("TrojanGo调用api查询用户错误 err: %v", err)
-			}
-			if userStatus == nil {
-				// 调用api添加用户
-				if err = trojanGoApi.AddUser(dto.TrojanGoAddUserDto{
-					Password: item,
-				}); err != nil {
-					logrus.Errorf("TrojanGo调用api添加用户错误 err: %v", err)
-					continue
-				}
+			// 调用api添加用户
+			if err = trojanGoApi.AddUser(dto.TrojanGoAddUserDto{
+				Password: item,
+			}); err != nil {
+				logrus.Errorf("TrojanGo调用api添加用户错误 err: %v", err)
+				continue
 			}
 		}
 		return true

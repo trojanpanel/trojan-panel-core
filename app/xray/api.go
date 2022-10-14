@@ -123,6 +123,13 @@ func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayS
 
 // AddUser 添加用户
 func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
+	xrayStatsVo, err := x.GetUserStats(dto.Password, "downlink", false)
+	if err != nil {
+		return err
+	}
+	if xrayStatsVo != nil {
+		return nil
+	}
 	conn, ctx, clo, err := apiClient(x.apiPort)
 	defer clo()
 	if err != nil {
@@ -219,6 +226,13 @@ func (x *xrayApi) RemoveInboundHandler(tag string) error {
 
 // DeleteUser 删除用户
 func (x *xrayApi) DeleteUser(email string) error {
+	xrayStatsVo, err := x.GetUserStats(email, "downlink", false)
+	if err != nil {
+		return err
+	}
+	if xrayStatsVo == nil {
+		return nil
+	}
 	conn, ctx, clo, err := apiClient(x.apiPort)
 	defer clo()
 	if err != nil {

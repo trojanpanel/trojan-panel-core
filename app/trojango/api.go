@@ -185,6 +185,13 @@ func (t *trojanGoApi) SetUserSpeedLimit(password string, uploadSpeedLimit int, d
 
 // DeleteUser 节点上删除用户
 func (t *trojanGoApi) DeleteUser(password string) error {
+	userStatus, err := t.GetUser(password)
+	if err != nil {
+		return err
+	}
+	if userStatus == nil {
+		return nil
+	}
 	req := &service.SetUsersRequest{
 		Status: &service.UserStatus{
 			User: &service.User{
@@ -198,6 +205,13 @@ func (t *trojanGoApi) DeleteUser(password string) error {
 
 // AddUser 节点上添加用户
 func (t *trojanGoApi) AddUser(dto dto.TrojanGoAddUserDto) error {
+	userStatus, err := t.GetUser(dto.Password)
+	if err != nil {
+		return err
+	}
+	if userStatus != nil {
+		return nil
+	}
 	req := &service.SetUsersRequest{
 		Status: &service.UserStatus{
 			User: &service.User{
