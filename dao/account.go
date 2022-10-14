@@ -38,23 +38,17 @@ func SelectAccountPasswords(ban bool) ([]string, error) {
 	mySQLConfig := core.Config.MySQLConfig
 	var accounts []module.Account
 	var (
-		buildSelect string
-		values      []interface{}
-		err         error
+		values []interface{}
+		err    error
 	)
 
-	var where map[string]interface{}
+	sql := fmt.Sprintf("select id,pass from %s where", mySQLConfig.AccountTable)
 	if ban {
-		where = map[string]interface{}{"_or": []map[string]interface{}{{"quota": 0}, {"quota >": 0, "quota <=": "download + upload"}}}
+		sql += " quota = 0 or (quota > 0 and quota <= download + upload)"
 	} else {
-		where = map[string]interface{}{"_or": []map[string]interface{}{{"quota <": 0}, {"quota >": "download + upload"}}}
+		sql += " quota < 0 or (quota > download + upload)"
 	}
-	buildSelect, values, err = builder.BuildSelect(mySQLConfig.AccountTable, where, []string{"id", "pass"})
-	if err != nil {
-		logrus.Errorln(err.Error())
-		return nil, errors.New(constant.SysError)
-	}
-	rows, err := db.Query(buildSelect, values...)
+	rows, err := db.Query(sql, values...)
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
