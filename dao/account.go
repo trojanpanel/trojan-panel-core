@@ -45,7 +45,7 @@ func SelectAccountPasswords(ban bool) ([]string, error) {
 
 	var where map[string]interface{}
 	if ban {
-		where = map[string]interface{}{"quota >=": 0, "quota <=": "download + upload"}
+		where = map[string]interface{}{"_or": []map[string]interface{}{{"quota": 0}, {"quota >": 0, "quota <=": "download + upload"}}}
 	} else {
 		where = map[string]interface{}{"_or": []map[string]interface{}{{"quota <": 0}, {"quota >": "download + upload"}}}
 	}
