@@ -22,6 +22,9 @@ ARG BASE_URL=https://github.com/trojanpanel/install-script/releases/${TROJAN_PAN
 ADD ${BASE_URL}/xray-${TARGETOS}-${TARGETARCH} bin/xray/xray-${TARGETOS}-${TARGETARCH}
 ADD ${BASE_URL}/trojan-go-${TARGETOS}-${TARGETARCH} bin/trojango/trojan-go-${TARGETOS}-${TARGETARCH}
 ADD ${BASE_URL}/hysteria-${TARGETOS}-${TARGETARCH} bin/hysteria/hysteria-${TARGETOS}-${TARGETARCH}
+RUN chmod 777 bin/xray/xray-${TARGETOS}-${TARGETARCH}
+RUN chmod 777 bin/trojango/trojan-go-${TARGETOS}-${TARGETARCH}
+RUN chmod 777 bin/hysteria/hysteria-${TARGETOS}-${TARGETARCH}
 # 国内环境开启以下注释 设置apk国内镜像
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk add bash tzdata ca-certificates && \
