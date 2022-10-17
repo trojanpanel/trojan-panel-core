@@ -16,9 +16,9 @@ ENV mariadb_ip=127.0.0.1 \
 ARG TARGETOS
 ARG TARGETARCH
 COPY build/trojan-panel-core-${TARGETOS}-${TARGETARCH} trojan-panel-core
-ARG TROJAN_PANEL_CORE_VERSION=latest
+ARG trojan_panel_core_version=v1.0.0
 ENV TROJAN_PANEL_CORE_VERSION=${trojan_panel_core_version}
-ARG BASE_URL=https://github.com/trojanpanel/install-script/releases/${TROJAN_PANEL_CORE_VERSION}/download/
+ARG BASE_URL=https://github.com/trojanpanel/install-script/releases/download/${trojan_panel_core_version}
 ADD ${BASE_URL}/xray-${TARGETOS}-${TARGETARCH} bin/xray/xray-${TARGETOS}-${TARGETARCH}
 ADD ${BASE_URL}/trojan-go-${TARGETOS}-${TARGETARCH} bin/trojango/trojan-go-${TARGETOS}-${TARGETARCH}
 ADD ${BASE_URL}/hysteria-${TARGETOS}-${TARGETARCH} bin/hysteria/hysteria-${TARGETOS}-${TARGETARCH}
