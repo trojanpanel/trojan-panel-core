@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"trojan-panel-core/core"
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/module/bo"
 	"trojan-panel-core/module/constant"
@@ -162,33 +163,45 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 		return err
 	}
 
-	//streamSettings := &bo.StreamSettings{}
-	//if err = json.Unmarshal([]byte(xrayConfigDto.StreamSettings), streamSettings); err != nil {
-	//	logrus.Errorf("xray StreamSettings反序列化异常 err: %v", err)
-	//	panic(err)
-	//}
-	//if len(streamSettings.XtlsSettings.Certificates) > 0 {
-	//	certConfig := core.Config.CertConfig
-	//	streamSettings.XtlsSettings.Certificates[0].CertificateFile = certConfig.CrtPath
-	//	streamSettings.XtlsSettings.Certificates[0].KeyFile = certConfig.KeyPath
-	//}
-	//streamSettingsStr, err := json.Marshal(streamSettings)
-	//if err != nil {
-	//	logrus.Errorf("xray StreamSettings序列化异常 err: %v", err)
-	//	panic(err)
-	//}
+	// 设置streamSettings字段
+	streamSettingsStr := []byte("")
+	if xrayConfigDto.StreamSettings != "" {
+		streamSettings := &bo.StreamSettings{}
+		if err = json.Unmarshal([]byte(xrayConfigDto.StreamSettings), streamSettings); err != nil {
+			logrus.Errorf("xray StreamSettings反序列化异常 err: %v", err)
+			return err
+		}
+
+		if streamSettings.Security != "none" {
+			// 设置证书
+			certConfig := core.Config.CertConfig
+			if streamSettings.Security == "tls" {
+				streamSettings.TlsSettings.Certificates[0].CertificateFile = certConfig.CrtPath
+				streamSettings.TlsSettings.Certificates[0].KeyFile = certConfig.KeyPath
+			} else if streamSettings.Security == "xtls" {
+				streamSettings.XtlsSettings.Certificates[0].CertificateFile = certConfig.CrtPath
+				streamSettings.XtlsSettings.Certificates[0].KeyFile = certConfig.KeyPath
+			}
+			streamSettingsStr, err = json.MarshalIndent(streamSettings, "", "    ")
+			if err != nil {
+				logrus.Errorf("xray StreamSettings序列化异常 err: %v", err)
+				return err
+			}
+		}
+	}
+
 	// 添加入站协议
 	xrayConfig.Inbounds = append(xrayConfig.Inbounds, bo.InboundBo{
 		Listen:         "127.0.0.1",
 		Port:           xrayConfigDto.Port,
 		Protocol:       xrayConfigDto.Protocol,
 		Settings:       bo.TypeMessage(xrayConfigDto.Settings),
-		StreamSettings: bo.TypeMessage(xrayConfigDto.StreamSettings),
+		StreamSettings: streamSettingsStr,
 		Tag:            xrayConfigDto.Tag,
 		Sniffing:       bo.TypeMessage(xrayConfigDto.Sniffing),
 		Allocate:       bo.TypeMessage(xrayConfigDto.Allocate),
 	})
-	configContentByte, err := json.Marshal(xrayConfig)
+	configContentByte, err := json.MarshalIndent(xrayConfig, "", "    ")
 	if err != nil {
 		logrus.Errorf("xray template config反序列化异常 err: %v", err)
 		return err

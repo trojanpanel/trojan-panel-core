@@ -25,18 +25,24 @@ type InboundBo struct {
 	Allocate       TypeMessage `json:"allocate"`
 }
 
-//
-//type StreamSettings struct {
-//	Network      string       `json:"network"`
-//	Security     string       `json:"security"`
-//	XtlsSettings XtlsSettings `json:"xtlsSettings"`
-//}
-//
-//type XtlsSettings struct {
-//	Certificates []Certificate `json:"certificates"`
-//}
-//
-//type Certificate struct {
-//	CertificateFile string `json:"certificateFile"`
-//	KeyFile         string `json:"keyFile"`
-//}
+type StreamSettings struct {
+	Network      string       `json:"network"`
+	Security     string       `json:"security"`
+	TlsSettings  TlsSettings  `json:"tlsSettings"`
+	XtlsSettings XtlsSettings `json:"xtlsSettings"`
+}
+
+type TlsSettings struct {
+	ServerName   string        `json:"serverName"`
+	Certificates []Certificate `json:"certificates"`
+}
+
+type XtlsSettings struct {
+	ServerName   string        `json:"serverName"`
+	Certificates []Certificate `json:"certificates"`
+}
+
+type Certificate struct {
+	CertificateFile string `json:"certificateFile"`
+	KeyFile         string `json:"keyFile"`
+}
