@@ -15,6 +15,7 @@ import (
 	"github.com/xtls/xray-core/proxy/vmess"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"strings"
 	"time"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
@@ -111,6 +112,9 @@ func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayS
 		Reset_: reset,
 	})
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "not found.") {
+			return nil, nil
+		}
 		logrus.Errorf("xray get user stats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
