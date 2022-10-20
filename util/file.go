@@ -17,7 +17,7 @@ import (
 	"trojan-panel-core/module/constant"
 )
 
-var configFileNameReg = regexp.MustCompile("^config-([1-9]\\d*)\\.json$")
+var configFileNameReg = regexp.MustCompile("^config-([1-9]\\d*)[\\s\\S]*\\.json$")
 
 func InitFile() {
 	// 初始化日志

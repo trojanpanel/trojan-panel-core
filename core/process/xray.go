@@ -48,7 +48,7 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 			return err
 		}
 		cmd := exec.Command(binaryFilePath, "-c", configFilePath)
-		x.cmdMap.Store(0, cmd)
+		x.cmdMap.Store(apiPort, cmd)
 		if err := cmd.Start(); err != nil {
 			logrus.Errorf("start xray error err: %v", err)
 			return errors.New(constant.XrayStartError)
