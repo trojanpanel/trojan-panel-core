@@ -175,12 +175,16 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 		if streamSettings.Security != "none" {
 			// 设置证书
 			certConfig := core.Config.CertConfig
+			var certificates []bo.Certificate
+			certificate := bo.Certificate{
+				CertificateFile: certConfig.CrtPath,
+				KeyFile:         certConfig.KeyPath,
+			}
+			certificates = append(certificates, certificate)
 			if streamSettings.Security == "tls" {
-				streamSettings.TlsSettings.Certificates[0].CertificateFile = certConfig.CrtPath
-				streamSettings.TlsSettings.Certificates[0].KeyFile = certConfig.KeyPath
+				streamSettings.TlsSettings.Certificates = certificates
 			} else if streamSettings.Security == "xtls" {
-				streamSettings.XtlsSettings.Certificates[0].CertificateFile = certConfig.CrtPath
-				streamSettings.XtlsSettings.Certificates[0].KeyFile = certConfig.KeyPath
+				streamSettings.XtlsSettings.Certificates = certificates
 			}
 			streamSettingsStr, err = json.MarshalIndent(streamSettings, "", "    ")
 			if err != nil {
