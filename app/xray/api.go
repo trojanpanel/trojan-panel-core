@@ -2,7 +2,6 @@ package xray
 
 import (
 	"context"
-	"crypto/md5"
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -10,7 +9,6 @@ import (
 	statscmd "github.com/xtls/xray-core/app/stats/command"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/common/serial"
-	"github.com/xtls/xray-core/common/uuid"
 	"github.com/xtls/xray-core/proxy/shadowsocks"
 	"github.com/xtls/xray-core/proxy/trojan"
 	"github.com/xtls/xray-core/proxy/vless"
@@ -22,6 +20,7 @@ import (
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
+	"trojan-panel-core/util"
 )
 
 type xrayApi struct {
@@ -150,6 +149,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
+						Level: 0,
 						Email: dto.Password,
 						Account: serial.ToTypedMessage(&shadowsocks.Account{
 							Password: dto.Password,
@@ -163,45 +163,38 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
+						Level: 0,
 						Email: dto.Password,
 						Account: serial.ToTypedMessage(&trojan.Account{
 							Password: dto.Password,
-							Flow:     "xtls-rprx-direct",
 						}),
 					},
 				}),
 		})
 	case constant.ProtocolVless:
-		uuidNew, err := uuid.ParseString(fmt.Sprintf("%x", md5.Sum([]byte(dto.Password))))
-		if err != nil {
-			return err
-		}
 		resp, _ = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
+						Level: 0,
 						Email: dto.Password,
 						Account: serial.ToTypedMessage(&vless.Account{
-							Id:   protocol.NewID(uuidNew).String(),
-							Flow: "xtls-rprx-direct",
+							Id: util.GenerateUUID(dto.Password),
 						}),
 					},
 				}),
 		})
 	case constant.ProtocolVmess:
-		uuidNew, err := uuid.ParseString(fmt.Sprintf("%x", md5.Sum([]byte(dto.Password))))
-		if err != nil {
-			return err
-		}
 		resp, _ = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
 					User: &protocol.User{
+						Level: 0,
 						Email: dto.Password,
 						Account: serial.ToTypedMessage(&vmess.Account{
-							Id:      protocol.NewID(uuidNew).String(),
+							Id:      util.GenerateUUID(dto.Password),
 							AlterId: 0,
 						}),
 					},
