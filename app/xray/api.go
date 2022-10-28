@@ -89,6 +89,9 @@ func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset boo
 		Reset_: reset,
 	})
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "not found.") {
+			return nil, nil
+		}
 		logrus.Errorf("xray get bound stats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
@@ -251,6 +254,9 @@ func (x *xrayApi) DeleteUser(email string) error {
 		Operation: serial.ToTypedMessage(&command.RemoveUserOperation{Email: email}),
 	})
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "not found.") {
+			return nil
+		}
 		logrus.Errorf("xray remove user err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
