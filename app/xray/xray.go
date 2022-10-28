@@ -195,7 +195,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 
 	// 添加入站协议
 	xrayConfig.Inbounds = append(xrayConfig.Inbounds, bo.InboundBo{
-		Listen:         "127.0.0.1",
+		Listen:         "0.0.0.0",
 		Port:           xrayConfigDto.Port,
 		Protocol:       xrayConfigDto.Protocol,
 		Settings:       bo.TypeMessage(xrayConfigDto.Settings),
