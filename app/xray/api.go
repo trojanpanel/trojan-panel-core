@@ -147,6 +147,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 				&command.AddUserOperation{
 					User: &protocol.User{
 						Email: dto.Password,
+						Level: 0,
 						Account: serial.ToTypedMessage(&shadowsocks.Account{
 							Password:   dto.Password,
 							CipherType: dto.CipherType,
@@ -161,6 +162,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 				&command.AddUserOperation{
 					User: &protocol.User{
 						Email: dto.Password,
+						Level: 0,
 						Account: serial.ToTypedMessage(&trojan.Account{
 							Password: dto.Password,
 							Flow:     "xtls-rprx-direct",
@@ -175,10 +177,11 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 				&command.AddUserOperation{
 					User: &protocol.User{
 						Email: dto.Password,
+						Level: 0,
 						Account: serial.ToTypedMessage(&vless.Account{
 							Id:         dto.Password,
-							Encryption: "none",
 							Flow:       "xtls-rprx-direct",
+							Encryption: "none",
 						}),
 					},
 				}),
@@ -190,8 +193,10 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 				&command.AddUserOperation{
 					User: &protocol.User{
 						Email: dto.Password,
+						Level: 0,
 						Account: serial.ToTypedMessage(&vmess.Account{
-							Id: dto.Password,
+							Id:      dto.Password,
+							AlterId: 0,
 						}),
 					},
 				}),
