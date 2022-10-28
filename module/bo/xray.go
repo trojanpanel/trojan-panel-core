@@ -33,12 +33,10 @@ type StreamSettings struct {
 }
 
 type TlsSettings struct {
-	ServerName   string        `json:"serverName"`
 	Certificates []Certificate `json:"certificates"`
 }
 
 type XtlsSettings struct {
-	ServerName   string        `json:"serverName"`
 	Certificates []Certificate `json:"certificates"`
 }
 
