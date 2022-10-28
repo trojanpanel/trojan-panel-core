@@ -204,6 +204,9 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 		})
 	}
 	if err != nil {
+		if strings.HasSuffix(err.Error(), "already exists.") {
+			return nil
+		}
 		logrus.Errorf("xray add user err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
