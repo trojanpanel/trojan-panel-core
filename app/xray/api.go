@@ -139,11 +139,9 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 		return nil
 	}
 	handlerServiceClient := command.NewHandlerServiceClient(conn)
-	var resp *command.AlterInboundResponse
-
 	switch dto.Protocol {
 	case constant.ProtocolShadowsocks:
-		resp, _ = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
+		_, err = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
@@ -157,7 +155,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 				}),
 		})
 	case constant.ProtocolTrojan:
-		resp, _ = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
+		_, err = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
@@ -171,7 +169,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 				}),
 		})
 	case constant.ProtocolVless:
-		resp, _ = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
+		_, err = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
@@ -186,7 +184,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 				}),
 		})
 	case constant.ProtocolVmess:
-		resp, _ = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
+		_, err = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: "user",
 			Operation: serial.ToTypedMessage(
 				&command.AddUserOperation{
@@ -199,8 +197,8 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 				}),
 		})
 	}
-	if resp == nil {
-		logrus.Errorf("xray add user unexpected nil response")
+	if err != nil {
+		logrus.Errorf("xray add user err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	return nil
@@ -214,15 +212,11 @@ func (x *xrayApi) RemoveInboundHandler(tag string) error {
 		return nil
 	}
 	handlerServiceClient := command.NewHandlerServiceClient(conn)
-	removeInboundResponse, err := handlerServiceClient.RemoveInbound(ctx, &command.RemoveInboundRequest{
+	_, err = handlerServiceClient.RemoveInbound(ctx, &command.RemoveInboundRequest{
 		Tag: tag,
 	})
 	if err != nil {
 		logrus.Errorf("xray remove inbound err: %v", err)
-		return errors.New(constant.GrpcError)
-	}
-	if removeInboundResponse == nil {
-		logrus.Errorf("xray remove inbound unexpected nil response")
 		return errors.New(constant.GrpcError)
 	}
 	return nil
@@ -243,16 +237,12 @@ func (x *xrayApi) DeleteUser(email string) error {
 		return nil
 	}
 	hsClient := command.NewHandlerServiceClient(conn)
-	resp, err := hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
+	_, err = hsClient.AlterInbound(ctx, &command.AlterInboundRequest{
 		Tag:       "user",
 		Operation: serial.ToTypedMessage(&command.RemoveUserOperation{Email: email}),
 	})
 	if err != nil {
 		logrus.Errorf("xray remove user err: %v", err)
-		return errors.New(constant.GrpcError)
-	}
-	if resp == nil {
-		logrus.Errorf("xray remove user nil response")
 		return errors.New(constant.GrpcError)
 	}
 	return nil
