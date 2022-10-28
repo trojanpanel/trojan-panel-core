@@ -20,6 +20,7 @@ import (
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
+	"trojan-panel-core/util"
 )
 
 type xrayApi struct {
@@ -179,7 +180,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Email: dto.Password,
 						Level: 0,
 						Account: serial.ToTypedMessage(&vless.Account{
-							Id:         dto.Password,
+							Id:         util.GenerateUUID(dto.Password),
 							Flow:       "xtls-rprx-direct",
 							Encryption: "none",
 						}),
@@ -195,7 +196,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Email: dto.Password,
 						Level: 0,
 						Account: serial.ToTypedMessage(&vmess.Account{
-							Id:      dto.Password,
+							Id:      util.GenerateUUID(dto.Password),
 							AlterId: 0,
 						}),
 					},
