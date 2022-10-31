@@ -13,10 +13,28 @@ import (
 )
 
 func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upload int) error {
+	if download == 0 && upload == 0 {
+		return nil
+	}
+
 	mySQLConfig := core.Config.MySQLConfig
 
 	values := []interface{}{download, upload}
-	sql := fmt.Sprintf("update %s set download = download + ?,upload = upload + ? where", mySQLConfig.AccountTable)
+	downloadUpdateSql := ""
+	if download != 0 {
+		downloadUpdateSql = "download = download + ?"
+	}
+	uploadUpdateSql := ""
+	if upload != 0 {
+		if downloadUpdateSql == "" {
+			uploadUpdateSql = "upload = upload + ?"
+		} else {
+			uploadUpdateSql = ",upload = upload + ?"
+		}
+	}
+
+	sql := fmt.Sprintf("update %s set %s where", mySQLConfig.AccountTable, downloadUpdateSql+uploadUpdateSql)
+
 	if pass != nil && *pass != "" {
 		sql += " pass = ?"
 		values = append(values, *pass)

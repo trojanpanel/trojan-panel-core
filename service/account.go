@@ -103,9 +103,9 @@ func CronHandlerDownloadAndUpload() {
 			for _, stat := range stats {
 				submatch := userLinkRegex.FindStringSubmatch(stat.Name)
 				accountUpdateBo := bo.AccountUpdateBo{}
-				if len(submatch) == 2 {
-					accountUpdateBo.Pass = submatch[0]
-					isDown := submatch[1] == "downlink"
+				if len(submatch) == 3 {
+					accountUpdateBo.Pass = submatch[1]
+					isDown := submatch[2] == "downlink"
 					if isDown {
 						accountUpdateBo.Download = stat.Value
 					} else {
