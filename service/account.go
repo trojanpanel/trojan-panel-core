@@ -102,16 +102,38 @@ func CronHandlerDownloadAndUpload() {
 			accountUpdateBos := make([]bo.AccountUpdateBo, 0)
 			for _, stat := range stats {
 				submatch := userLinkRegex.FindStringSubmatch(stat.Name)
-				accountUpdateBo := bo.AccountUpdateBo{}
 				if len(submatch) == 3 {
-					accountUpdateBo.Pass = submatch[1]
 					isDown := submatch[2] == "downlink"
+					var setFlag = false
 					if isDown {
-						accountUpdateBo.Download = stat.Value
+						for index := range accountUpdateBos {
+							if accountUpdateBos[index].Pass == submatch[1] {
+								accountUpdateBos[index].Download = stat.Value
+								setFlag = true
+								break
+							}
+						}
+						if !setFlag {
+							accountUpdateBo := bo.AccountUpdateBo{}
+							accountUpdateBo.Pass = submatch[1]
+							accountUpdateBo.Download = stat.Value
+							accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
+						}
 					} else {
-						accountUpdateBo.Upload = stat.Value
+						for index := range accountUpdateBos {
+							if accountUpdateBos[index].Pass == submatch[1] {
+								accountUpdateBos[index].Upload = stat.Value
+								setFlag = true
+								break
+							}
+						}
+						if !setFlag {
+							accountUpdateBo := bo.AccountUpdateBo{}
+							accountUpdateBo.Pass = submatch[1]
+							accountUpdateBo.Upload = stat.Value
+							accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
+						}
 					}
-					accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
 				}
 			}
 			for _, account := range accountUpdateBos {
