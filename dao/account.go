@@ -19,10 +19,11 @@ func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upl
 
 	mySQLConfig := core.Config.MySQLConfig
 
-	values := []interface{}{download, upload}
+	var values []interface{}
 	downloadUpdateSql := ""
 	if download != 0 {
 		downloadUpdateSql = "download = download + ?"
+		values = append(values, download)
 	}
 	uploadUpdateSql := ""
 	if upload != 0 {
@@ -31,6 +32,7 @@ func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upl
 		} else {
 			uploadUpdateSql = ",upload = upload + ?"
 		}
+		values = append(values, upload)
 	}
 
 	sql := fmt.Sprintf("update %s set %s where", mySQLConfig.AccountTable, downloadUpdateSql+uploadUpdateSql)
