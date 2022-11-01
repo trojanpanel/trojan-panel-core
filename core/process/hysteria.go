@@ -50,6 +50,9 @@ func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
 		cmd := exec.Command(binaryFilePath, "-c", configFilePath, "server")
 		h.cmdMap.Store(apiPort, cmd)
 		if err := cmd.Start(); err != nil {
+			if err = util.RemoveFile(configFilePath); err != nil {
+				return err
+			}
 			logrus.Errorf("start hysteria error err: %v", err)
 			return errors.New(constant.HysteriaStartError)
 		}

@@ -165,9 +165,11 @@ func DownloadFile(url string, fileName string) error {
 }
 
 func RemoveFile(fileName string) error {
-	if err := os.Remove(fileName); err != nil {
-		logrus.Errorf("删除文件失败 fileName: %s err: %v", fileName, err)
-		return errors.New(constant.RemoveFileError)
+	if Exists(fileName) {
+		if err := os.Remove(fileName); err != nil {
+			logrus.Errorf("删除文件失败 fileName: %s err: %v", fileName, err)
+			return errors.New(constant.RemoveFileError)
+		}
 	}
 	return nil
 }

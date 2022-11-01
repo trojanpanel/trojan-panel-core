@@ -50,6 +50,9 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 		cmd := exec.Command(binaryFilePath, "-c", configFilePath)
 		x.cmdMap.Store(apiPort, cmd)
 		if err := cmd.Start(); err != nil {
+			if err = util.RemoveFile(configFilePath); err != nil {
+				return err
+			}
 			logrus.Errorf("start xray error err: %v", err)
 			return errors.New(constant.XrayStartError)
 		}
