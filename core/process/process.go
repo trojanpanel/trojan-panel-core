@@ -56,11 +56,10 @@ func (p *process) Stop(apiPort uint, removeFile bool) error {
 			p.cmdMap.Delete(apiPort)
 			if removeFile {
 				configFile, err := util.GetConfigFile(p.binaryType, apiPort)
-				if err != nil {
-					return err
-				}
-				if err = util.RemoveFile(configFile); err != nil {
-					return err
+				if err == nil {
+					if err = util.RemoveFile(configFile); err != nil {
+						return err
+					}
 				}
 			}
 			return nil
