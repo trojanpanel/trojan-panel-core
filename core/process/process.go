@@ -37,6 +37,14 @@ func (p *process) Stop(apiPort uint, removeFile bool) error {
 	if p.mutex.TryLock() {
 		if !p.IsRunning(apiPort) {
 			logrus.Errorf("process has been stoped. apiPort: %d", apiPort)
+			if removeFile {
+				configFile, err := util.GetConfigFile(p.binaryType, apiPort)
+				if err == nil {
+					if err = util.RemoveFile(configFile); err != nil {
+						return err
+					}
+				}
+			}
 			return nil
 		}
 		cmd, ok := p.cmdMap.Load(apiPort)
