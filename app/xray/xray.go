@@ -185,11 +185,12 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 			} else if streamSettings.Security == "xtls" {
 				streamSettings.XtlsSettings.Certificates = certificates
 			}
-			streamSettingsStr, err = json.MarshalIndent(streamSettings, "", "    ")
-			if err != nil {
-				logrus.Errorf("xray StreamSettings序列化异常 err: %v", err)
-				return err
-			}
+		}
+
+		streamSettingsStr, err = json.MarshalIndent(streamSettings, "", "    ")
+		if err != nil {
+			logrus.Errorf("xray StreamSettings序列化异常 err: %v", err)
+			return err
 		}
 	}
 
