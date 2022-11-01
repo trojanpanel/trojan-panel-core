@@ -15,7 +15,7 @@ func RateLimiterHandler() gin.HandlerFunc {
 		// 限流
 		httpError := tollbooth.LimitByRequest(limit, c.Writer, c.Request)
 		if httpError != nil {
-			logrus.Errorf("请求太快了 ip: %s", c.ClientIP())
+			logrus.Warnf("请求太快了 ip: %s", c.ClientIP())
 			c.Abort()
 			return
 		}
