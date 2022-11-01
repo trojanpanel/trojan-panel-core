@@ -163,7 +163,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	}
 
 	// 设置streamSettings字段
-	streamSettingsStr := []byte("")
+	streamSettingsStr := []byte("{}")
 	if xrayConfigDto.StreamSettings != "" {
 		streamSettings := &bo.StreamSettings{}
 		if err = json.Unmarshal([]byte(xrayConfigDto.StreamSettings), streamSettings); err != nil {
