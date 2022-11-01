@@ -26,10 +26,11 @@ type InboundBo struct {
 }
 
 type StreamSettings struct {
-	Network      string       `json:"network"`
-	Security     string       `json:"security"`
-	TlsSettings  TlsSettings  `json:"tlsSettings"`
-	XtlsSettings XtlsSettings `json:"xtlsSettings"`
+	Network      string                       `json:"network"`
+	Security     string                       `json:"security"`
+	TlsSettings  TlsSettings                  `json:"tlsSettings"`
+	XtlsSettings XtlsSettings                 `json:"xtlsSettings"`
+	WsSettings   XrayStreamSettingsWsSettings `json:"wsSettings"`
 }
 
 type TlsSettings struct {
@@ -43,4 +44,8 @@ type XtlsSettings struct {
 type Certificate struct {
 	CertificateFile string `json:"certificateFile"`
 	KeyFile         string `json:"keyFile"`
+}
+
+type XrayStreamSettingsWsSettings struct {
+	Path string `json:"path"`
 }
