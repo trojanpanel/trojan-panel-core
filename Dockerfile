@@ -16,12 +16,10 @@ ENV mariadb_ip=127.0.0.1 \
 ARG TARGETOS
 ARG TARGETARCH
 COPY build/trojan-panel-core-${TARGETOS}-${TARGETARCH} trojan-panel-core
-ARG TROJAN_PANEL_CORE_VERSION=v1.2.0
-ENV trojan_panel_core_version=${TROJAN_PANEL_CORE_VERSION}
-ARG BASE_URL=https://github.com/trojanpanel/install-script/releases/download/${trojan_panel_core_version}
-ADD ${BASE_URL}/xray-${TARGETOS}-${TARGETARCH} bin/xray/xray-${TARGETOS}-${TARGETARCH}
-ADD ${BASE_URL}/trojan-go-${TARGETOS}-${TARGETARCH} bin/trojango/trojan-go-${TARGETOS}-${TARGETARCH}
-ADD ${BASE_URL}/hysteria-${TARGETOS}-${TARGETARCH} bin/hysteria/hysteria-${TARGETOS}-${TARGETARCH}
+ARG BASE_URL=bin
+ADD ${BASE_URL}/xray/xray-${TARGETOS}-${TARGETARCH} bin/xray/xray-${TARGETOS}-${TARGETARCH}
+ADD ${BASE_URL}/trojango/trojan-go-${TARGETOS}-${TARGETARCH} bin/trojango/trojan-go-${TARGETOS}-${TARGETARCH}
+ADD ${BASE_URL}/hysteria/hysteria-${TARGETOS}-${TARGETARCH} bin/hysteria/hysteria-${TARGETOS}-${TARGETARCH}
 RUN chmod 777 bin/xray/xray-${TARGETOS}-${TARGETARCH}
 RUN chmod 777 bin/trojango/trojan-go-${TARGETOS}-${TARGETARCH}
 RUN chmod 777 bin/hysteria/hysteria-${TARGETOS}-${TARGETARCH}
