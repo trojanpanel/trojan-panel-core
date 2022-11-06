@@ -39,7 +39,7 @@ echo_content() {
 main() {
   echo_content skyBlue "start build trojan-panel-core CPU架构：${arch_arr}"
 
-  docker buildx build -t jonssonyan/trojan-panel-core:latest --build-arg TROJAN_PANEL_CORE_VERSION=${trojan_panel_core_version} --platform ${arch_arr} --push .
+  docker buildx build -t jonssonyan/trojan-panel-core:latest --platform ${arch_arr} --push .
   if [[ "$?" == "0" ]]; then
     echo_content green "trojan-panel-core Version：latest CPU架构：${arch_arr} build success"
 
