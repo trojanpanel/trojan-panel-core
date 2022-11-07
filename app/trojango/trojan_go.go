@@ -63,28 +63,6 @@ func RestartTrojanGo(apiPort uint) error {
 
 // 初始化TrojanGo文件
 func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
-	// 初始化文件夹
-	trojanGoPath := constant.TrojanGoPath
-	if !util.Exists(trojanGoPath) {
-		if err := os.MkdirAll(trojanGoPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建Trojan Go文件夹异常 err: %v", err)
-			return err
-		}
-	}
-
-	// 下载二进制文件
-	binaryFilePath, err := util.GetBinaryFilePath(2)
-	if err != nil {
-		return err
-	}
-	if !util.Exists(binaryFilePath) {
-		if err = util.DownloadFile(fmt.Sprintf("%s/trojan-go-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
-			binaryFilePath); err != nil {
-			logrus.Errorf("Trojan Go二进制文件下载失败 err: %v", err)
-			return err
-		}
-	}
-
 	// 初始化配置
 	trojanGoConfigFilePath, err := util.GetConfigFilePath(2, trojanGoConfigDto.ApiPort)
 	if err != nil {
@@ -198,6 +176,31 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	if err != nil {
 		logrus.Errorf("trojan go config-%d.json文件写入异常 err: %v", trojanGoConfigDto.ApiPort, err)
 		return err
+	}
+	return nil
+}
+
+func InitTrojanGoBinFile() error {
+	// 初始化文件夹
+	trojanGoPath := constant.TrojanGoPath
+	if !util.Exists(trojanGoPath) {
+		if err := os.MkdirAll(trojanGoPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建Trojan Go文件夹异常 err: %v", err)
+			return err
+		}
+	}
+
+	// 下载二进制文件
+	binaryFilePath, err := util.GetBinaryFilePath(2)
+	if err != nil {
+		return err
+	}
+	if !util.Exists(binaryFilePath) {
+		if err = util.DownloadFile(fmt.Sprintf("%s/trojan-go-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
+			binaryFilePath); err != nil {
+			logrus.Errorf("Trojan Go二进制文件下载失败 err: %v", err)
+			return err
+		}
 	}
 	return nil
 }

@@ -68,28 +68,6 @@ func RestartXray(apiPort uint) error {
 
 // 初始化Xray文件
 func initXray(xrayConfigDto dto.XrayConfigDto) error {
-	// 初始化文件夹
-	xrayPath := constant.XrayPath
-	if !util.Exists(xrayPath) {
-		if err := os.MkdirAll(xrayPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建Xray文件夹异常 err: %v", err)
-			return err
-		}
-	}
-
-	// 下载二进制文件
-	binaryFilePath, err := util.GetBinaryFilePath(1)
-	if err != nil {
-		return err
-	}
-	if !util.Exists(binaryFilePath) {
-		if err = util.DownloadFile(fmt.Sprintf("%s/xray-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
-			binaryFilePath); err != nil {
-			logrus.Errorf("Xray二进制文件下载失败 err: %v", err)
-			return err
-		}
-	}
-
 	// 初始化配置 文件名称格式：config-[apiPort]-[protocol].json
 	xrayConfigFilePath := fmt.Sprintf("%s/config-%d-%s.json", constant.XrayPath, xrayConfigDto.ApiPort, xrayConfigDto.Protocol)
 	file, err := os.OpenFile(xrayConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
@@ -214,6 +192,31 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	if err != nil {
 		logrus.Errorf("xray config.json文件写入异常 err: %v", err)
 		return err
+	}
+	return nil
+}
+
+func InitXrayBinFile() error {
+	// 初始化文件夹
+	xrayPath := constant.XrayPath
+	if !util.Exists(xrayPath) {
+		if err := os.MkdirAll(xrayPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建Xray文件夹异常 err: %v", err)
+			return err
+		}
+	}
+
+	// 下载二进制文件
+	binaryFilePath, err := util.GetBinaryFilePath(1)
+	if err != nil {
+		return err
+	}
+	if !util.Exists(binaryFilePath) {
+		if err = util.DownloadFile(fmt.Sprintf("%s/xray-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
+			binaryFilePath); err != nil {
+			logrus.Errorf("Xray二进制文件下载失败 err: %v", err)
+			return err
+		}
 	}
 	return nil
 }

@@ -14,6 +14,9 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"trojan-panel-core/app/hysteria"
+	"trojan-panel-core/app/trojango"
+	"trojan-panel-core/app/xray"
 	"trojan-panel-core/module/constant"
 )
 
@@ -29,8 +32,7 @@ func InitFile() {
 		}
 	}
 
-	// 初始化bin文件夹
-	InitBinFilePath()
+	InitBinFile()
 
 	// 初始化全局配置文件
 	InitConfigFile()
@@ -254,26 +256,17 @@ func GetConfigApiPorts(dirPth string) ([]uint, error) {
 	return apiPorts, nil
 }
 
-func InitBinFilePath() {
-	xrayPath := constant.XrayPath
-	if !Exists(xrayPath) {
-		if err := os.MkdirAll(xrayPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建/bin/xray文件夹异常 err: %v", err)
-			panic(err)
-		}
+func InitBinFile() {
+	if err := xray.InitXrayBinFile(); err != nil {
+		logrus.Errorf("下载Xray文件异常 err: %v", err)
+		panic(err)
 	}
-	trojanGoPath := constant.TrojanGoPath
-	if !Exists(trojanGoPath) {
-		if err := os.MkdirAll(trojanGoPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建/bin/trojango文件夹异常 err: %v", err)
-			panic(err)
-		}
+	if err := trojango.InitTrojanGoBinFile(); err != nil {
+		logrus.Errorf("下载TrojanGo文件异常 err: %v", err)
+		panic(err)
 	}
-	hysteriaPath := constant.HysteriaPath
-	if !Exists(hysteriaPath) {
-		if err := os.MkdirAll(hysteriaPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建/bin/hysteriaPath文件夹异常 err: %v", err)
-			panic(err)
-		}
+	if err := hysteria.InitHysteriaBinFile(); err != nil {
+		logrus.Errorf("下载Hysteria文件异常 err: %v", err)
+		panic(err)
 	}
 }
