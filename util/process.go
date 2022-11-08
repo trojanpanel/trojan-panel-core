@@ -3,8 +3,10 @@ package util
 import (
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"runtime"
+	"strconv"
 	"strings"
 	"trojan-panel-core/module/constant"
 )
@@ -95,4 +97,25 @@ func GetXrayProtocolByApiPort(apiPort uint) (string, error) {
 	start := strings.LastIndex(xrayConfigFileName, "-") + 1
 	end := strings.LastIndex(xrayConfigFileName, ".")
 	return xrayConfigFileName[start:end], nil
+}
+
+func GetConfigApiPorts(dirPth string) ([]uint, error) {
+	dir, err := ioutil.ReadDir(dirPth)
+	if err != nil {
+		return nil, err
+	}
+	apiPorts := make([]uint, 0)
+	for _, fi := range dir {
+		// 过滤指定格式
+		finds := configFileNameReg.FindStringSubmatch(fi.Name())
+		if len(finds) > 0 {
+			apiPort, err := strconv.Atoi(finds[1])
+			if err != nil {
+				logrus.Errorf("类型转换异常 err: %v", err)
+				continue
+			}
+			apiPorts = append(apiPorts, uint(apiPort))
+		}
+	}
+	return apiPorts, nil
 }

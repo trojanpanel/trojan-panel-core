@@ -12,11 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
-	"trojan-panel-core/app/hysteria"
-	"trojan-panel-core/app/trojango"
-	"trojan-panel-core/app/xray"
 	"trojan-panel-core/module/constant"
 )
 
@@ -31,8 +27,6 @@ func InitFile() {
 			panic(err)
 		}
 	}
-
-	InitBinFile()
 
 	// 初始化全局配置文件
 	InitConfigFile()
@@ -233,40 +227,4 @@ func Exists(path string) bool {
 		return false
 	}
 	return true
-}
-
-func GetConfigApiPorts(dirPth string) ([]uint, error) {
-	dir, err := ioutil.ReadDir(dirPth)
-	if err != nil {
-		return nil, err
-	}
-	apiPorts := make([]uint, 0)
-	for _, fi := range dir {
-		// 过滤指定格式
-		finds := configFileNameReg.FindStringSubmatch(fi.Name())
-		if len(finds) > 0 {
-			apiPort, err := strconv.Atoi(finds[1])
-			if err != nil {
-				logrus.Errorf("类型转换异常 err: %v", err)
-				continue
-			}
-			apiPorts = append(apiPorts, uint(apiPort))
-		}
-	}
-	return apiPorts, nil
-}
-
-func InitBinFile() {
-	if err := xray.InitXrayBinFile(); err != nil {
-		logrus.Errorf("下载Xray文件异常 err: %v", err)
-		panic(err)
-	}
-	if err := trojango.InitTrojanGoBinFile(); err != nil {
-		logrus.Errorf("下载TrojanGo文件异常 err: %v", err)
-		panic(err)
-	}
-	if err := hysteria.InitHysteriaBinFile(); err != nil {
-		logrus.Errorf("下载Hysteria文件异常 err: %v", err)
-		panic(err)
-	}
 }

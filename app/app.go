@@ -99,6 +99,7 @@ func RestartApp(apiPort uint, nodeType uint) error {
 }
 
 func InitApp() {
+	InitBinFile()
 	if err := xray.InitXrayApp(); err != nil {
 		logrus.Errorf("Xray app 初始化失败 err: %s", err.Error())
 	}
@@ -107,5 +108,20 @@ func InitApp() {
 	}
 	if err := hysteria.InitHysteriaApp(); err != nil {
 		logrus.Errorf("Hysteria app 初始化失败 err: %s", err.Error())
+	}
+}
+
+func InitBinFile() {
+	if err := xray.InitXrayBinFile(); err != nil {
+		logrus.Errorf("下载Xray文件异常 err: %v", err)
+		panic(err)
+	}
+	if err := trojango.InitTrojanGoBinFile(); err != nil {
+		logrus.Errorf("下载TrojanGo文件异常 err: %v", err)
+		panic(err)
+	}
+	if err := hysteria.InitHysteriaBinFile(); err != nil {
+		logrus.Errorf("下载Hysteria文件异常 err: %v", err)
+		panic(err)
 	}
 }
