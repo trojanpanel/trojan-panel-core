@@ -26,13 +26,13 @@ func GetBinaryFilePath(binaryType int) (string, error) {
 	switch binaryType {
 	case 1:
 		binaryName = fmt.Sprintf("xray-%s-%s", runtime.GOOS, runtime.GOARCH)
-		binaryPath = constant.XrayPath
+		binaryPath = constant.XrayBinPath
 	case 2:
 		binaryName = fmt.Sprintf("trojan-go-%s-%s", runtime.GOOS, runtime.GOARCH)
-		binaryPath = constant.TrojanGoPath
+		binaryPath = constant.TrojanGoBinPath
 	case 3:
 		binaryName = fmt.Sprintf("hysteria-%s-%s", runtime.GOOS, runtime.GOARCH)
-		binaryPath = constant.HysteriaPath
+		binaryPath = constant.HysteriaBinPath
 	default:
 		return "", errors.New(constant.BinaryFileNotExist)
 	}
