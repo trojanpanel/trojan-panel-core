@@ -2,9 +2,11 @@ package api
 
 import (
 	"context"
+	"errors"
 	"trojan-panel-core/app"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
+	"trojan-panel-core/util"
 )
 
 type NodeServerApi struct {
@@ -19,8 +21,24 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 	}
 
 	// 校验端口
+	var err error
 	if nodeAddDto.Port != 0 && (nodeAddDto.Port <= 100 || nodeAddDto.Port >= 30000) {
-		return &Response{Success: false, Msg: constant.PortRangeError}, nil
+		err = errors.New(constant.PortRangeError)
+	}
+	if nodeAddDto.NodeTypeId == 1 || nodeAddDto.NodeTypeId == 2 {
+		if !util.IsPortAvailable(uint(nodeAddDto.Port), "tcp") {
+			err = errors.New(constant.PortIsOccupied)
+		}
+		if !util.IsPortAvailable(uint(nodeAddDto.Port+10000), "tcp") {
+			err = errors.New(constant.PortIsOccupied)
+		}
+	} else if nodeAddDto.NodeTypeId == 3 {
+		if !util.IsPortAvailable(uint(nodeAddDto.Port), "udp") {
+			err = errors.New(constant.PortIsOccupied)
+		}
+	}
+	if err != nil {
+		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 
 	if err := app.StartApp(dto.NodeAddDto{
