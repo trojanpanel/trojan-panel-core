@@ -7,6 +7,7 @@ Trojan Panel核心
 1. Xray
 2. Trojan Go
 3. Hysteria
+4. NaiveProxy
 
 默认数据处理：
 
@@ -43,9 +44,9 @@ create table trojan_panel_db.account
 
 ## 版本对应关系
 
-| Trojan Panel | Trojan Panel Core | Xray   | Trojan Go | Hysteria |
-|--------------|-------------------|--------|-----------|----------|
-| v1.2.0       | v1.2.0            | v1.6.0 | v0.10.6   | v1.2.1   |
+| Trojan Panel | Trojan Panel Core | Xray   | Trojan Go | Hysteria | Caddy  |
+|--------------|-------------------|--------|-----------|----------|--------|
+| v1.2.0       | v1.2.0            | v1.6.0 | v0.10.6   | v1.2.1   | v2.6.2 |
 
 # 编译命令
 
