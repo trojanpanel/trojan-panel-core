@@ -11,3 +11,8 @@ type AccountVo struct {
 	Deleted  uint     `json:"deleted"`
 	Roles    []string `json:"roles"`
 }
+
+type AccountAuthVo struct {
+	Username string `json:"username"`
+	Pass     string `json:"pass"`
+}

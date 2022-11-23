@@ -207,7 +207,7 @@ func InitXrayBinFile() error {
 	}
 
 	// 下载二进制文件
-	binaryFilePath, err := util.GetBinaryFilePath(1)
+	binaryFilePath, err := util.GetBinaryFilePath(constant.Xray)
 	if err != nil {
 		return err
 	}

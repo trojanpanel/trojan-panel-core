@@ -17,7 +17,7 @@ type HysteriaProcess struct {
 }
 
 func NewHysteriaInstance() *HysteriaProcess {
-	return &HysteriaProcess{process{mutex: &mutexHysteria, binaryType: 3, cmdMap: &cmdMapHysteria}}
+	return &HysteriaProcess{process{mutex: &mutexHysteria, binaryType: constant.Hysteria, cmdMap: &cmdMapHysteria}}
 }
 
 func (h *HysteriaProcess) StopHysteriaInstance() error {
@@ -39,11 +39,11 @@ func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
 		if h.IsRunning(apiPort) {
 			return nil
 		}
-		binaryFilePath, err := util.GetBinaryFile(3)
+		binaryFilePath, err := util.GetBinaryFile(constant.Hysteria)
 		if err != nil {
 			return err
 		}
-		configFilePath, err := util.GetConfigFile(3, apiPort)
+		configFilePath, err := util.GetConfigFile(constant.Hysteria, apiPort)
 		if err != nil {
 			return err
 		}

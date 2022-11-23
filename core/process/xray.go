@@ -17,7 +17,7 @@ type XrayProcess struct {
 }
 
 func NewXrayProcess() *XrayProcess {
-	return &XrayProcess{process{mutex: &mutexXray, binaryType: 1, cmdMap: &cmdMapXray}}
+	return &XrayProcess{process{mutex: &mutexXray, binaryType: constant.Xray, cmdMap: &cmdMapXray}}
 }
 
 func (x *XrayProcess) StopXrayProcess() error {
@@ -39,11 +39,11 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 		if x.IsRunning(apiPort) {
 			return nil
 		}
-		binaryFilePath, err := util.GetBinaryFile(1)
+		binaryFilePath, err := util.GetBinaryFile(constant.Xray)
 		if err != nil {
 			return err
 		}
-		configFilePath, err := util.GetConfigFile(1, apiPort)
+		configFilePath, err := util.GetConfigFile(constant.Xray, apiPort)
 		if err != nil {
 			return err
 		}

@@ -64,7 +64,7 @@ func RestartTrojanGo(apiPort uint) error {
 // 初始化TrojanGo文件
 func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	// 初始化配置
-	trojanGoConfigFilePath, err := util.GetConfigFilePath(2, trojanGoConfigDto.ApiPort)
+	trojanGoConfigFilePath, err := util.GetConfigFilePath(constant.TrojanGo, trojanGoConfigDto.ApiPort)
 	if err != nil {
 		return err
 	}
@@ -191,7 +191,7 @@ func InitTrojanGoBinFile() error {
 	}
 
 	// 下载二进制文件
-	binaryFilePath, err := util.GetBinaryFilePath(2)
+	binaryFilePath, err := util.GetBinaryFilePath(constant.TrojanGo)
 	if err != nil {
 		return err
 	}

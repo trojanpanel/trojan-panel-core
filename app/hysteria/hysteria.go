@@ -67,7 +67,7 @@ func RestartHysteria(apiPort uint) error {
 // 初始化Hysteria文件
 func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	// 初始化配置
-	hysteriaConfigFilePath, err := util.GetConfigFilePath(3, hysteriaConfigDto.ApiPort)
+	hysteriaConfigFilePath, err := util.GetConfigFilePath(constant.Hysteria, hysteriaConfigDto.ApiPort)
 	if err != nil {
 		return err
 	}
@@ -118,7 +118,7 @@ func InitHysteriaBinFile() error {
 	}
 
 	// 下载二进制文件
-	binaryFilePath, err := util.GetBinaryFilePath(3)
+	binaryFilePath, err := util.GetBinaryFilePath(constant.Hysteria)
 	if err != nil {
 		return err
 	}

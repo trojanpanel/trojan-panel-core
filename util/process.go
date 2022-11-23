@@ -26,15 +26,18 @@ func GetBinaryFilePath(binaryType int) (string, error) {
 	var binaryPath string
 	var binaryName string
 	switch binaryType {
-	case 1:
+	case constant.Xray:
 		binaryName = fmt.Sprintf("xray-%s-%s", runtime.GOOS, runtime.GOARCH)
 		binaryPath = constant.XrayBinPath
-	case 2:
+	case constant.TrojanGo:
 		binaryName = fmt.Sprintf("trojan-go-%s-%s", runtime.GOOS, runtime.GOARCH)
 		binaryPath = constant.TrojanGoBinPath
-	case 3:
+	case constant.Hysteria:
 		binaryName = fmt.Sprintf("hysteria-%s-%s", runtime.GOOS, runtime.GOARCH)
 		binaryPath = constant.HysteriaBinPath
+	case constant.NaiveProxy:
+		binaryName = fmt.Sprintf("naiveproxy-%s-%s", runtime.GOOS, runtime.GOARCH)
+		binaryPath = constant.NaiveProxyBinPath
 	default:
 		return "", errors.New(constant.BinaryFileNotExist)
 	}
@@ -56,18 +59,21 @@ func GetConfigFilePath(binaryType int, apiPort uint) (string, error) {
 	var configPath string
 	var configFileName string
 	switch binaryType {
-	case 1:
+	case constant.Xray:
 		configPath = constant.XrayPath
 		var err error
 		configFileName, err = GetXrayConfigFileNameByApiPort(apiPort)
 		if err != nil {
 			return "", err
 		}
-	case 2:
+	case constant.TrojanGo:
 		configPath = constant.TrojanGoPath
 		configFileName = fmt.Sprintf("config-%d.json", apiPort)
-	case 3:
+	case constant.Hysteria:
 		configPath = constant.HysteriaPath
+		configFileName = fmt.Sprintf("config-%d.json", apiPort)
+	case constant.NaiveProxy:
+		configPath = constant.NaiveProxyPath
 		configFileName = fmt.Sprintf("config-%d.json", apiPort)
 	default:
 		return "", errors.New(constant.ConfigFileNotExist)

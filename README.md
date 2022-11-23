@@ -10,7 +10,7 @@ Trojan Panel核心
 
 默认数据处理：
 
-1. 读取/写入account中pass、hash、quota、download、upload、ip_limit、download_speed_limit、upload_speed_limit
+1. 读取/写入account中username,pass、hash、quota、download、upload、ip_limit、download_speed_limit、upload_speed_limit
    pass、hash需要进行hash，quota、upload、download、download_speed_limit、upload_speed_limit单位是byte
 
 主要逻辑：
@@ -29,6 +29,7 @@ create table trojan_panel_db.account
 (
     id                   bigint(10) unsigned auto_increment comment '自增主键'
         primary key,
+    username             varchar(64) default '' not null comment '登录用户名',
     pass                 varchar(64) default '' not null comment '登录密码',
     hash                 varchar(64) default '' not null comment 'pass的hash',
     quota                bigint      default 0  not null comment '配额 单位/byte',

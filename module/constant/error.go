@@ -10,11 +10,12 @@ const (
 	ForbiddenError    string = "没有权限"
 	TokenExpiredError string = "登录过期"
 
-	GrpcError          string = "gRPC连接异常"
-	XrayStartError     string = "启动Xray失败"
-	TrojanGoStartError string = "启动TrojanGo失败"
-	HysteriaStartError string = "启动Hysteria失败"
-	ProcessStopError   string = "进程暂停失败"
+	GrpcError            string = "gRPC连接异常"
+	XrayStartError       string = "启动Xray失败"
+	TrojanGoStartError   string = "启动TrojanGo失败"
+	HysteriaStartError   string = "启动Hysteria失败"
+	NaiveProxyStartError string = "启动NaiveProxy失败"
+	ProcessStopError     string = "进程暂停失败"
 
 	NodeTypeNotExist   string = "节点类型不存在"
 	RemoveFileError    string = "删除文件失败"

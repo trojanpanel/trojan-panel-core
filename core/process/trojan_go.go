@@ -17,7 +17,7 @@ type TrojanGoProcess struct {
 }
 
 func NewTrojanGoInstance() *TrojanGoProcess {
-	return &TrojanGoProcess{process{mutex: &mutexTrojanGo, binaryType: 2, cmdMap: &cmdMapTrojanGo}}
+	return &TrojanGoProcess{process{mutex: &mutexTrojanGo, binaryType: constant.TrojanGo, cmdMap: &cmdMapTrojanGo}}
 }
 
 func (t *TrojanGoProcess) StopTrojanGoInstance() error {
@@ -39,11 +39,11 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
 		if t.IsRunning(apiPort) {
 			return nil
 		}
-		binaryFilePath, err := util.GetBinaryFile(2)
+		binaryFilePath, err := util.GetBinaryFile(constant.TrojanGo)
 		if err != nil {
 			return err
 		}
-		configFilePath, err := util.GetConfigFile(2, apiPort)
+		configFilePath, err := util.GetConfigFile(constant.TrojanGo, apiPort)
 		if err != nil {
 			return err
 		}

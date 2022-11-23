@@ -12,11 +12,13 @@ const (
 	// ConfigFilePath 全局配置文件路径
 	ConfigFilePath string = "config/config.ini"
 
-	XrayPath        string = "bin/xray/config"
-	TrojanGoPath    string = "bin/trojango/config"
-	HysteriaPath    string = "bin/hysteria/config"
-	XrayBinPath     string = "bin/xray"
-	TrojanGoBinPath string = "bin/trojango"
-	HysteriaBinPath string = "bin/hysteria"
-	DownloadBaseUrl string = "https://github.com/trojanpanel/install-script/releases/download/v1.2.0"
+	XrayPath          string = "bin/xray/config"
+	TrojanGoPath      string = "bin/trojango/config"
+	HysteriaPath      string = "bin/hysteria/config"
+	NaiveProxyPath    string = "bin/naiveproxy/config"
+	XrayBinPath       string = "bin/xray"
+	TrojanGoBinPath   string = "bin/trojango"
+	HysteriaBinPath   string = "bin/hysteria"
+	NaiveProxyBinPath string = "bin/naiveproxy"
+	DownloadBaseUrl   string = "https://github.com/trojanpanel/install-script/releases/download/v1.2.0"
 )

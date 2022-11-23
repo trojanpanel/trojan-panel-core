@@ -53,7 +53,7 @@ func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upl
 	return nil
 }
 
-// SelectAccountPasswords 查询全量账户
+// SelectAccountPasswords 查询全量账户密码
 func SelectAccountPasswords(ban bool) ([]string, error) {
 	mySQLConfig := core.Config.MySQLConfig
 	var accounts []module.Account
@@ -121,4 +121,38 @@ func SelectAccountByPass(pass string) (*vo.AccountHysteriaVo, error) {
 		Id: *account.Id,
 	}
 	return &AccountHysteriaVo, nil
+}
+
+// SelectAccountUsernameAndPass 查询全量账户用户名密码
+func SelectAccountUsernameAndPass() ([]vo.AccountAuthVo, error) {
+	mySQLConfig := core.Config.MySQLConfig
+	var accounts []module.Account
+	var (
+		values []interface{}
+		err    error
+	)
+
+	sql := fmt.Sprintf("select username,pass from %s where quota < 0 or (quota > download + upload)", mySQLConfig.AccountTable)
+	rows, err := db.Query(sql, values...)
+	if err != nil {
+		logrus.Errorln(err.Error())
+		return nil, errors.New(constant.SysError)
+	}
+	defer rows.Close()
+
+	if err = scanner.Scan(rows, &accounts); err != nil && err != scanner.ErrEmptyResult {
+		logrus.Errorln(err.Error())
+		return nil, errors.New(constant.SysError)
+	}
+	accountAuthVos := make([]vo.AccountAuthVo, 0)
+	if len(accounts) > 0 {
+		for _, item := range accounts {
+			accountAuthVo := vo.AccountAuthVo{
+				Username: *item.Username,
+				Pass:     *item.Pass,
+			}
+			accountAuthVos = append(accountAuthVos, accountAuthVo)
+		}
+	}
+	return accountAuthVos, nil
 }

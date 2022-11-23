@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/sirupsen/logrus"
 	"trojan-panel-core/app/hysteria"
+	"trojan-panel-core/app/naiveproxy"
 	"trojan-panel-core/app/trojango"
 	"trojan-panel-core/app/xray"
 	"trojan-panel-core/module/constant"
@@ -12,7 +13,7 @@ import (
 
 func StartApp(nodeAddDto dto.NodeAddDto) error {
 	switch nodeAddDto.NodeTypeId {
-	case 1:
+	case constant.Xray:
 		if err := xray.StartXray(dto.XrayConfigDto{
 			ApiPort:        nodeAddDto.Port + 10000,
 			Port:           nodeAddDto.Port,
@@ -25,7 +26,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		}); err != nil {
 			return err
 		}
-	case 2:
+	case constant.TrojanGo:
 		if err := trojango.StartTrojanGo(dto.TrojanGoConfigDto{
 			ApiPort:         nodeAddDto.Port + 10000,
 			Port:            nodeAddDto.Port,
@@ -41,7 +42,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		}); err != nil {
 			return err
 		}
-	case 3:
+	case constant.Hysteria:
 		if err := hysteria.StartHysteria(dto.HysteriaConfigDto{
 			ApiPort:  nodeAddDto.Port + 10000,
 			Port:     nodeAddDto.Port,
@@ -49,6 +50,14 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 			Ip:       nodeAddDto.HysteriaIp,
 			UpMbps:   nodeAddDto.HysteriaUpMbps,
 			DownMbps: nodeAddDto.HysteriaDownMbps,
+		}); err != nil {
+			return err
+		}
+	case constant.NaiveProxy:
+		if err := naiveproxy.StartNaiveProxy(dto.NaiveProxyConfigDto{
+			ApiPort: nodeAddDto.Port + 10000,
+			Port:    nodeAddDto.Port,
+			Ip:      nodeAddDto.HysteriaIp,
 		}); err != nil {
 			return err
 		}
@@ -60,16 +69,20 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 
 func StopApp(apiPort uint, nodeType uint) error {
 	switch nodeType {
-	case 1:
+	case constant.Xray:
 		if err := xray.StopXray(apiPort, true); err != nil {
 			return err
 		}
-	case 2:
+	case constant.TrojanGo:
 		if err := trojango.StopTrojanGo(apiPort, true); err != nil {
 			return err
 		}
-	case 3:
+	case constant.Hysteria:
 		if err := hysteria.StopHysteria(apiPort, true); err != nil {
+			return err
+		}
+	case constant.NaiveProxy:
+		if err := naiveproxy.StopNaiveProxy(apiPort, true); err != nil {
 			return err
 		}
 	default:
@@ -80,16 +93,20 @@ func StopApp(apiPort uint, nodeType uint) error {
 
 func RestartApp(apiPort uint, nodeType uint) error {
 	switch nodeType {
-	case 1:
+	case constant.Xray:
 		if err := xray.RestartXray(apiPort); err != nil {
 			return err
 		}
-	case 2:
+	case constant.TrojanGo:
 		if err := trojango.RestartTrojanGo(apiPort); err != nil {
 			return err
 		}
-	case 3:
+	case constant.Hysteria:
 		if err := hysteria.RestartHysteria(apiPort); err != nil {
+			return err
+		}
+	case constant.NaiveProxy:
+		if err := naiveproxy.RestartNaiveProxy(apiPort); err != nil {
 			return err
 		}
 	default:
@@ -109,6 +126,9 @@ func InitApp() {
 	if err := hysteria.InitHysteriaApp(); err != nil {
 		logrus.Errorf("Hysteria app 初始化失败 err: %s", err.Error())
 	}
+	if err := naiveproxy.InitNaiveProxyApp(); err != nil {
+		logrus.Errorf("NaiveProxy app 初始化失败 err: %s", err.Error())
+	}
 }
 
 func InitBinFile() {
@@ -122,6 +142,10 @@ func InitBinFile() {
 	}
 	if err := hysteria.InitHysteriaBinFile(); err != nil {
 		logrus.Errorf("下载Hysteria文件异常 err: %v", err)
+		panic(err)
+	}
+	if err := naiveproxy.InitNaiveProxyBinFile(); err != nil {
+		logrus.Errorf("下载NaiveProxy文件异常 err: %v", err)
 		panic(err)
 	}
 }
