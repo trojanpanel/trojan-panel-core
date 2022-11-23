@@ -14,15 +14,15 @@ service ApiAccountService {
 message NodeAddDto {
   uint64 nodeTypeId = 1;
   uint64 port = 2;
+  string ip = 3;
 
-  string xrayProtocol = 3;
-  string xraySettings = 4;
-  string xrayStreamSettings = 5;
-  string xrayTag = 6;
-  string xraySniffing = 7;
-  string xrayAllocate = 8;
+  string xrayProtocol = 4;
+  string xraySettings = 5;
+  string xrayStreamSettings = 6;
+  string xrayTag = 7;
+  string xraySniffing = 8;
+  string xrayAllocate = 9;
 
-  string trojanGoIp = 9;
   string trojanGoSni = 10;
   uint64 trojanGoMuxEnable = 11;
   uint64 trojanGoWebsocketEnable = 12;
@@ -33,9 +33,8 @@ message NodeAddDto {
   string trojanGoSSPassword = 17;
 
   string hysteriaProtocol = 18;
-  string hysteriaIp = 19;
-  int64 hysteriaUpMbps = 20;
-  int64 hysteriaDownMbps = 21;
+  int64 hysteriaUpMbps = 19;
+  int64 hysteriaDownMbps = 20;
 }
 
 message NodeRemoveDto {

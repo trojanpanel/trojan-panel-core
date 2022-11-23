@@ -53,7 +53,7 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		XraySniffing:       nodeAddDto.XraySniffing,
 		XrayAllocate:       nodeAddDto.XrayAllocate,
 		// Trojan Go
-		TrojanGoIp:              nodeAddDto.TrojanGoIp,
+		TrojanGoIp:              nodeAddDto.Ip,
 		TrojanGoSni:             nodeAddDto.TrojanGoSni,
 		TrojanGoMuxEnable:       uint(nodeAddDto.TrojanGoMuxEnable),
 		TrojanGoWebsocketEnable: uint(nodeAddDto.TrojanGoWebsocketEnable),
@@ -64,7 +64,7 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		TrojanGoSSPassword:      nodeAddDto.TrojanGoSSPassword,
 		// Hysteria
 		HysteriaProtocol: nodeAddDto.HysteriaProtocol,
-		HysteriaIp:       nodeAddDto.HysteriaIp,
+		HysteriaIp:       nodeAddDto.Ip,
 		HysteriaUpMbps:   int(nodeAddDto.HysteriaUpMbps),
 		HysteriaDownMbps: int(nodeAddDto.HysteriaDownMbps),
 	}); err != nil {
