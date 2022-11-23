@@ -29,7 +29,7 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		if !util.IsPortAvailable(uint(nodeAddDto.Port), "tcp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
-		if !util.IsPortAvailable(uint(nodeAddDto.Port+10000), "tcp") {
+		if !util.IsPortAvailable(uint(nodeAddDto.Port+30000), "tcp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
 	} else if nodeAddDto.NodeTypeId == 3 {
@@ -76,7 +76,7 @@ func (s *NodeServerApi) RemoveNode(ctx context.Context, nodeRemoveDto *NodeRemov
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-	if err := app.StopApp(uint(nodeRemoveDto.Port)+10000, uint(nodeRemoveDto.NodeType)); err != nil {
+	if err := app.StopApp(uint(nodeRemoveDto.Port)+30000, uint(nodeRemoveDto.NodeType)); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 	return &Response{Success: true, Msg: ""}, nil

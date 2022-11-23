@@ -15,7 +15,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 	switch nodeAddDto.NodeTypeId {
 	case constant.Xray:
 		if err := xray.StartXray(dto.XrayConfigDto{
-			ApiPort:        nodeAddDto.Port + 10000,
+			ApiPort:        nodeAddDto.Port + 30000,
 			Port:           nodeAddDto.Port,
 			Protocol:       nodeAddDto.XrayProtocol,
 			Settings:       nodeAddDto.XraySettings,
@@ -28,7 +28,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		}
 	case constant.TrojanGo:
 		if err := trojango.StartTrojanGo(dto.TrojanGoConfigDto{
-			ApiPort:         nodeAddDto.Port + 10000,
+			ApiPort:         nodeAddDto.Port + 30000,
 			Port:            nodeAddDto.Port,
 			Ip:              nodeAddDto.Ip,
 			Sni:             nodeAddDto.TrojanGoSni,
@@ -44,7 +44,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		}
 	case constant.Hysteria:
 		if err := hysteria.StartHysteria(dto.HysteriaConfigDto{
-			ApiPort:  nodeAddDto.Port + 10000,
+			ApiPort:  nodeAddDto.Port + 30000,
 			Port:     nodeAddDto.Port,
 			Protocol: nodeAddDto.HysteriaProtocol,
 			Ip:       nodeAddDto.Ip,
@@ -55,7 +55,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		}
 	case constant.NaiveProxy:
 		if err := naiveproxy.StartNaiveProxy(dto.NaiveProxyConfigDto{
-			ApiPort: nodeAddDto.Port + 10000,
+			ApiPort: nodeAddDto.Port + 30000,
 			Port:    nodeAddDto.Port,
 			Ip:      nodeAddDto.Ip,
 		}); err != nil {
