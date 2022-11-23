@@ -4,7 +4,6 @@ type NaiveProxyConfig struct {
 	Admin   TypeMessage `json:"admin"`
 	Logging TypeMessage `json:"logging"`
 	Apps    Apps        `json:"apps"`
-	Tls     string      `json:"tls"`
 }
 
 type Apps struct {

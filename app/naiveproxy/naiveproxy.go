@@ -153,7 +153,7 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
             "certificates": {
                 "load_files": [
                     {
-                        "certificate": "${certificate_path}",
+                        "certificate": "${crt_path}",
                         "key": "${key_path}"
                     }
                 ]
@@ -161,7 +161,8 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
         }
     }
 }`
-	configContent = strings.ReplaceAll(configContent, "${ip}", strconv.FormatInt(int64(naiveProxyConfigDto.Port), 10))
+	configContent = strings.ReplaceAll(configContent, "${ip}", naiveProxyConfigDto.Ip)
+	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(naiveProxyConfigDto.Port), 10))
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
 
