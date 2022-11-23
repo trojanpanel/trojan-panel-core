@@ -44,22 +44,18 @@ type Route struct {
 }
 type Handle struct {
 	Handler      TypeMessage   `json:"handler"`
-	HandleRoutes []HandleRoute `json:"routes"`
-}
-
-type HandleRoute struct {
-	Handle   []RouteHandle `json:"handle"`
-	Match    TypeMessage   `json:"match"`
-	Terminal TypeMessage   `json:"terminal"`
+	HandleRoutes []TypeMessage `json:"routes"`
 }
 
 type RouteHandle struct {
-	AuthPassDeprecated string      `json:"auth_pass_deprecated"`
-	AuthUserDeprecated string      `json:"auth_user_deprecated"`
-	Handler            TypeMessage `json:"handler"`
-	HideIp             TypeMessage `json:"hide_ip"`
-	HideVia            TypeMessage `json:"hide_via"`
-	ProbeResistance    TypeMessage `json:"probe_resistance"`
-	Root               TypeMessage `json:"root"`
-	IndexNames         TypeMessage `json:"index_names"`
+	Handle []HandleAuth `json:"handle"`
+}
+
+type HandleAuth struct {
+	AuthPassDeprecated string `json:"auth_pass_deprecated"`
+	AuthUserDeprecated string `json:"auth_user_deprecated"`
+	Handler            string `json:"handler"`
+	HideIp             bool   `json:"hide_ip"`
+	HideVia            bool   `json:"hide_via"`
+	ProbeResistance    string `json:"probe_resistance"`
 }

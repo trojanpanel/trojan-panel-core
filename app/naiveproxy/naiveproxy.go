@@ -178,25 +178,32 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
 		return err
 	}
 	if len(accountAuthVos) > 0 {
-		routeHandles := make([]bo.RouteHandle, 0)
+		routeHandleAuths := make([]bo.HandleAuth, 0)
 		for _, item := range accountAuthVos {
-			handle := bo.RouteHandle{
+			handleAuth := bo.HandleAuth{
 				AuthUserDeprecated: item.Username,
 				AuthPassDeprecated: item.Pass,
-				Handler:            bo.TypeMessage("forward_proxy"),
-				HideIp:             bo.TypeMessage("true"),
-				HideVia:            bo.TypeMessage("true"),
-				ProbeResistance:    bo.TypeMessage("{}"),
+				Handler:            "forward_proxy",
+				HideIp:             true,
+				HideVia:            true,
+				ProbeResistance:    "{}",
 			}
-			routeHandles = append(routeHandles, handle)
+			routeHandleAuths = append(routeHandleAuths, handleAuth)
 		}
-		handles := naiveProxyConfig.Apps.Http.Servers.Srv0.Routes[0].Handle[0].HandleRoutes[0].Handle
-		handles = append(handles, routeHandles...)
+		handle := bo.RouteHandle{
+			Handle: routeHandleAuths,
+		}
+		handleTypeMessage, err := json.Marshal(handle)
+		if err == nil {
+			naiveProxyConfig.Apps.Http.Servers.Srv0.Routes[0].Handle[0].HandleRoutes =
+				append(naiveProxyConfig.Apps.Http.Servers.Srv0.Routes[0].Handle[0].HandleRoutes, handleTypeMessage)
+		}
+
 	}
 
 	configContentByte, err := json.MarshalIndent(naiveProxyConfig, "", "    ")
 	if err != nil {
-		logrus.Errorf("naiveproxy template config反序列化异常 err: %v", err)
+		logrus.Errorf("naiveproxy template config序列化异常 err: %v", err)
 		return err
 	}
 
