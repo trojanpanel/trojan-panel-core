@@ -183,10 +183,10 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
 			handleAuth := bo.HandleAuth{
 				AuthUserDeprecated: item.Username,
 				AuthPassDeprecated: item.Pass,
-				Handler:            "forward_proxy",
-				HideIp:             true,
-				HideVia:            true,
-				ProbeResistance:    "{}",
+				Handler:            bo.TypeMessage("forward_proxy"),
+				HideIp:             bo.TypeMessage("true"),
+				HideVia:            bo.TypeMessage("true"),
+				ProbeResistance:    bo.TypeMessage("{}"),
 			}
 			routeHandleAuths = append(routeHandleAuths, handleAuth)
 		}
