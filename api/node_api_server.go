@@ -44,6 +44,7 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 	if err := app.StartApp(dto.NodeAddDto{
 		NodeTypeId: uint(nodeAddDto.NodeTypeId),
 		Port:       uint(nodeAddDto.Port),
+		Ip:         nodeAddDto.Ip,
 
 		// Xray
 		XrayProtocol:       nodeAddDto.XrayProtocol,
@@ -53,7 +54,6 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		XraySniffing:       nodeAddDto.XraySniffing,
 		XrayAllocate:       nodeAddDto.XrayAllocate,
 		// Trojan Go
-		TrojanGoIp:              nodeAddDto.Ip,
 		TrojanGoSni:             nodeAddDto.TrojanGoSni,
 		TrojanGoMuxEnable:       uint(nodeAddDto.TrojanGoMuxEnable),
 		TrojanGoWebsocketEnable: uint(nodeAddDto.TrojanGoWebsocketEnable),
@@ -64,7 +64,6 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		TrojanGoSSPassword:      nodeAddDto.TrojanGoSSPassword,
 		// Hysteria
 		HysteriaProtocol: nodeAddDto.HysteriaProtocol,
-		HysteriaIp:       nodeAddDto.Ip,
 		HysteriaUpMbps:   int(nodeAddDto.HysteriaUpMbps),
 		HysteriaDownMbps: int(nodeAddDto.HysteriaDownMbps),
 	}); err != nil {

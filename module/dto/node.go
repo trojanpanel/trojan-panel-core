@@ -1,8 +1,9 @@
 package dto
 
 type NodeAddDto struct {
-	NodeTypeId uint `json:"nodeType" form:"nodeType" validate:"required"`
-	Port       uint `json:"port" form:"port" validate:"omitempty"`
+	NodeTypeId uint   `json:"nodeType" form:"nodeType" validate:"required"`
+	Port       uint   `json:"port" form:"port" validate:"omitempty"`
+	Ip         string `json:"ip" form:"ip" validate:"omitempty"`
 
 	XrayProtocol       string `json:"xrayProtocol" form:"xrayProtocol" validate:"omitempty"`
 	XraySettings       string `json:"xraySettings" form:"xraySettings" validate:"omitempty"`
@@ -11,7 +12,6 @@ type NodeAddDto struct {
 	XraySniffing       string `json:"xraySniffing" form:"xraySniffing" validate:"omitempty"`
 	XrayAllocate       string `json:"xrayAllocate" form:"xrayAllocate" validate:"omitempty"`
 
-	TrojanGoIp              string `json:"trojanGoIp" form:"trojanGoIp" validate:"omitempty"`
 	TrojanGoSni             string `json:"trojanGoSni" form:"trojanGoSni" validate:"omitempty"`
 	TrojanGoMuxEnable       uint   `json:"trojanGoMuxEnable" form:"trojanGoMuxEnable" validate:"omitempty"`
 	TrojanGoWebsocketEnable uint   `json:"trojanGoWebsocketEnable" form:"trojanGoWebsocketEnable" validate:"omitempty"`
@@ -22,7 +22,6 @@ type NodeAddDto struct {
 	TrojanGoSSPassword      string `json:"trojanGoSSPassword" form:"trojanGoSSPassword" validate:"omitempty"`
 
 	HysteriaProtocol string `json:"hysteriaProtocol" form:"hysteriaProtocol" validate:"omitempty"`
-	HysteriaIp       string `json:"hysteriaIp" form:"hysteriaIp" validate:"omitempty"`
 	HysteriaUpMbps   int    `json:"hysteriaUpMbps" form:"hysteriaUpMbps" validate:"omitempty"`
 	HysteriaDownMbps int    `json:"hysteriaDownMbps" form:"hysteriaDownMbps" validate:"omitempty"`
 }
