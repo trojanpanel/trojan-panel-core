@@ -1,5 +1,18 @@
 package naiveproxy
 
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/sirupsen/logrus"
+	"io/ioutil"
+	"net/http"
+	"trojan-panel-core/module/bo"
+	"trojan-panel-core/module/constant"
+	"trojan-panel-core/module/dto"
+)
+
 type naiveProxyApi struct {
 	apiPort uint
 }
@@ -9,4 +22,100 @@ func NewNaiveProxyApi(apiPort uint) *naiveProxyApi {
 	return &naiveProxyApi{
 		apiPort: apiPort,
 	}
+}
+
+// ListUsers 查询节点上的所有用户
+func (n *naiveProxyApi) ListUsers() (*[]bo.HandleAuth, error) {
+	url := fmt.Sprintf("http://127.0.0.1:%d/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/", n.apiPort)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		logrus.Errorf("naiveproxy list user new request err: %s", err.Error())
+		return nil, errors.New(constant.SysError)
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil || resp.StatusCode != 200 {
+		logrus.Errorf("naiveproxy list users http request err: %s", err.Error())
+		return nil, errors.New(constant.SysError)
+	}
+	defer resp.Body.Close()
+	contentByte, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		logrus.Errorf("naiveproxy list users IO err: %s", err.Error())
+		return nil, errors.New(constant.SysError)
+	}
+	var handleAuths *[]bo.HandleAuth
+	if err = json.Unmarshal(contentByte, &handleAuths); err != nil {
+		logrus.Errorf("naiveproxy list users 返序列化异常 err: %s", err.Error())
+		return nil, errors.New(constant.SysError)
+	}
+	return handleAuths, nil
+}
+
+// GetUser 查询节点上的用户
+func (n *naiveProxyApi) GetUser(pass string) (*bo.HandleAuth, *int, error) {
+	users, err := n.ListUsers()
+	if err != nil {
+		return nil, nil, err
+	}
+	for index, user := range *users {
+		if user.AuthPassDeprecated == pass {
+			return &user, &index, nil
+		}
+	}
+	return nil, nil, nil
+}
+
+// AddUser 节点上添加用户
+func (n *naiveProxyApi) AddUser(dto dto.NaiveProxyAddUserDto) error {
+	handleAuth := bo.HandleAuth{
+		AuthUserDeprecated: dto.Username,
+		AuthPassDeprecated: dto.Pass,
+		Handler:            bo.TypeMessage("forward_proxy"),
+		HideIp:             bo.TypeMessage("true"),
+		HideVia:            bo.TypeMessage("true"),
+		ProbeResistance:    bo.TypeMessage("{}"),
+	}
+	addUserDtoByte, err := json.Marshal(handleAuth)
+	if err != nil {
+		logrus.Errorf("naiveproxy add user 序列化异常 err: %s", err.Error())
+		return errors.New(constant.SysError)
+	}
+	req, err := http.NewRequest("PUT", "http://127.0.0.1:30883/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/",
+		bytes.NewBuffer(addUserDtoByte))
+	if err != nil {
+		logrus.Errorf("naiveproxy add user new request err: %s", err.Error())
+		return errors.New(constant.SysError)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req)
+	defer resp.Body.Close()
+	if err != nil || resp.StatusCode != 200 {
+		logrus.Errorf("naiveproxy add user http request err: %s", err.Error())
+		return errors.New(constant.SysError)
+	}
+	return nil
+}
+
+// DeleteUser 节点上删除用户
+func (n *naiveProxyApi) DeleteUser(pass string) error {
+	_, index, err := n.GetUser(pass)
+	if err != nil {
+		return err
+	}
+	if index != nil {
+		url := fmt.Sprintf("http://127.0.0.1:%d/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/%d", n.apiPort, *index)
+		req, err := http.NewRequest("DELETE", url, nil)
+		if err != nil {
+			logrus.Errorf("naiveproxy delete user new request err: %s", err.Error())
+			return errors.New(constant.SysError)
+		}
+		resp, err := http.DefaultClient.Do(req)
+		defer resp.Body.Close()
+		if err != nil || resp.StatusCode != 200 {
+			logrus.Errorf("naiveproxy add user http request err: %s", err.Error())
+			return errors.New(constant.SysError)
+		}
+		return nil
+	}
+	return nil
 }
