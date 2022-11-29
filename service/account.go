@@ -18,14 +18,14 @@ var userLinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>(downlink|upl
 // CronHandlerUser 定时任务 处理用户
 func CronHandlerUser() {
 	// 禁用用户
-	banPasswords, err := dao.SelectAccountPasswords(true)
+	banAccountBos, err := dao.SelectAccounts(true)
 	if err != nil {
 		logrus.Errorf("查询禁用用户错误 err: %v", err)
 		return
 	}
 
 	// 添加用户
-	addPasswords, err := dao.SelectAccountPasswords(false)
+	addAccountBos, err := dao.SelectAccounts(false)
 	if err != nil {
 		logrus.Errorf("查询添加用户错误 err: %v", err)
 		return
@@ -39,8 +39,8 @@ func CronHandlerUser() {
 	// xray
 	xrayCmdMaps.Range(func(apiPort, cmd any) bool {
 		xrayApi := xray.NewXrayApi(apiPort.(uint))
-		for _, item := range banPasswords {
-			if err = xrayApi.DeleteUser(item); err != nil {
+		for _, item := range banAccountBos {
+			if err = xrayApi.DeleteUser(item.Pass); err != nil {
 				logrus.Errorf("Xray调用api删除用户错误 err: %v", err)
 				continue
 			}
@@ -49,10 +49,10 @@ func CronHandlerUser() {
 		if err != nil {
 			logrus.Errorf("Xray查询协议错误 apiPort: %s err: %v", apiPort, err)
 		} else {
-			for _, item := range addPasswords {
+			for _, item := range addAccountBos {
 				if err = xrayApi.AddUser(dto.XrayAddUserDto{
 					Protocol: protocol,
-					Password: item,
+					Password: item.Pass,
 				}); err != nil {
 					logrus.Errorf("Xray调用api添加用户错误 err: %v", err)
 					continue
@@ -65,18 +65,18 @@ func CronHandlerUser() {
 	// trojan go
 	trojanGoCmdMaps.Range(func(apiPort, cmd any) bool {
 		trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
-		for _, item := range banPasswords {
+		for _, item := range banAccountBos {
 			// 调用api删除用户
-			if err = trojanGoApi.DeleteUser(item); err != nil {
+			if err = trojanGoApi.DeleteUser(item.Pass); err != nil {
 				logrus.Errorf("TrojanGo调用api删除用户错误 err: %v", err)
 				continue
 			}
 		}
 
-		for _, item := range addPasswords {
+		for _, item := range addAccountBos {
 			// 调用api添加用户
 			if err = trojanGoApi.AddUser(dto.TrojanGoAddUserDto{
-				Password: item,
+				Password: item.Pass,
 			}); err != nil {
 				logrus.Errorf("TrojanGo调用api添加用户错误 err: %v", err)
 				continue
@@ -178,8 +178,8 @@ func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upl
 	return dao.UpdateAccountFlowByPassOrHash(pass, hash, download, upload)
 }
 
-func SelectAccountPasswords(ban bool) ([]string, error) {
-	return dao.SelectAccountPasswords(ban)
+func SelectAccounts(ban bool) ([]bo.AccountBo, error) {
+	return dao.SelectAccounts(ban)
 }
 
 func RemoveAccount(password string) error {

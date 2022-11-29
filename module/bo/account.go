@@ -5,3 +5,8 @@ type AccountUpdateBo struct {
 	Download int
 	Upload   int
 }
+
+type AccountBo struct {
+	Username string
+	Pass     string
+}

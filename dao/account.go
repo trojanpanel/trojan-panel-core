@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"trojan-panel-core/core"
 	"trojan-panel-core/module"
+	"trojan-panel-core/module/bo"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/vo"
 )
@@ -53,8 +54,8 @@ func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upl
 	return nil
 }
 
-// SelectAccountPasswords 查询全量账户密码
-func SelectAccountPasswords(ban bool) ([]string, error) {
+// SelectAccounts 查询全量账户密码
+func SelectAccounts(ban bool) ([]bo.AccountBo, error) {
 	mySQLConfig := core.Config.MySQLConfig
 	var accounts []module.Account
 	var (
@@ -62,7 +63,7 @@ func SelectAccountPasswords(ban bool) ([]string, error) {
 		err    error
 	)
 
-	sql := fmt.Sprintf("select id,pass from %s where", mySQLConfig.AccountTable)
+	sql := fmt.Sprintf("select id,username,pass from %s where", mySQLConfig.AccountTable)
 	if ban {
 		sql += " quota = 0 or (quota > 0 and quota <= download + upload)"
 	} else {
@@ -79,13 +80,17 @@ func SelectAccountPasswords(ban bool) ([]string, error) {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
 	}
-	passwords := make([]string, 0)
+	accountBos := make([]bo.AccountBo, 0)
 	if len(accounts) > 0 {
 		for _, item := range accounts {
-			passwords = append(passwords, *item.Pass)
+			accountBo := bo.AccountBo{
+				Username: *item.Username,
+				Pass:     *item.Pass,
+			}
+			accountBos = append(accountBos, accountBo)
 		}
 	}
-	return passwords, nil
+	return accountBos, nil
 }
 
 func SelectAccountByPass(pass string) (*vo.AccountHysteriaVo, error) {
@@ -121,38 +126,4 @@ func SelectAccountByPass(pass string) (*vo.AccountHysteriaVo, error) {
 		Id: *account.Id,
 	}
 	return &AccountHysteriaVo, nil
-}
-
-// SelectAccountUsernameAndPass 查询全量账户用户名密码
-func SelectAccountUsernameAndPass() ([]vo.AccountAuthVo, error) {
-	mySQLConfig := core.Config.MySQLConfig
-	var accounts []module.Account
-	var (
-		values []interface{}
-		err    error
-	)
-
-	sql := fmt.Sprintf("select username,pass from %s where quota < 0 or (quota > download + upload)", mySQLConfig.AccountTable)
-	rows, err := db.Query(sql, values...)
-	if err != nil {
-		logrus.Errorln(err.Error())
-		return nil, errors.New(constant.SysError)
-	}
-	defer rows.Close()
-
-	if err = scanner.Scan(rows, &accounts); err != nil && err != scanner.ErrEmptyResult {
-		logrus.Errorln(err.Error())
-		return nil, errors.New(constant.SysError)
-	}
-	accountAuthVos := make([]vo.AccountAuthVo, 0)
-	if len(accounts) > 0 {
-		for _, item := range accounts {
-			accountAuthVo := vo.AccountAuthVo{
-				Username: *item.Username,
-				Pass:     *item.Pass,
-			}
-			accountAuthVos = append(accountAuthVos, accountAuthVo)
-		}
-	}
-	return accountAuthVos, nil
 }

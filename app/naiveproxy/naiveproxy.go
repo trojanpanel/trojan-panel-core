@@ -1,7 +1,6 @@
 package naiveproxy
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -10,8 +9,6 @@ import (
 	"strings"
 	"trojan-panel-core/core"
 	"trojan-panel-core/core/process"
-	"trojan-panel-core/dao"
-	"trojan-panel-core/module/bo"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/util"
@@ -168,48 +165,48 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
 
-	naiveProxyConfig := &bo.NaiveProxyConfig{}
-	// 将json字符串映射到模板对象
-	if err = json.Unmarshal([]byte(configContent), naiveProxyConfig); err != nil {
-		logrus.Errorf("naiveproxy template config反序列化异常 err: %v", err)
-		return err
-	}
+	//naiveProxyConfig := &bo.NaiveProxyConfig{}
+	//// 将json字符串映射到模板对象
+	//if err = json.Unmarshal([]byte(configContent), naiveProxyConfig); err != nil {
+	//	logrus.Errorf("naiveproxy template config反序列化异常 err: %v", err)
+	//	return err
+	//}
 
-	accountAuthVos, err := dao.SelectAccountUsernameAndPass()
-	if err != nil {
-		return err
-	}
-	if len(accountAuthVos) > 0 {
-		routeHandleAuths := make([]bo.HandleAuth, 0)
-		for _, item := range accountAuthVos {
-			handleAuth := bo.HandleAuth{
-				AuthUserDeprecated: item.Username,
-				AuthPassDeprecated: item.Pass,
-				Handler:            bo.TypeMessage("forward_proxy"),
-				HideIp:             bo.TypeMessage("true"),
-				HideVia:            bo.TypeMessage("true"),
-				ProbeResistance:    bo.TypeMessage("{}"),
-			}
-			routeHandleAuths = append(routeHandleAuths, handleAuth)
-		}
-		handle := bo.RouteHandle{
-			Handle: routeHandleAuths,
-		}
-		handleTypeMessage, err := json.Marshal(handle)
-		if err == nil {
-			naiveProxyConfig.Apps.Http.Servers.Srv0.Routes[0].Handle[0].HandleRoutes =
-				append(naiveProxyConfig.Apps.Http.Servers.Srv0.Routes[0].Handle[0].HandleRoutes, handleTypeMessage)
-		}
+	//accountAuthVos, err := dao.SelectAccountUsernameAndPass()
+	//if err != nil {
+	//	return err
+	//}
+	//if len(accountAuthVos) > 0 {
+	//	routeHandleAuths := make([]bo.HandleAuth, 0)
+	//	for _, item := range accountAuthVos {
+	//		handleAuth := bo.HandleAuth{
+	//			AuthUserDeprecated: item.Username,
+	//			AuthPassDeprecated: item.Pass,
+	//			Handler:            bo.TypeMessage("forward_proxy"),
+	//			HideIp:             bo.TypeMessage("true"),
+	//			HideVia:            bo.TypeMessage("true"),
+	//			ProbeResistance:    bo.TypeMessage("{}"),
+	//		}
+	//		routeHandleAuths = append(routeHandleAuths, handleAuth)
+	//	}
+	//	handle := bo.RouteHandle{
+	//		Handle: routeHandleAuths,
+	//	}
+	//	handleTypeMessage, err := json.Marshal(handle)
+	//	if err == nil {
+	//		naiveProxyConfig.Apps.Http.Servers.Srv0.Routes[0].Handle[0].HandleRoutes =
+	//			append(naiveProxyConfig.Apps.Http.Servers.Srv0.Routes[0].Handle[0].HandleRoutes, handleTypeMessage)
+	//	}
+	//
+	//}
 
-	}
+	//configContentByte, err := json.MarshalIndent(naiveProxyConfig, "", "    ")
+	//if err != nil {
+	//	logrus.Errorf("naiveproxy template config序列化异常 err: %v", err)
+	//	return err
+	//}
 
-	configContentByte, err := json.MarshalIndent(naiveProxyConfig, "", "    ")
-	if err != nil {
-		logrus.Errorf("naiveproxy template config序列化异常 err: %v", err)
-		return err
-	}
-
-	_, err = file.Write(configContentByte)
+	_, err = file.WriteString(configContent)
 	if err != nil {
 		logrus.Errorf("naiveproxy config-%d.json文件写入异常 err: %v", naiveProxyConfigDto.ApiPort, err)
 		return err
