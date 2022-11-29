@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/sirupsen/logrus"
 	"regexp"
+	"trojan-panel-core/app/naiveproxy"
 	"trojan-panel-core/app/trojango"
 	"trojan-panel-core/app/xray"
 	"trojan-panel-core/core/process"
@@ -35,6 +36,8 @@ func CronHandlerUser() {
 	trojanGoCmdMaps := trojanGoInstance.GetCmdMap()
 	xrayInstance := process.NewXrayProcess()
 	xrayCmdMaps := xrayInstance.GetCmdMap()
+	naiveProxyInstance := process.NewNaiveProxyInstance()
+	naiveProxyCmdMaps := naiveProxyInstance.GetCmdMap()
 
 	// xray
 	xrayCmdMaps.Range(func(apiPort, cmd any) bool {
@@ -79,6 +82,30 @@ func CronHandlerUser() {
 				Password: item.Pass,
 			}); err != nil {
 				logrus.Errorf("TrojanGo调用api添加用户错误 err: %v", err)
+				continue
+			}
+		}
+		return true
+	})
+
+	// naiveproxy
+	naiveProxyCmdMaps.Range(func(apiPort, cmd any) bool {
+		naiveProxyApi := naiveproxy.NewNaiveProxyApi(apiPort.(uint))
+		for _, item := range banAccountBos {
+			// 调用api删除用户
+			if err = naiveProxyApi.DeleteUser(item.Pass); err != nil {
+				logrus.Errorf("NaiveProxy调用api删除用户错误 err: %v", err)
+				continue
+			}
+		}
+
+		for _, item := range addAccountBos {
+			// 调用api添加用户
+			if err = naiveProxyApi.AddUser(dto.NaiveProxyAddUserDto{
+				Username: item.Username,
+				Pass:     item.Pass,
+			}); err != nil {
+				logrus.Errorf("NaiveProxy调用api添加用户错误 err: %v", err)
 				continue
 			}
 		}
