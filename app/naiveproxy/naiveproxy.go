@@ -159,52 +159,11 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
         }
     }
 }`
-	configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(naiveProxyConfigDto.Port), 10))
+	configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(naiveProxyConfigDto.ApiPort), 10))
 	configContent = strings.ReplaceAll(configContent, "${ip}", naiveProxyConfigDto.Ip)
 	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(naiveProxyConfigDto.Port), 10))
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
-
-	//naiveProxyConfig := &bo.NaiveProxyConfig{}
-	//// 将json字符串映射到模板对象
-	//if err = json.Unmarshal([]byte(configContent), naiveProxyConfig); err != nil {
-	//	logrus.Errorf("naiveproxy template config反序列化异常 err: %v", err)
-	//	return err
-	//}
-
-	//accountAuthVos, err := dao.SelectAccountUsernameAndPass()
-	//if err != nil {
-	//	return err
-	//}
-	//if len(accountAuthVos) > 0 {
-	//	routeHandleAuths := make([]bo.HandleAuth, 0)
-	//	for _, item := range accountAuthVos {
-	//		handleAuth := bo.HandleAuth{
-	//			AuthUserDeprecated: item.Username,
-	//			AuthPassDeprecated: item.Pass,
-	//			Handler:            bo.TypeMessage("forward_proxy"),
-	//			HideIp:             bo.TypeMessage("true"),
-	//			HideVia:            bo.TypeMessage("true"),
-	//			ProbeResistance:    bo.TypeMessage("{}"),
-	//		}
-	//		routeHandleAuths = append(routeHandleAuths, handleAuth)
-	//	}
-	//	handle := bo.RouteHandle{
-	//		Handle: routeHandleAuths,
-	//	}
-	//	handleTypeMessage, err := json.Marshal(handle)
-	//	if err == nil {
-	//		naiveProxyConfig.Apps.Http.Servers.Srv0.Routes[0].Handle[0].HandleRoutes =
-	//			append(naiveProxyConfig.Apps.Http.Servers.Srv0.Routes[0].Handle[0].HandleRoutes, handleTypeMessage)
-	//	}
-	//
-	//}
-
-	//configContentByte, err := json.MarshalIndent(naiveProxyConfig, "", "    ")
-	//if err != nil {
-	//	logrus.Errorf("naiveproxy template config序列化异常 err: %v", err)
-	//	return err
-	//}
 
 	_, err = file.WriteString(configContent)
 	if err != nil {
