@@ -67,20 +67,34 @@ func (n *naiveProxyApi) GetUser(pass string) (*bo.HandleAuth, *int, error) {
 
 // AddUser 节点上添加用户
 func (n *naiveProxyApi) AddUser(dto dto.NaiveProxyAddUserDto) error {
-	handleAuth := bo.HandleAuth{
-		AuthUserDeprecated: dto.Username,
-		AuthPassDeprecated: dto.Pass,
-		Handler:            bo.TypeMessage("forward_proxy"),
-		HideIp:             bo.TypeMessage("true"),
-		HideVia:            bo.TypeMessage("true"),
-		ProbeResistance:    bo.TypeMessage("{}"),
+	user, _, err := n.GetUser(dto.Pass)
+	if err != nil {
+		return err
 	}
+	if user != nil {
+		return nil
+	}
+
+	authJsonStr := `{
+    "handler":"forward_proxy",
+    "hide_ip":true,
+    "hide_via":true,
+    "probe_resistance":{}
+}`
+	var handleAuth *bo.HandleAuth
+	if err = json.Unmarshal([]byte(authJsonStr), &handleAuth); err != nil {
+		logrus.Errorf("naiveproxy add user 反序列化异常 err: %v", err)
+		return errors.New(constant.SysError)
+	}
+	handleAuth.AuthUserDeprecated = dto.Username
+	handleAuth.AuthPassDeprecated = dto.Pass
 	addUserDtoByte, err := json.Marshal(handleAuth)
 	if err != nil {
 		logrus.Errorf("naiveproxy add user 序列化异常 err: %v", err)
 		return errors.New(constant.SysError)
 	}
-	url := fmt.Sprintf("http://127.0.0.1:%d/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/", n.apiPort)
+
+	url := fmt.Sprintf("http://127.0.0.1:%d/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/0", n.apiPort)
 	req, err := http.NewRequest("PUT", url,
 		bytes.NewBuffer(addUserDtoByte))
 	if err != nil {
