@@ -33,14 +33,14 @@ func CronHandlerUser() {
 	}
 
 	trojanGoInstance := process.NewTrojanGoInstance()
-	trojanGoCmdMaps := trojanGoInstance.GetCmdMap()
+	trojanGoCmdMap := trojanGoInstance.GetCmdMap()
 	xrayInstance := process.NewXrayProcess()
-	xrayCmdMaps := xrayInstance.GetCmdMap()
+	xrayCmdMap := xrayInstance.GetCmdMap()
 	naiveProxyInstance := process.NewNaiveProxyInstance()
-	naiveProxyCmdMaps := naiveProxyInstance.GetCmdMap()
+	naiveProxyCmdMap := naiveProxyInstance.GetCmdMap()
 
 	// xray
-	xrayCmdMaps.Range(func(apiPort, cmd any) bool {
+	xrayCmdMap.Range(func(apiPort, cmd any) bool {
 		xrayApi := xray.NewXrayApi(apiPort.(uint))
 		for _, item := range banAccountBos {
 			if err = xrayApi.DeleteUser(item.Pass); err != nil {
@@ -66,7 +66,7 @@ func CronHandlerUser() {
 	})
 
 	// trojan go
-	trojanGoCmdMaps.Range(func(apiPort, cmd any) bool {
+	trojanGoCmdMap.Range(func(apiPort, cmd any) bool {
 		trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
 		for _, item := range banAccountBos {
 			// 调用api删除用户
@@ -89,7 +89,7 @@ func CronHandlerUser() {
 	})
 
 	// naiveproxy
-	naiveProxyCmdMaps.Range(func(apiPort, cmd any) bool {
+	naiveProxyCmdMap.Range(func(apiPort, cmd any) bool {
 		naiveProxyApi := naiveproxy.NewNaiveProxyApi(apiPort.(uint))
 		for _, item := range banAccountBos {
 			// 调用api删除用户
@@ -116,11 +116,11 @@ func CronHandlerUser() {
 // CronHandlerDownloadAndUpload 定时任务 更新数据库中用户的下载和上传流量 Hysteria暂不支持流量统计
 func CronHandlerDownloadAndUpload() {
 	xrayInstance := process.NewXrayProcess()
-	xrayCmdMaps := xrayInstance.GetCmdMap()
+	xrayCmdMap := xrayInstance.GetCmdMap()
 	trojanGoInstance := process.NewTrojanGoInstance()
-	trojanGoCmdMaps := trojanGoInstance.GetCmdMap()
+	trojanGoCmdMap := trojanGoInstance.GetCmdMap()
 
-	xrayCmdMaps.Range(func(apiPort, cmd any) bool {
+	xrayCmdMap.Range(func(apiPort, cmd any) bool {
 		xrayApi := xray.NewXrayApi(apiPort.(uint))
 		stats, err := xrayApi.QueryStats("", true)
 		if err != nil {
@@ -173,7 +173,7 @@ func CronHandlerDownloadAndUpload() {
 		return true
 	})
 
-	trojanGoCmdMaps.Range(func(apiPort, cmd any) bool {
+	trojanGoCmdMap.Range(func(apiPort, cmd any) bool {
 		trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
 		users, err := trojanGoApi.ListUsers()
 		if err == nil {
@@ -211,25 +211,37 @@ func SelectAccounts(ban bool) ([]bo.AccountBo, error) {
 
 func RemoveAccount(password string) error {
 	xrayInstance := process.NewXrayProcess()
-	xrayCmdMaps := xrayInstance.GetCmdMap()
+	xrayCmdMap := xrayInstance.GetCmdMap()
 	trojanGoInstance := process.NewTrojanGoInstance()
-	trojanGoCmdMaps := trojanGoInstance.GetCmdMap()
+	trojanGoCmdMap := trojanGoInstance.GetCmdMap()
+	naiveProxyInstance := process.NewNaiveProxyInstance()
+	naiveProxyCmdMap := naiveProxyInstance.GetCmdMap()
 
 	// xray
-	xrayCmdMaps.Range(func(apiPort, cmd any) bool {
+	xrayCmdMap.Range(func(apiPort, cmd any) bool {
 		xrayApi := xray.NewXrayApi(apiPort.(uint))
 		if err := xrayApi.DeleteUser(password); err != nil {
-			logrus.Errorf("调用api删除用户错误 err: %v", err)
+			logrus.Errorf("Xray调用api删除用户错误 err: %v", err)
 		}
 		return true
 	})
 
 	// trojan go
-	trojanGoCmdMaps.Range(func(apiPort, cmd any) bool {
+	trojanGoCmdMap.Range(func(apiPort, cmd any) bool {
 		trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
 		// 调用api删除用户
 		if err := trojanGoApi.DeleteUser(password); err != nil {
-			logrus.Errorf("调用api删除用户错误 err: %v", err)
+			logrus.Errorf("TrojanGo调用api删除用户错误 err: %v", err)
+		}
+		return true
+	})
+
+	// naiveproxy
+	naiveProxyCmdMap.Range(func(apiPort, cmd any) bool {
+		naiveProxyApi := naiveproxy.NewNaiveProxyApi(apiPort.(uint))
+		// 调用api删除用户
+		if err := naiveProxyApi.DeleteUser(password); err != nil {
+			logrus.Errorf("NavieProxy调用api删除用户错误 err: %v", err)
 		}
 		return true
 	})
