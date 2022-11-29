@@ -81,7 +81,8 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
 	certConfig := core.Config.CertConfig
 	configContent := `{
     "admin": {
-        "disabled": true
+        "disabled": false,
+		"listen": "127.0.0.1:${api_port}"
     },
     "logging": {
         "sink": {
@@ -161,6 +162,7 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
         }
     }
 }`
+	configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(naiveProxyConfigDto.Port), 10))
 	configContent = strings.ReplaceAll(configContent, "${ip}", naiveProxyConfigDto.Ip)
 	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(naiveProxyConfigDto.Port), 10))
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
