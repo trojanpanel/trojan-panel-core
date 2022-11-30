@@ -236,7 +236,7 @@ CREATE TABLE `node_type` (
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COMMENT='节点类型';
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COMMENT='节点类型';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -320,16 +320,8 @@ DROP TABLE IF EXISTS `system`;
 CREATE TABLE `system` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `name` varchar(16) NOT NULL DEFAULT '' COMMENT '系统名称',
-  `open_register` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '开放注册 0/否 1/是',
-  `register_quota` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '新默认流量 单位/MB',
-  `register_expire_days` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '新用户默认过期天数 单位/天',
-  `expire_warn_enable` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否开启到期警告 0/否 1/是',
-  `expire_warn_day` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '到期警告 单位/天',
-  `email_enable` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否开启邮箱功能 0/否 1/是',
-  `email_host` varchar(64) NOT NULL DEFAULT '' COMMENT '系统邮箱设置-host',
-  `email_port` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '系统邮箱设置-port',
-  `email_username` varchar(32) NOT NULL DEFAULT '' COMMENT '系统邮箱设置-username',
-  `email_password` varchar(32) NOT NULL DEFAULT '' COMMENT '系统邮箱设置-password',
+  `register_config` varchar(512) NOT NULL DEFAULT '' COMMENT '新用户设置',
+  `email_config` varchar(512) NOT NULL DEFAULT '' COMMENT '系统邮箱设置',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
@@ -342,7 +334,7 @@ CREATE TABLE `system` (
 
 LOCK TABLES `system` WRITE;
 /*!40000 ALTER TABLE `system` DISABLE KEYS */;
-INSERT INTO `system` VALUES (1,'trojan-panel',1,0,0,0,0,0,'',0,'','','2022-04-01 00:00:00','2022-04-01 00:00:00');
+INSERT INTO `system` VALUES (1,'trojan-panel','{\"openRegister\":1,\"registerQuota\":0,\"registerExpireDays\":0}','{\"expireWarnEnable\":0,\"expireWarnDay\":0,\"emailEnable\":0,\"emailHost\":\"\",\"emailPort\":0,\"emailUsername\":\"\",\"emailPassword\":\"\"}','2022-04-01 00:00:00','2022-04-01 00:00:00');
 /*!40000 ALTER TABLE `system` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
