@@ -44,9 +44,9 @@ create table trojan_panel_db.account
 
 ## 版本对应关系
 
-| Trojan Panel | Trojan Panel Core | Xray   | Trojan Go | Hysteria | Caddy  |
-|--------------|-------------------|--------|-----------|----------|--------|
-| v1.2.0       | v1.2.0            | v1.6.0 | v0.10.6   | v1.2.1   | v2.6.2 |
+| Trojan Panel | Trojan Panel Core | Xray   | Trojan Go | Hysteria | Caddy（NaiveProxy） |
+|--------------|-------------------|--------|-----------|----------|-------------------|
+| v1.2.0       | v1.2.0            | v1.6.0 | v0.10.6   | v1.2.1   | v2.6.2            |
 
 # 编译命令
 
@@ -59,10 +59,10 @@ create table trojan_panel_db.account
 # Community
 
 - Telegram Channel: [Trojan Panel](https://t.me/TrojanPanel)
-- Telegram Group: [Trojan Panel交流群](https://t.me/TrojanPanelGroup)
 
 # Thanks
 
 - [trojan-gfw](https://github.com/trojan-gfw/trojan)
 - [trojan-go](https://github.com/p4gefau1t/trojan-go)
 - [hysteria](https://github.com/HyNetwork/hysteria)
+- [naiveproxy](https://github.com/klzgrad/naiveproxy)
