@@ -11,6 +11,10 @@ service ApiAccountService {
   rpc RemoveAccount(AccountRemoveDto) returns (Response) {}
 }
 
+service ApiStateService {
+  rpc Ping(StateDto) returns (Response) {}
+}
+
 message NodeAddDto {
   uint64 nodeTypeId = 1;
   uint64 port = 2;
@@ -45,6 +49,8 @@ message NodeRemoveDto {
 message AccountRemoveDto {
   string password = 1;
 }
+
+message StateDto {}
 
 message Response {
   bool success = 1;

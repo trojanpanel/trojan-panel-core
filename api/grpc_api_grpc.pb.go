@@ -225,3 +225,89 @@ var ApiAccountService_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "grpc_api.proto",
 }
+
+// ApiStateServiceClient is the client API for ApiStateService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ApiStateServiceClient interface {
+	Ping(ctx context.Context, in *StateDto, opts ...grpc.CallOption) (*Response, error)
+}
+
+type apiStateServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewApiStateServiceClient(cc grpc.ClientConnInterface) ApiStateServiceClient {
+	return &apiStateServiceClient{cc}
+}
+
+func (c *apiStateServiceClient) Ping(ctx context.Context, in *StateDto, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/ApiStateService/Ping", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ApiStateServiceServer is the server API for ApiStateService service.
+// All implementations must embed UnimplementedApiStateServiceServer
+// for forward compatibility
+type ApiStateServiceServer interface {
+	Ping(context.Context, *StateDto) (*Response, error)
+	mustEmbedUnimplementedApiStateServiceServer()
+}
+
+// UnimplementedApiStateServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedApiStateServiceServer struct {
+}
+
+func (UnimplementedApiStateServiceServer) Ping(context.Context, *StateDto) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+}
+func (UnimplementedApiStateServiceServer) mustEmbedUnimplementedApiStateServiceServer() {}
+
+// UnsafeApiStateServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ApiStateServiceServer will
+// result in compilation errors.
+type UnsafeApiStateServiceServer interface {
+	mustEmbedUnimplementedApiStateServiceServer()
+}
+
+func RegisterApiStateServiceServer(s grpc.ServiceRegistrar, srv ApiStateServiceServer) {
+	s.RegisterService(&ApiStateService_ServiceDesc, srv)
+}
+
+func _ApiStateService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StateDto)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiStateServiceServer).Ping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ApiStateService/Ping",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiStateServiceServer).Ping(ctx, req.(*StateDto))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ApiStateService_ServiceDesc is the grpc.ServiceDesc for ApiStateService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ApiStateService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "ApiStateService",
+	HandlerType: (*ApiStateServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Ping",
+			Handler:    _ApiStateService_Ping_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "grpc_api.proto",
+}
