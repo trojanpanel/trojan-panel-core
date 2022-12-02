@@ -27,13 +27,6 @@ func InitFile() {
 			panic(err)
 		}
 	}
-	webFilePath := constant.WebFilePath
-	if !Exists(webFilePath) {
-		if err := os.Mkdir(webFilePath, os.ModePerm); err != nil {
-			logrus.Errorf("创建webfile文件夹异常 err: %v", err)
-			panic(err)
-		}
-	}
 
 	// 初始化全局配置文件
 	InitConfigFile()
