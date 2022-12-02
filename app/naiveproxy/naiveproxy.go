@@ -119,7 +119,7 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
                                             "handle": [
                                                 {
                                                     "handler": "file_server",
-                                                    "root": "/tpdata/trojan-panel/webfile/",
+                                                    "root": "/tpdata/caddy/srv/",
                                                     "index_names": [
                                                         "index.html","index.htm"
                                                     ]
