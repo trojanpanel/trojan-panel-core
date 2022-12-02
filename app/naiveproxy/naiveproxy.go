@@ -16,7 +16,7 @@ import (
 
 // InitNaiveProxyApp 初始化NaiveProxy应用
 func InitNaiveProxyApp() error {
-	apiPorts, err := util.GetConfigApiPorts(constant.NaiveProxyBinPath)
+	apiPorts, err := util.GetConfigApiPorts(constant.NaiveProxyPath)
 	if err != nil {
 		return err
 	}
