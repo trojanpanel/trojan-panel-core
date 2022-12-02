@@ -29,7 +29,7 @@ func apiClient(apiPort uint) (clent service.TrojanServerServiceClient, ctx conte
 	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%d", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	clent = service.NewTrojanServerServiceClient(conn)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	clo = func() {
 		cancel()
 		conn.Close()

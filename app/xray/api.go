@@ -36,7 +36,7 @@ func NewXrayApi(apiPort uint) *xrayApi {
 func apiClient(apiPort uint) (conn *grpc.ClientConn, ctx context.Context, clo func(), err error) {
 	conn, err = grpc.Dial(fmt.Sprintf("127.0.0.1:%d", apiPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	clo = func() {
 		cancel()
 		conn.Close()
