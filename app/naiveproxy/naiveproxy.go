@@ -109,6 +109,9 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
                                     "handler": "subroute",
                                     "routes": [
                                         {
+                                            "handle": []
+                                        },
+                                        {
                                             "match": [
                                                 {
                                                     "host": [
