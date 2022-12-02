@@ -25,14 +25,14 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 	if nodeAddDto.Port != 0 && (nodeAddDto.Port <= 100 || nodeAddDto.Port >= 30000) {
 		err = errors.New(constant.PortRangeError)
 	}
-	if nodeAddDto.NodeTypeId == 1 || nodeAddDto.NodeTypeId == 2 {
+	if nodeAddDto.NodeTypeId == constant.Xray || nodeAddDto.NodeTypeId == constant.TrojanGo || nodeAddDto.NodeTypeId == constant.NaiveProxy {
 		if !util.IsPortAvailable(uint(nodeAddDto.Port), "tcp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
 		if !util.IsPortAvailable(uint(nodeAddDto.Port+30000), "tcp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
-	} else if nodeAddDto.NodeTypeId == 3 {
+	} else if nodeAddDto.NodeTypeId == constant.Hysteria {
 		if !util.IsPortAvailable(uint(nodeAddDto.Port), "udp") {
 			err = errors.New(constant.PortIsOccupied)
 		}
