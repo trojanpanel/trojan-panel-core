@@ -47,7 +47,7 @@ func (t *NaiveProxyProcess) StartNaiveProxy(apiPort uint) error {
 		if err != nil {
 			return err
 		}
-		cmd := exec.Command(binaryFilePath, "run --config", configFilePath)
+		cmd := exec.Command(binaryFilePath, "run", "--config", configFilePath)
 		t.cmdMap.Store(apiPort, cmd)
 		if err := cmd.Start(); err != nil {
 			if err = util.RemoveFile(configFilePath); err != nil {
