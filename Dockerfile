@@ -3,13 +3,13 @@ LABEL maintainer="jonsosnyan <https://jonssonyan.com>"
 RUN mkdir -p /tpdata/trojan-panel-core/
 WORKDIR /tpdata/trojan-panel-core/
 ENV mariadb_ip=127.0.0.1 \
-    mariadb_port=3306 \
+    mariadb_port=9507 \
     mariadb_user=root \
     mariadb_pas=123456 \
     database=trojan_panel_db \
     account_table=account \
     redis_host=127.0.0.1 \
-    redis_port=6379 \
+    redis_port=6378 \
     redis_pass=123456 \
     crt_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.crt \
     key_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.key
@@ -20,9 +20,11 @@ ARG BASE_URL=https://github.com/trojanpanel/install-script/releases/download/v1.
 ADD ${BASE_URL}/xray-${TARGETOS}-${TARGETARCH} bin/xray/xray-${TARGETOS}-${TARGETARCH}
 ADD ${BASE_URL}/trojan-go-${TARGETOS}-${TARGETARCH} bin/trojango/trojan-go-${TARGETOS}-${TARGETARCH}
 ADD ${BASE_URL}/hysteria-${TARGETOS}-${TARGETARCH} bin/hysteria/hysteria-${TARGETOS}-${TARGETARCH}
+ADD ${BASE_URL}/naiveproxy-${TARGETOS}-${TARGETARCH} bin/naiveproxy/naiveproxy-${TARGETOS}-${TARGETARCH}
 RUN chmod 777 bin/xray/xray-${TARGETOS}-${TARGETARCH}
 RUN chmod 777 bin/trojango/trojan-go-${TARGETOS}-${TARGETARCH}
 RUN chmod 777 bin/hysteria/hysteria-${TARGETOS}-${TARGETARCH}
+RUN chmod 777 bin/naiveproxy/naiveproxy-${TARGETOS}-${TARGETARCH}
 # 国内环境开启以下注释 设置apk国内镜像
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk add bash tzdata ca-certificates && \
