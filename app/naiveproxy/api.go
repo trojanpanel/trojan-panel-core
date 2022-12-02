@@ -95,7 +95,7 @@ func (n *naiveProxyApi) AddUser(dto dto.NaiveProxyAddUserDto) error {
 	}
 
 	url := fmt.Sprintf("http://127.0.0.1:%d/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/0", n.apiPort)
-	req, err := http.NewRequest("PUT", url,
+	req, err := http.NewRequest("POST", url,
 		bytes.NewBuffer(addUserDtoByte))
 	if err != nil {
 		logrus.Errorf("naiveproxy add user new request err: %v", err)
