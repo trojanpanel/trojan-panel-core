@@ -1,6 +1,6 @@
 # Trojan Panel Core
 
-Trojan Panel核心
+Trojan Panel内核
 
 # 支持的节点类型
 
