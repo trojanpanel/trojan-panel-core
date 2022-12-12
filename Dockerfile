@@ -12,7 +12,8 @@ ENV mariadb_ip=127.0.0.1 \
     redis_port=6378 \
     redis_pass=123456 \
     crt_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.crt \
-    key_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.key
+    key_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.key \
+    TZ=Asia/Shanghai
 ARG TARGETOS
 ARG TARGETARCH
 COPY build/trojan-panel-core-${TARGETOS}-${TARGETARCH} trojan-panel-core
