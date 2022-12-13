@@ -174,8 +174,8 @@ DROP TABLE IF EXISTS `node_hysteria`;
 CREATE TABLE `node_hysteria` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `protocol` varchar(32) NOT NULL DEFAULT 'udp' COMMENT '协议名称 udp/faketcp',
-  `up_mbps` int(3) NOT NULL DEFAULT '100' COMMENT '单客户端最大上传速度 单位:Mbps',
-  `down_mbps` int(3) NOT NULL DEFAULT '100' COMMENT '单客户端最大下载速度 单位:Mbps',
+  `up_mbps` int(10) NOT NULL DEFAULT '100' COMMENT '单客户端最大上传速度 单位:Mbps',
+  `down_mbps` int(10) NOT NULL DEFAULT '100' COMMENT '单客户端最大下载速度 单位:Mbps',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
