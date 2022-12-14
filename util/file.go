@@ -125,7 +125,7 @@ compress=true
 }
 
 func usage() {
-	_, _ = fmt.Fprint(os.Stdout, `trojan panel core manage help
+	_, _ = fmt.Fprintln(os.Stdout, `trojan panel core manage help
 Usage: trojan-panel-core [-host] [-password] [-port] [-database] [-account-table] [-redisHost] [-redisPort] [-redisPassword] [-redisDb] [-redisMaxIdle] [-redisMaxActive] [-redisWait] [-crt-path] [-key-path] [-h] [-version]`)
 	flag.PrintDefaults()
 }
