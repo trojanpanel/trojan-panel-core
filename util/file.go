@@ -67,6 +67,7 @@ func InitConfigFile() {
 			redisWait      string
 			crtPath        string
 			keyPath        string
+			version        bool
 		)
 		flag.StringVar(&host, "host", "localhost", "数据库地址")
 		flag.StringVar(&user, "user", "root", "数据库用户名")
@@ -83,7 +84,12 @@ func InitConfigFile() {
 		flag.StringVar(&redisWait, "redisWait", "true", "Redis是否等待")
 		flag.StringVar(&crtPath, "crt-path", "", "crt秘钥")
 		flag.StringVar(&keyPath, "key-path", "", "key秘钥")
+		flag.BoolVar(&version, "version", false, "print trojan panel version")
 		flag.Parse()
+		if version {
+			println(constant.TrojanPanelCoreVersion)
+			os.Exit(0)
+		}
 		_, err = file.WriteString(fmt.Sprintf(
 			`[mysql]
 host=%s
@@ -121,7 +127,7 @@ compress=true
 
 func usage() {
 	_, _ = fmt.Fprintf(os.Stderr, `trojan panel core manage help
-Usage: trojan-panel-core [-host] [-password] [-port] [-database] [-account-table] [-redisHost] [-redisPort] [-redisPassword] [-redisDb] [-redisMaxIdle] [-redisMaxActive] [-redisWait] [-crt-path] [-key-path] [-h]
+Usage: trojan-panel-core [-host] [-password] [-port] [-database] [-account-table] [-redisHost] [-redisPort] [-redisPassword] [-redisDb] [-redisMaxIdle] [-redisMaxActive] [-redisWait] [-crt-path] [-key-path] [-h] [-version]
 
 Options:
 -host            database host
@@ -140,6 +146,7 @@ Options:
 -crt-path	 	 cert crt file path
 -key-path	 	 cert key file path
 -h               help
+-version         trojan panel core version
 `)
 }
 
