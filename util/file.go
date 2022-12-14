@@ -33,6 +33,46 @@ func InitFile() {
 }
 
 func InitConfigFile() {
+	var (
+		host           string
+		user           string
+		password       string
+		port           string
+		database       string
+		accountTable   string
+		redisHost      string
+		redisPort      string
+		redisPassword  string
+		redisDb        string
+		redisMaxIdle   string
+		redisMaxActive string
+		redisWait      string
+		crtPath        string
+		keyPath        string
+		version        bool
+	)
+	flag.StringVar(&host, "host", "localhost", "数据库地址")
+	flag.StringVar(&user, "user", "root", "数据库用户名")
+	flag.StringVar(&password, "password", "123456", "数据库密码")
+	flag.StringVar(&port, "port", "3306", "数据库端口")
+	flag.StringVar(&database, "database", "trojan_panel_db", "数据库名称")
+	flag.StringVar(&accountTable, "account-table", "account", "account表名称")
+	flag.StringVar(&redisHost, "redisHost", "127.0.0.1", "Redis地址")
+	flag.StringVar(&redisPort, "redisPort", "6379", "Redis端口")
+	flag.StringVar(&redisPassword, "redisPassword", "123456", "Redis密码")
+	flag.StringVar(&redisDb, "redisDb", "0", "Redis默认数据库")
+	flag.StringVar(&redisMaxIdle, "redisMaxIdle", "2", "Redis最大空闲连接数")
+	flag.StringVar(&redisMaxActive, "redisMaxActive", "2", "Redis最大连接数")
+	flag.StringVar(&redisWait, "redisWait", "true", "Redis是否等待")
+	flag.StringVar(&crtPath, "crt-path", "", "crt秘钥")
+	flag.StringVar(&keyPath, "key-path", "", "key秘钥")
+	flag.BoolVar(&version, "version", false, "print trojan panel version")
+	flag.Parse()
+	flag.Usage = usage
+	if version {
+		println(constant.TrojanPanelCoreVersion)
+		os.Exit(0)
+	}
 	// 初始化全局配文件夹
 	configPath := constant.ConfigPath
 	if !Exists(configPath) {
@@ -51,45 +91,6 @@ func InitConfigFile() {
 		}
 		defer file.Close()
 
-		var (
-			host           string
-			user           string
-			password       string
-			port           string
-			database       string
-			accountTable   string
-			redisHost      string
-			redisPort      string
-			redisPassword  string
-			redisDb        string
-			redisMaxIdle   string
-			redisMaxActive string
-			redisWait      string
-			crtPath        string
-			keyPath        string
-			version        bool
-		)
-		flag.StringVar(&host, "host", "localhost", "数据库地址")
-		flag.StringVar(&user, "user", "root", "数据库用户名")
-		flag.StringVar(&password, "password", "123456", "数据库密码")
-		flag.StringVar(&port, "port", "3306", "数据库端口")
-		flag.StringVar(&database, "database", "trojan_panel_db", "数据库名称")
-		flag.StringVar(&accountTable, "account-table", "account", "account表名称")
-		flag.StringVar(&redisHost, "redisHost", "127.0.0.1", "Redis地址")
-		flag.StringVar(&redisPort, "redisPort", "6379", "Redis端口")
-		flag.StringVar(&redisPassword, "redisPassword", "123456", "Redis密码")
-		flag.StringVar(&redisDb, "redisDb", "0", "Redis默认数据库")
-		flag.StringVar(&redisMaxIdle, "redisMaxIdle", "2", "Redis最大空闲连接数")
-		flag.StringVar(&redisMaxActive, "redisMaxActive", "2", "Redis最大连接数")
-		flag.StringVar(&redisWait, "redisWait", "true", "Redis是否等待")
-		flag.StringVar(&crtPath, "crt-path", "", "crt秘钥")
-		flag.StringVar(&keyPath, "key-path", "", "key秘钥")
-		flag.BoolVar(&version, "version", false, "print trojan panel version")
-		flag.Parse()
-		if version {
-			println(constant.TrojanPanelCoreVersion)
-			os.Exit(0)
-		}
 		_, err = file.WriteString(fmt.Sprintf(
 			`[mysql]
 host=%s
@@ -121,7 +122,6 @@ compress=true
 			logrus.Errorf("config.ini文件写入异常 err: %v", err)
 			panic(err)
 		}
-		flag.Usage = usage
 	}
 }
 
