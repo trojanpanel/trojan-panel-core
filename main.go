@@ -19,7 +19,7 @@ func main() {
 }
 
 func init() {
-	util.InitSystem()
+	util.InitFile()
 	core.InitConfig()
 	middleware.InitLog()
 	dao.InitMySQL()

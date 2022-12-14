@@ -18,25 +18,26 @@ import (
 
 var configFileNameReg = regexp.MustCompile("^config-([1-9]\\d*)[\\s\\S]*\\.json$")
 
-func InitSystem() {
-	var (
-		host           string
-		user           string
-		password       string
-		port           string
-		database       string
-		accountTable   string
-		redisHost      string
-		redisPort      string
-		redisPassword  string
-		redisDb        string
-		redisMaxIdle   string
-		redisMaxActive string
-		redisWait      string
-		crtPath        string
-		keyPath        string
-		version        bool
-	)
+var (
+	host           string
+	user           string
+	password       string
+	port           string
+	database       string
+	accountTable   string
+	redisHost      string
+	redisPort      string
+	redisPassword  string
+	redisDb        string
+	redisMaxIdle   string
+	redisMaxActive string
+	redisWait      string
+	crtPath        string
+	keyPath        string
+	version        bool
+)
+
+func init() {
 	flag.StringVar(&host, "host", "localhost", "数据库地址")
 	flag.StringVar(&user, "user", "root", "数据库用户名")
 	flag.StringVar(&password, "password", "123456", "数据库密码")
@@ -52,14 +53,16 @@ func InitSystem() {
 	flag.StringVar(&redisWait, "redisWait", "true", "Redis是否等待")
 	flag.StringVar(&crtPath, "crt-path", "", "crt秘钥")
 	flag.StringVar(&keyPath, "key-path", "", "key秘钥")
-	flag.BoolVar(&version, "version", false, "print trojan panel version")
-	flag.Parse()
+	flag.BoolVar(&version, "version", false, "打印版本信息")
 	flag.Usage = usage
+	flag.Parse()
 	if version {
-		fmt.Println(constant.TrojanPanelCoreVersion)
+		_, _ = fmt.Fprintln(os.Stdout, constant.TrojanPanelCoreVersion)
 		os.Exit(0)
 	}
+}
 
+func InitFile() {
 	// 初始化日志
 	logPath := constant.LogPath
 	if !Exists(logPath) {
@@ -122,28 +125,9 @@ compress=true
 }
 
 func usage() {
-	_, _ = fmt.Fprintf(os.Stderr, `trojan panel core manage help
-Usage: trojan-panel-core [-host] [-password] [-port] [-database] [-account-table] [-redisHost] [-redisPort] [-redisPassword] [-redisDb] [-redisMaxIdle] [-redisMaxActive] [-redisWait] [-crt-path] [-key-path] [-h] [-version]
-
-Options:
--host            database host
--user            database user
--password        database password
--port            database port
--database        database name
--account-table   account table name
--redisHost		 redis redisHost
--redisPort		 redis redisPort
--redisPassword	 redis redisPassword
--redisDb		 redis redisDb
--redisMaxIdle    redis redisMaxIdle
--redisMaxActive	 redis redisMaxActive
--redisWait		 redis redisWait
--crt-path	 	 cert crt file path
--key-path	 	 cert key file path
--h               help
--version         trojan panel core version
-`)
+	_, _ = fmt.Fprintln(os.Stdout, `trojan panel core manage help
+Usage: trojan-panel-core [-host] [-password] [-port] [-database] [-account-table] [-redisHost] [-redisPort] [-redisPassword] [-redisDb] [-redisMaxIdle] [-redisMaxActive] [-redisWait] [-crt-path] [-key-path] [-h] [-version]`)
+	flag.PrintDefaults()
 }
 
 func DownloadFile(url string, fileName string) error {
