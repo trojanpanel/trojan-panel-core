@@ -57,7 +57,7 @@ func init() {
 	flag.Usage = usage
 	flag.Parse()
 	if version {
-		_, _ = fmt.Fprintln(os.Stdout, constant.TrojanPanelCoreVersion)
+		_, _ = fmt.Fprint(os.Stdout, constant.TrojanPanelCoreVersion)
 		os.Exit(0)
 	}
 }
@@ -125,7 +125,7 @@ compress=true
 }
 
 func usage() {
-	_, _ = fmt.Fprintln(os.Stdout, `trojan panel core manage help
+	_, _ = fmt.Fprint(os.Stdout, `trojan panel core manage help
 Usage: trojan-panel-core [-host] [-password] [-port] [-database] [-account-table] [-redisHost] [-redisPort] [-redisPassword] [-redisDb] [-redisMaxIdle] [-redisMaxActive] [-redisWait] [-crt-path] [-key-path] [-h] [-version]`)
 	flag.PrintDefaults()
 }
