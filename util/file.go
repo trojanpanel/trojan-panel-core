@@ -18,21 +18,7 @@ import (
 
 var configFileNameReg = regexp.MustCompile("^config-([1-9]\\d*)[\\s\\S]*\\.json$")
 
-func InitFile() {
-	// 初始化日志
-	logPath := constant.LogPath
-	if !Exists(logPath) {
-		if err := os.MkdirAll(logPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建logs文件夹异常 err: %v", err)
-			panic(err)
-		}
-	}
-
-	// 初始化全局配置文件
-	InitConfigFile()
-}
-
-func InitConfigFile() {
+func InitSystem() {
 	var (
 		host           string
 		user           string
@@ -70,9 +56,19 @@ func InitConfigFile() {
 	flag.Parse()
 	flag.Usage = usage
 	if version {
-		println(constant.TrojanPanelCoreVersion)
+		fmt.Println(constant.TrojanPanelCoreVersion)
 		os.Exit(0)
 	}
+
+	// 初始化日志
+	logPath := constant.LogPath
+	if !Exists(logPath) {
+		if err := os.MkdirAll(logPath, os.ModePerm); err != nil {
+			logrus.Errorf("创建logs文件夹异常 err: %v", err)
+			panic(err)
+		}
+	}
+
 	// 初始化全局配文件夹
 	configPath := constant.ConfigPath
 	if !Exists(configPath) {
