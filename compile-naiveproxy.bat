@@ -1,4 +1,4 @@
-go install github.com/caddyserver/xcaddy/cmd/xcaddy@2.6.2
+go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest
 ::Linux 386
 SET CGO_ENABLED=0
 SET GOOS=linux
