@@ -44,9 +44,9 @@ create table trojan_panel_db.account
 
 ## 版本对应关系
 
-| Trojan Panel | Trojan Panel Core | Xray   | Trojan Go | Hysteria | Caddy（NaiveProxy） |
-|--------------|-------------------|--------|-----------|----------|-------------------|
-| v1.3.0       | v1.3.0            | v1.6.1 | v0.10.6   | v1.3.2   | v2.6.2            |
+| Trojan Panel Core | Xray   | Trojan Go | Hysteria | Caddy（NaiveProxy） |
+|-------------------|--------|-----------|----------|-------------------|
+| v1.3.1            | v1.6.1 | v0.10.6   | v1.3.2   | v2.6.2            |
 
 # 编译命令
 
