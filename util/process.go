@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
-	"runtime"
 	"strconv"
 	"strings"
 	"trojan-panel-core/module/constant"
@@ -27,16 +26,16 @@ func GetBinaryFilePath(binaryType int) (string, error) {
 	var binaryName string
 	switch binaryType {
 	case constant.Xray:
-		binaryName = fmt.Sprintf("xray-%s-%s", runtime.GOOS, runtime.GOARCH)
+		binaryName = "xray"
 		binaryPath = constant.XrayBinPath
 	case constant.TrojanGo:
-		binaryName = fmt.Sprintf("trojan-go-%s-%s", runtime.GOOS, runtime.GOARCH)
+		binaryName = "trojan-go"
 		binaryPath = constant.TrojanGoBinPath
 	case constant.Hysteria:
-		binaryName = fmt.Sprintf("hysteria-%s-%s", runtime.GOOS, runtime.GOARCH)
+		binaryName = "hysteria"
 		binaryPath = constant.HysteriaBinPath
 	case constant.NaiveProxy:
-		binaryName = fmt.Sprintf("naiveproxy-%s-%s", runtime.GOOS, runtime.GOARCH)
+		binaryName = "naiveproxy"
 		binaryPath = constant.NaiveProxyBinPath
 	default:
 		return "", errors.New(constant.BinaryFileNotExist)
