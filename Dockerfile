@@ -16,12 +16,12 @@ ENV mariadb_ip=127.0.0.1 \
     TZ=Asia/Shanghai
 ARG TARGETOS
 ARG TARGETARCH
-ARG TARGETPLATFORM
-COPY build/trojan-panel-core-${TARGETOS}-${TARGETARCH}${TARGETPLATFORM} trojan-panel-core
-COPY build/xray-${TARGETOS}-${TARGETARCH}${TARGETPLATFORM} bin/xray/xray
-COPY build/trojan-go-${TARGETOS}-${TARGETARCH}${TARGETPLATFORM} bin/trojango/trojan-go
-COPY build/hysteria-${TARGETOS}-${TARGETARCH}${TARGETPLATFORM} bin/hysteria/hysteria
-COPY build/naiveproxy-${TARGETOS}-${TARGETARCH}${TARGETPLATFORM} bin/naiveproxy/naiveproxy
+ARG TARGETVARIANT
+COPY build/trojan-panel-core-${TARGETOS}-${TARGETARCH}${TARGETVARIANT} trojan-panel-core
+COPY build/xray-${TARGETOS}-${TARGETARCH}${TARGETVARIANT} bin/xray/xray
+COPY build/trojan-go-${TARGETOS}-${TARGETARCH}${TARGETVARIANT} bin/trojango/trojan-go
+COPY build/hysteria-${TARGETOS}-${TARGETARCH}${TARGETVARIANT} bin/hysteria/hysteria
+COPY build/naiveproxy-${TARGETOS}-${TARGETARCH}${TARGETVARIANT} bin/naiveproxy/naiveproxy
 RUN chmod 777 bin/xray/xray
 RUN chmod 777 bin/trojango/trojan-go
 RUN chmod 777 bin/hysteria/hysteria
