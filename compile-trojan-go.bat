@@ -8,11 +8,18 @@ SET CGO_ENABLED=0
 SET GOOS=linux
 SET GOARCH=amd64
 go build -o build/trojan-go-linux-amd64 -tags "full"
-::Linux arm
+::Linux armv6
 SET CGO_ENABLED=0
 SET GOOS=linux
 SET GOARCH=arm
-go build -o build/trojan-go-linux-arm -tags "full"
+SET GOARM=6
+go build -o build/trojan-go-linux-armv6 -tags "full"
+::Linux armv7
+SET CGO_ENABLED=0
+SET GOOS=linux
+SET GOARCH=arm
+SET GOARM=7
+go build -o build/trojan-go-linux-armv7 -tags "full"
 ::Linux arm64
 SET CGO_ENABLED=0
 SET GOOS=linux

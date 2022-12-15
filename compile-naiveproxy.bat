@@ -9,11 +9,18 @@ SET CGO_ENABLED=0
 SET GOOS=linux
 SET GOARCH=amd64
 xcaddy build --output build/naiveproxy-linux-amd64 --with github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive
-::Linux arm
+::Linux armv6
 SET CGO_ENABLED=0
 SET GOOS=linux
 SET GOARCH=arm
-xcaddy build --output build/naiveproxy-linux-arm --with github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive
+SET GOARM=6
+xcaddy build --output build/naiveproxy-linux-armv6 --with github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive
+::Linux armv7
+SET CGO_ENABLED=0
+SET GOOS=linux
+SET GOARCH=arm
+SET GOARM=7
+xcaddy build --output build/naiveproxy-linux-armv7 --with github.com/caddyserver/forwardproxy@caddy2=github.com/klzgrad/forwardproxy@naive
 ::Linux arm64
 SET CGO_ENABLED=0
 SET GOOS=linux

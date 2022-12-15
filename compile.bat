@@ -19,11 +19,18 @@ SET CGO_ENABLED=0
 SET GOOS=linux
 SET GOARCH=amd64
 garble -literals -tiny build -o build/trojan-panel-core-linux-amd64 -trimpath -ldflags "-s -w -buildid="
-::Linux arm
+::Linux armv6
 SET CGO_ENABLED=0
 SET GOOS=linux
 SET GOARCH=arm
-garble -literals -tiny build -o build/trojan-panel-core-linux-arm -trimpath -ldflags "-s -w -buildid="
+SET GOARM=6
+garble -literals -tiny build -o build/trojan-panel-core-linux-armv6 -trimpath -ldflags "-s -w -buildid="
+::Linux armv7
+SET CGO_ENABLED=0
+SET GOOS=linux
+SET GOARCH=arm
+SET GOARM=7
+garble -literals -tiny build -o build/trojan-panel-core-linux-armv7 -trimpath -ldflags "-s -w -buildid="
 ::Linux arm64
 SET CGO_ENABLED=0
 SET GOOS=linux

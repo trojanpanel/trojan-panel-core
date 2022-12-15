@@ -8,11 +8,18 @@ SET CGO_ENABLED=0
 SET GOOS=linux
 SET GOARCH=amd64
 go build -o build/xray-linux-amd64 -trimpath -ldflags "-s -w -buildid=" ./main
-::Linux arm
+::Linux armv6
 SET CGO_ENABLED=0
 SET GOOS=linux
 SET GOARCH=arm
-go build -o build/xray-linux-arm -trimpath -ldflags "-s -w -buildid=" ./main
+SET GOARM=6
+go build -o build/xray-linux-armv6 -trimpath -ldflags "-s -w -buildid=" ./main
+::Linux armv7
+SET CGO_ENABLED=0
+SET GOOS=linux
+SET GOARCH=arm
+SET GOARM=7
+go build -o build/xray-linux-armv7 -trimpath -ldflags "-s -w -buildid=" ./main
 ::Linux arm64
 SET CGO_ENABLED=0
 SET GOOS=linux
