@@ -2,7 +2,7 @@ package dto
 
 type TrojanGoConfigDto struct {
 	Port            uint
-	Ip              string
+	NodeServerIp    string
 	Sni             string
 	MuxEnable       uint
 	WebsocketEnable uint

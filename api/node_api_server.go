@@ -42,9 +42,9 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 	}
 
 	if err := app.StartApp(dto.NodeAddDto{
-		NodeTypeId: uint(nodeAddDto.NodeTypeId),
-		Port:       uint(nodeAddDto.Port),
-		Ip:         nodeAddDto.Ip,
+		NodeTypeId:   uint(nodeAddDto.NodeTypeId),
+		Port:         uint(nodeAddDto.Port),
+		NodeServerIp: nodeAddDto.NodeServerIp,
 
 		// Xray
 		XrayProtocol:       nodeAddDto.XrayProtocol,

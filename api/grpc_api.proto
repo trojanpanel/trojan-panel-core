@@ -18,7 +18,7 @@ service ApiStateService {
 message NodeAddDto {
   uint64 nodeTypeId = 1;
   uint64 port = 2;
-  string ip = 3;
+  string nodeServerIp = 3;
 
   string xrayProtocol = 4;
   string xraySettings = 5;
