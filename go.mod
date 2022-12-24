@@ -1,6 +1,6 @@
 module trojan-panel-core
 
-go 1.18
+go 1.19
 
 require (
 	github.com/didi/gendry v1.8.0

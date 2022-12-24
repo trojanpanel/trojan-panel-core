@@ -115,7 +115,7 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
                                             "match": [
                                                 {
                                                     "host": [
-                                                        "${ip}"
+                                                        "${domain}"
                                                     ]
                                                 }
                                             ],
@@ -139,7 +139,7 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
                         {
                             "match": {
                                 "sni": [
-                                    "${ip}"
+                                    "${domain}"
                                 ]
                             }
                         }
@@ -163,7 +163,7 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
     }
 }`
 	configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(naiveProxyConfigDto.ApiPort), 10))
-	configContent = strings.ReplaceAll(configContent, "${ip}", naiveProxyConfigDto.NodeServerIp)
+	configContent = strings.ReplaceAll(configContent, "${domain}", naiveProxyConfigDto.Domain)
 	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(naiveProxyConfigDto.Port), 10))
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)

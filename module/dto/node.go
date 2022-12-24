@@ -1,9 +1,9 @@
 package dto
 
 type NodeAddDto struct {
-	NodeTypeId   uint   `json:"nodeType" form:"nodeType" validate:"required"`
-	Port         uint   `json:"port" form:"port" validate:"omitempty"`
-	NodeServerIp string `json:"nodeServerIp" form:"nodeServerIp" validate:"omitempty"`
+	NodeTypeId uint   `json:"nodeType" form:"nodeType" validate:"required"`
+	Port       uint   `json:"port" form:"port" validate:"omitempty"`
+	Domain     string `json:"domain" form:"domain" validate:"omitempty"`
 
 	XrayProtocol       string `json:"xrayProtocol" form:"xrayProtocol" validate:"omitempty"`
 	XraySettings       string `json:"xraySettings" form:"xraySettings" validate:"omitempty"`

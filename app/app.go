@@ -30,7 +30,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		if err := trojango.StartTrojanGo(dto.TrojanGoConfigDto{
 			ApiPort:         nodeAddDto.Port + 30000,
 			Port:            nodeAddDto.Port,
-			NodeServerIp:    nodeAddDto.NodeServerIp,
+			Domain:          nodeAddDto.Domain,
 			Sni:             nodeAddDto.TrojanGoSni,
 			MuxEnable:       nodeAddDto.TrojanGoMuxEnable,
 			WebsocketEnable: nodeAddDto.TrojanGoWebsocketEnable,
@@ -44,20 +44,20 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 		}
 	case constant.Hysteria:
 		if err := hysteria.StartHysteria(dto.HysteriaConfigDto{
-			ApiPort:      nodeAddDto.Port + 30000,
-			Port:         nodeAddDto.Port,
-			Protocol:     nodeAddDto.HysteriaProtocol,
-			NodeServerIp: nodeAddDto.NodeServerIp,
-			UpMbps:       nodeAddDto.HysteriaUpMbps,
-			DownMbps:     nodeAddDto.HysteriaDownMbps,
+			ApiPort:  nodeAddDto.Port + 30000,
+			Port:     nodeAddDto.Port,
+			Protocol: nodeAddDto.HysteriaProtocol,
+			Domain:   nodeAddDto.Domain,
+			UpMbps:   nodeAddDto.HysteriaUpMbps,
+			DownMbps: nodeAddDto.HysteriaDownMbps,
 		}); err != nil {
 			return err
 		}
 	case constant.NaiveProxy:
 		if err := naiveproxy.StartNaiveProxy(dto.NaiveProxyConfigDto{
-			ApiPort:      nodeAddDto.Port + 30000,
-			Port:         nodeAddDto.Port,
-			NodeServerIp: nodeAddDto.NodeServerIp,
+			ApiPort: nodeAddDto.Port + 30000,
+			Port:    nodeAddDto.Port,
+			Domain:  nodeAddDto.Domain,
 		}); err != nil {
 			return err
 		}

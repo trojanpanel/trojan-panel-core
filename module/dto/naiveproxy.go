@@ -1,9 +1,9 @@
 package dto
 
 type NaiveProxyConfigDto struct {
-	ApiPort      uint
-	Port         uint
-	NodeServerIp string
+	ApiPort uint
+	Port    uint
+	Domain  string
 }
 
 type NaiveProxyAddUserDto struct {
