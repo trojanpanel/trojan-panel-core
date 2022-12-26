@@ -1,4 +1,4 @@
-go install mvdan.cc/garble@latest
+go install mvdan.cc/garble@v0.7.2
 ::Windows amd64
 ::SET CGO_ENABLED=0
 ::SET GOOS=windows
