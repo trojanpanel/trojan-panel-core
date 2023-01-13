@@ -2,9 +2,15 @@ syntax = "proto3";
 
 option go_package = ".;api";
 
+import "google/protobuf/any.proto";
+
 service ApiNodeService {
   rpc AddNode(NodeAddDto) returns (Response) {}
   rpc RemoveNode(NodeRemoveDto) returns (Response) {}
+}
+
+service ApiNodeServerService {
+  rpc NodeServerState(NodeServerGroupDto) returns (Response) {}
 }
 
 service ApiAccountService {
@@ -46,6 +52,8 @@ message NodeRemoveDto {
   uint64 port = 2;
 }
 
+message NodeServerGroupDto {}
+
 message AccountRemoveDto {
   string password = 1;
 }
@@ -55,4 +63,5 @@ message StateDto {}
 message Response {
   bool success = 1;
   string msg = 2;
+  google.protobuf.Any data = 3;
 }

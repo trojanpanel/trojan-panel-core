@@ -12,6 +12,7 @@ require (
 	github.com/gomodule/redigo v1.8.9
 	github.com/p4gefau1t/trojan-go v0.10.6
 	github.com/robfig/cron/v3 v3.0.1
+	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/sirupsen/logrus v1.9.0
 	github.com/xtls/xray-core v1.7.0
 	google.golang.org/grpc v1.51.0
@@ -25,6 +26,7 @@ require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/dgryski/go-metro v0.0.0-20211217172704-adc40b04c140 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
+	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
@@ -41,11 +43,14 @@ require (
 	github.com/refraction-networking/utls v1.2.0 // indirect
 	github.com/riobard/go-bloom v0.0.0-20200614022211-cdc8013cb5b3 // indirect
 	github.com/seiflotfy/cuckoofilter v0.0.0-20220411075957-e3b120b3f5fb // indirect
+	github.com/tklauser/go-sysconf v0.3.11 // indirect
+	github.com/tklauser/numcpus v0.6.0 // indirect
 	github.com/txthinking/socks5 v0.0.0-20220212043548-414499347d4a // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	github.com/v2fly/ss-bloomring v0.0.0-20210312155135-28617310f63e // indirect
 	github.com/xtaci/smux v1.5.17 // indirect
 	github.com/xtls/go v0.0.0-20220914232946-0441cf4cf837 // indirect
+	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	golang.org/x/crypto v0.4.0 // indirect
 	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect

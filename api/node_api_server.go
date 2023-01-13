@@ -9,13 +9,13 @@ import (
 	"trojan-panel-core/util"
 )
 
-type NodeServerApi struct {
+type NodeApiServer struct {
 }
 
-func (s *NodeServerApi) mustEmbedUnimplementedApiNodeServiceServer() {
+func (s *NodeApiServer) mustEmbedUnimplementedApiNodeServiceServer() {
 }
 
-func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*Response, error) {
+func (s *NodeApiServer) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*Response, error) {
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
@@ -72,7 +72,7 @@ func (s *NodeServerApi) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 	return &Response{Success: true, Msg: ""}, nil
 }
 
-func (s *NodeServerApi) RemoveNode(ctx context.Context, nodeRemoveDto *NodeRemoveDto) (*Response, error) {
+func (s *NodeApiServer) RemoveNode(ctx context.Context, nodeRemoveDto *NodeRemoveDto) (*Response, error) {
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}

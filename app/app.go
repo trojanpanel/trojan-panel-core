@@ -116,7 +116,7 @@ func RestartApp(apiPort uint, nodeType uint) error {
 }
 
 func InitApp() {
-	InitBinFile()
+	//InitBinFile()
 	if err := xray.InitXrayApp(); err != nil {
 		logrus.Errorf("Xray app 初始化失败 err: %s", err.Error())
 	}
