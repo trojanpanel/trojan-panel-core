@@ -54,6 +54,12 @@ message NodeRemoveDto {
 
 message NodeServerGroupDto {}
 
+message NodeServerGroupVo {
+  float cpuUsed = 1;
+  float memUsed = 2;
+  float diskUsed = 3;
+}
+
 message AccountRemoveDto {
   string password = 1;
 }

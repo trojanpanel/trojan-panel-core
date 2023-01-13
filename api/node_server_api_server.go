@@ -4,7 +4,6 @@ import (
 	"context"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
-	"trojan-panel-core/module/vo"
 	"trojan-panel-core/util"
 )
 
@@ -24,10 +23,10 @@ func (s *NodeServerApiServer) NodeServerState(ctx context.Context, nodeServerGro
 	if err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-	nodeServerGroupVo := &vo.NodeServerGroupVo{
-		CpuUsed:  cpuUsed,
-		MemUsed:  memUsed,
-		DiskUsed: diskUsed,
+	nodeServerGroupVo := &NodeServerGroupVo{
+		CpuUsed:  float32(cpuUsed),
+		MemUsed:  float32(memUsed),
+		DiskUsed: float32(diskUsed),
 	}
 	data, err := anypb.New(proto.Message(nodeServerGroupVo))
 	if err != nil {
