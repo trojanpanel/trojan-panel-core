@@ -14,9 +14,9 @@ func (s *NodeServerApiServer) mustEmbedUnimplementedApiNodeServerServiceServer()
 }
 
 func (s *NodeServerApiServer) NodeServerState(ctx context.Context, nodeServerGroupDto *NodeServerGroupDto) (*Response, error) {
-	//if err := authRequest(ctx); err != nil {
-	//	return &Response{Success: false, Msg: err.Error()}, nil
-	//}
+	if err := authRequest(ctx); err != nil {
+		return &Response{Success: false, Msg: err.Error()}, nil
+	}
 	cpuUsed, err := util.GetCpuPercent()
 	memUsed, err := util.GetMemPercent()
 	diskUsed, err := util.GetDiskPercent()
