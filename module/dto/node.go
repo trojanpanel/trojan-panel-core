@@ -5,6 +5,7 @@ type NodeAddDto struct {
 	Port       uint   `json:"port" form:"port" validate:"omitempty"`
 	Domain     string `json:"domain" form:"domain" validate:"omitempty"`
 
+	XrayTemplate       string `json:"xrayTemplate" form:"xrayTemplate" validate:"omitempty"`
 	XrayProtocol       string `json:"xrayProtocol" form:"xrayProtocol" validate:"omitempty"`
 	XraySettings       string `json:"xraySettings" form:"xraySettings" validate:"omitempty"`
 	XrayStreamSettings string `json:"xrayStreamSettings" form:"xrayStreamSettings" validate:"omitempty"`

@@ -26,25 +26,26 @@ message NodeAddDto {
   uint64 port = 2;
   string domain = 3;
 
-  string xrayProtocol = 4;
-  string xraySettings = 5;
-  string xrayStreamSettings = 6;
-  string xrayTag = 7;
-  string xraySniffing = 8;
-  string xrayAllocate = 9;
+  string xrayTemplate = 4;
+  string xrayProtocol = 5;
+  string xraySettings = 6;
+  string xrayStreamSettings = 7;
+  string xrayTag = 8;
+  string xraySniffing = 9;
+  string xrayAllocate = 10;
 
-  string trojanGoSni = 10;
-  uint64 trojanGoMuxEnable = 11;
-  uint64 trojanGoWebsocketEnable = 12;
-  string trojanGoWebsocketPath = 13;
-  string trojanGoWebsocketHost = 14;
-  uint64 trojanGoSSEnable = 15;
-  string trojanGoSSMethod = 16;
-  string trojanGoSSPassword = 17;
+  string trojanGoSni = 11;
+  uint64 trojanGoMuxEnable = 12;
+  uint64 trojanGoWebsocketEnable = 13;
+  string trojanGoWebsocketPath = 14;
+  string trojanGoWebsocketHost = 15;
+  uint64 trojanGoSSEnable = 16;
+  string trojanGoSSMethod = 17;
+  string trojanGoSSPassword = 18;
 
-  string hysteriaProtocol = 18;
-  int64 hysteriaUpMbps = 19;
-  int64 hysteriaDownMbps = 20;
+  string hysteriaProtocol = 19;
+  int64 hysteriaUpMbps = 20;
+  int64 hysteriaDownMbps = 21;
 }
 
 message NodeRemoveDto {

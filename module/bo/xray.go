@@ -50,3 +50,8 @@ type Certificate struct {
 type XrayStreamSettingsWsSettings struct {
 	Path string `json:"path"`
 }
+
+type XrayTemplate struct {
+	Flow           string `json:"flow"`
+	ConfigTemplate string `json:"configTemplate"`
+}

@@ -20,6 +20,7 @@ import (
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
+	"trojan-panel-core/service"
 	"trojan-panel-core/util"
 )
 
@@ -142,6 +143,10 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 	if err != nil {
 		return nil
 	}
+	xrayTemplate, err := service.SelectXrayTemplate()
+	if err != nil {
+		return err
+	}
 	handlerServiceClient := command.NewHandlerServiceClient(conn)
 	switch dto.Protocol {
 	case constant.ProtocolShadowsocks:
@@ -169,7 +174,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Level: 0,
 						Account: serial.ToTypedMessage(&trojan.Account{
 							Password: dto.Password,
-							Flow:     "xtls-rprx-direct",
+							Flow:     xrayTemplate.Flow,
 						}),
 					},
 				}),
@@ -184,7 +189,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Level: 0,
 						Account: serial.ToTypedMessage(&vless.Account{
 							Id:         util.GenerateUUID(dto.Password),
-							Flow:       "xtls-rprx-direct",
+							Flow:       xrayTemplate.Flow,
 							Encryption: "none",
 						}),
 					},
