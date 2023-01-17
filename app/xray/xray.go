@@ -6,8 +6,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"runtime"
-	"strconv"
-	"strings"
 	"trojan-panel-core/core"
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/module/bo"
@@ -83,17 +81,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
     "log": {
         "loglevel": "warning"
     },
-    "inbounds": [
-        {
-            "tag": "api",
-            "listen": "127.0.0.1",
-            "port": "${api_port}",
-            "protocol": "dokodemo-door",
-            "settings": {
-                "address": "127.0.0.1"
-            }
-        }
-    ],
+    "inbounds": [],
     "outbounds": [
         {
             "protocol": "freedom"
@@ -133,10 +121,9 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
     }
 }`
 	}
-	configTemplateContent := strings.ReplaceAll(xrayConfigDto.Template, "\"${api_port}\"", strconv.FormatInt(int64(xrayConfigDto.ApiPort), 10))
 	xrayConfig := &bo.XrayConfigBo{}
 	// 将json字符串映射到模板对象
-	if err = json.Unmarshal([]byte(configTemplateContent), xrayConfig); err != nil {
+	if err = json.Unmarshal([]byte(xrayConfigDto.Template), xrayConfig); err != nil {
 		logrus.Errorf("xray template config反序列化异常 err: %v", err)
 		return err
 	}
@@ -175,6 +162,14 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	}
 
 	// 添加入站协议
+	xrayConfig.Inbounds = append(xrayConfig.Inbounds, bo.InboundBo{
+		Listen:   "127.0.0.1",
+		Port:     xrayConfigDto.ApiPort,
+		Protocol: "dokodemo-door",
+		Settings: bo.TypeMessage("{\"address\": \"127.0.0.1\"}"),
+		Tag:      "api",
+	})
+
 	xrayConfig.Inbounds = append(xrayConfig.Inbounds, bo.InboundBo{
 		Listen:         "0.0.0.0",
 		Port:           xrayConfigDto.Port,
