@@ -11,8 +11,6 @@ const (
 	ConfigPath string = "config"
 	// ConfigFilePath 全局配置文件路径
 	ConfigFilePath string = "config/config.ini"
-	// XrayTemplateFilePath Xray模板
-	XrayTemplateFilePath string = "config/template-xray.json"
 
 	XrayPath          string = "bin/xray/config"
 	TrojanGoPath      string = "bin/trojango/config"

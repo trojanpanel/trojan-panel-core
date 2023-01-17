@@ -47,6 +47,7 @@ func (s *NodeApiServer) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		Domain:     nodeAddDto.Domain,
 
 		// Xray
+		XrayTemplate:       nodeAddDto.XrayTemplate,
 		XrayProtocol:       nodeAddDto.XrayProtocol,
 		XraySettings:       nodeAddDto.XraySettings,
 		XrayStreamSettings: nodeAddDto.XrayStreamSettings,

@@ -142,10 +142,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 	if err != nil {
 		return nil
 	}
-	xrayTemplate, err := SelectXrayTemplate()
-	if err != nil {
-		return err
-	}
+
 	handlerServiceClient := command.NewHandlerServiceClient(conn)
 	switch dto.Protocol {
 	case constant.ProtocolShadowsocks:
@@ -173,7 +170,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Level: 0,
 						Account: serial.ToTypedMessage(&trojan.Account{
 							Password: dto.Password,
-							Flow:     xrayTemplate.Flow,
+							Flow:     "xtls-rprx-vision",
 						}),
 					},
 				}),
@@ -188,7 +185,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Level: 0,
 						Account: serial.ToTypedMessage(&vless.Account{
 							Id:         util.GenerateUUID(dto.Password),
-							Flow:       xrayTemplate.Flow,
+							Flow:       "xtls-rprx-vision",
 							Encryption: "none",
 						}),
 					},

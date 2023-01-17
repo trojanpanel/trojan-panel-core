@@ -11,6 +11,7 @@ type XrayConfigDto struct {
 	Tag            string
 	Sniffing       string
 	Allocate       string
+	Template       string // 模板
 }
 
 type XrayAddUserDto struct {
