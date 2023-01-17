@@ -12,7 +12,7 @@ const (
 	// ConfigFilePath 全局配置文件路径
 	ConfigFilePath string = "config/config.ini"
 	// XrayTemplateFilePath Xray模板
-	XrayTemplateFilePath string = "config/template-xray.yaml"
+	XrayTemplateFilePath string = "config/template-xray.json"
 
 	XrayPath          string = "bin/xray/config"
 	TrojanGoPath      string = "bin/trojango/config"
@@ -24,5 +24,5 @@ const (
 	NaiveProxyBinPath string = "bin/naiveproxy"
 	DownloadBaseUrl   string = "https://github.com/trojanpanel/install-script/releases/download/v1.2.0"
 
-	TrojanPanelCoreVersion = "v1.3.2"
+	TrojanPanelCoreVersion = "v2.0.0"
 )

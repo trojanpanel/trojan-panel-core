@@ -132,11 +132,10 @@ compress=true
 		}
 		defer file.Close()
 
-		_, err = file.WriteString(fmt.Sprintf(
-			`{
+		_, err = file.WriteString(`{
   "flow": "xtls-rprx-vision",
   "configTemplate": "{\n    \"log\": {\n        \"loglevel\": \"warning\"\n    },\n    \"inbounds\": [\n        {\n            \"tag\": \"api\",\n            \"listen\": \"127.0.0.1\",\n            \"port\": ${api_port},\n            \"protocol\": \"dokodemo-door\",\n            \"settings\": {\n                \"address\": \"127.0.0.1\"\n            }\n        }\n    ],\n    \"outbounds\": [\n        {\n            \"protocol\": \"freedom\"\n        }\n    ],\n    \"api\": {\n        \"tag\": \"api\",\n        \"services\": [\n            \"HandlerService\",\n            \"LoggerService\",\n            \"StatsService\"\n        ]\n    },\n    \"routing\": {\n        \"rules\": [\n            {\n                \"inboundTag\": [\n                    \"api\"\n                ],\n                \"outboundTag\": \"api\",\n                \"type\": \"field\"\n            }\n        ]\n    },\n    \"stats\": {},\n    \"policy\": {\n        \"levels\": {\n            \"0\": {\n                \"statsUserUplink\": true,\n                \"statsUserDownlink\": true\n            }\n        },\n        \"system\": {\n            \"statsInboundUplink\": true,\n            \"statsInboundDownlink\": true\n        }\n    }\n}"
-}`))
+}`)
 		if err != nil {
 			logrus.Errorf("template-xray.json文件写入异常 err: %v", err)
 			panic(err)
