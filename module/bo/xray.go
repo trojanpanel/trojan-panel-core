@@ -49,4 +49,5 @@ type Certificate struct {
 
 type XrayStreamSettingsWsSettings struct {
 	Path string `json:"path"`
+	Host string `json:"host"`
 }
