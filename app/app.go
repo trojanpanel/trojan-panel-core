@@ -23,7 +23,6 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 			Tag:            nodeAddDto.XrayTag,
 			Sniffing:       nodeAddDto.XraySniffing,
 			Allocate:       nodeAddDto.XrayAllocate,
-			Template:       nodeAddDto.XrayTemplate,
 		}); err != nil {
 			return err
 		}

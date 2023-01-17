@@ -69,9 +69,6 @@ func RestartXray(apiPort uint) error {
 
 // 初始化Xray文件
 func initXray(xrayConfigDto dto.XrayConfigDto) error {
-	if err := service.UpdateXrayTemplate(xrayConfigDto.Template); err != nil {
-		return err
-	}
 	// 初始化配置 文件名称格式：config-[apiPort]-[protocol].json
 	xrayConfigFilePath := fmt.Sprintf("%s/config-%d-%s.json", constant.XrayPath, xrayConfigDto.ApiPort, xrayConfigDto.Protocol)
 	file, err := os.OpenFile(xrayConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
@@ -82,8 +79,12 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	defer file.Close()
 
 	// 根据不同的协议生成对应的配置文件，用户信息通过新建同步协程
-	configTemplateContent := xrayConfigDto.Template
-	configTemplateContent = strings.ReplaceAll(configTemplateContent, "${api_port}", strconv.FormatInt(int64(xrayConfigDto.ApiPort), 10))
+	xrayTemplate, err := service.SelectXrayTemplate()
+	if err != nil {
+		return err
+	}
+
+	configTemplateContent := strings.ReplaceAll(xrayTemplate.ConfigTemplate, "${api_port}", strconv.FormatInt(int64(xrayConfigDto.ApiPort), 10))
 	xrayConfig := &bo.XrayConfigBo{}
 	// 将json字符串映射到模板对象
 	if err = json.Unmarshal([]byte(configTemplateContent), xrayConfig); err != nil {
