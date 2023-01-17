@@ -48,6 +48,10 @@ create table trojan_panel_db.account
 |-------------------|--------|-----------|----------|-------------------|
 | v2.0.0            | v1.7.2 | v0.10.6   | v1.3.2   | v2.6.2            |
 
+## 防止循环依赖
+
+router,api,middleware->service->dao,app->core
+
 # 编译命令
 
 [compile.bat](./compile.bat)

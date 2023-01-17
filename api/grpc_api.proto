@@ -21,6 +21,10 @@ service ApiStateService {
   rpc Ping(StateDto) returns (Response) {}
 }
 
+service ApiXrayTemplateService {
+  rpc UpdateXrayTemplate(XrayTemplateDto) returns (Response) {}
+}
+
 message NodeAddDto {
   uint64 nodeTypeId = 1;
   uint64 port = 2;
@@ -65,6 +69,10 @@ message AccountRemoveDto {
 }
 
 message StateDto {}
+
+message XrayTemplateDto {
+  string xrayTemplate = 1;
+}
 
 message Response {
   bool success = 1;

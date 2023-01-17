@@ -20,7 +20,6 @@ import (
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
-	"trojan-panel-core/service"
 	"trojan-panel-core/util"
 )
 
@@ -143,7 +142,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 	if err != nil {
 		return nil
 	}
-	xrayTemplate, err := service.SelectXrayTemplate()
+	xrayTemplate, err := SelectXrayTemplate()
 	if err != nil {
 		return err
 	}

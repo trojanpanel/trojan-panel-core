@@ -13,7 +13,6 @@ import (
 	"trojan-panel-core/module/bo"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
-	"trojan-panel-core/service"
 	"trojan-panel-core/util"
 )
 
@@ -79,7 +78,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	defer file.Close()
 
 	// 根据不同的协议生成对应的配置文件，用户信息通过新建同步协程
-	xrayTemplate, err := service.SelectXrayTemplate()
+	xrayTemplate, err := SelectXrayTemplate()
 	if err != nil {
 		return err
 	}

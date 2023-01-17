@@ -1,4 +1,4 @@
-package service
+package xray
 
 import (
 	"encoding/json"
