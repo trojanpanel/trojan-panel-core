@@ -6,7 +6,7 @@ import "errors"
 type TypeMessage []byte
 
 func (m TypeMessage) MarshalJSON() ([]byte, error) {
-	if len(m) == 0 {
+	if len(m) == 0 || (m[0] == 123 && m[1] == 125) {
 		return []byte("null"), nil
 	}
 	return m, nil
