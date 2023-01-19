@@ -121,9 +121,9 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
     }
 }`
 	}
-	xrayConfig := bo.XrayConfigBo{}
+	xrayConfig := &bo.XrayConfigBo{}
 	// 将json字符串映射到模板对象
-	if err = json.Unmarshal([]byte(xrayConfigDto.Template), &xrayConfig); err != nil {
+	if err = json.Unmarshal([]byte(xrayConfigDto.Template), xrayConfig); err != nil {
 		logrus.Errorf("xray template config反序列化异常 err: %v", err)
 		return err
 	}
