@@ -170,7 +170,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Level: 0,
 						Account: serial.ToTypedMessage(&trojan.Account{
 							Password: dto.Password,
-							Flow:     "xtls-rprx-vision",
+							Flow:     "xtls-rprx-direct",
 						}),
 					},
 				}),
@@ -185,7 +185,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Level: 0,
 						Account: serial.ToTypedMessage(&vless.Account{
 							Id:         util.GenerateUUID(dto.Password),
-							Flow:       "xtls-rprx-vision",
+							Flow:       "xtls-rprx-direct",
 							Encryption: "none",
 						}),
 					},
