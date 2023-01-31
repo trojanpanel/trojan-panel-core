@@ -22,5 +22,5 @@ const (
 	NaiveProxyBinPath string = "bin/naiveproxy"
 	DownloadBaseUrl   string = "https://github.com/trojanpanel/install-script/releases/download/v1.2.0"
 
-	TrojanPanelCoreVersion = "v2.0.0"
+	TrojanPanelCoreVersion = "v2.0.1"
 )
