@@ -56,7 +56,6 @@ func init() {
 	flag.StringVar(&keyPath, "key-path", "", "key秘钥")
 	flag.BoolVar(&version, "version", false, "打印版本信息")
 	flag.Usage = usage
-	testing.Init()
 	flag.Parse()
 	if version {
 		_, _ = fmt.Fprint(os.Stdout, constant.TrojanPanelCoreVersion)
