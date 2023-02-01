@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"testing"
 	"trojan-panel-core/module/constant"
 )
 
