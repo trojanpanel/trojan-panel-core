@@ -41,13 +41,15 @@ func (s *NodeApiServer) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 
-	if err := app.StartApp(dto.NodeAddDto{
+	if err = app.StartApp(dto.NodeAddDto{
 		NodeTypeId: uint(nodeAddDto.NodeTypeId),
 		Port:       uint(nodeAddDto.Port),
 		Domain:     nodeAddDto.Domain,
 
 		// Xray
 		XrayTemplate:       nodeAddDto.XrayTemplate,
+		XrayFlow:           nodeAddDto.XrayFlow,
+		XraySSMethod:       nodeAddDto.XraySSMethod,
 		XrayProtocol:       nodeAddDto.XrayProtocol,
 		XraySettings:       nodeAddDto.XraySettings,
 		XrayStreamSettings: nodeAddDto.XrayStreamSettings,
@@ -77,7 +79,7 @@ func (s *NodeApiServer) RemoveNode(ctx context.Context, nodeRemoveDto *NodeRemov
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-	if err := app.StopApp(uint(nodeRemoveDto.Port)+30000, uint(nodeRemoveDto.NodeType)); err != nil {
+	if err := app.StopApp(uint(nodeRemoveDto.Port)+30000, uint(nodeRemoveDto.NodeTypeId)); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 	return &Response{Success: true, Msg: ""}, nil

@@ -23,6 +23,7 @@ func init() {
 	core.InitConfig()
 	middleware.InitLog()
 	dao.InitMySQL()
+	dao.InitSqlLite()
 	redis.InitRedis()
 	middleware.InitCron()
 	middleware.InitRateLimiter()

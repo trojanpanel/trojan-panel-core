@@ -3,97 +3,123 @@ package app
 import (
 	"errors"
 	"github.com/sirupsen/logrus"
+	"sync"
 	"trojan-panel-core/app/hysteria"
 	"trojan-panel-core/app/naiveproxy"
 	"trojan-panel-core/app/trojango"
 	"trojan-panel-core/app/xray"
+	"trojan-panel-core/dao"
+	"trojan-panel-core/module"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 )
 
 func StartApp(nodeAddDto dto.NodeAddDto) error {
-	switch nodeAddDto.NodeTypeId {
-	case constant.Xray:
-		if err := xray.StartXray(dto.XrayConfigDto{
-			ApiPort:        nodeAddDto.Port + 30000,
-			Port:           nodeAddDto.Port,
-			Protocol:       nodeAddDto.XrayProtocol,
-			Settings:       nodeAddDto.XraySettings,
-			StreamSettings: nodeAddDto.XrayStreamSettings,
-			Tag:            nodeAddDto.XrayTag,
-			Sniffing:       nodeAddDto.XraySniffing,
-			Allocate:       nodeAddDto.XrayAllocate,
-			Template:       nodeAddDto.XrayTemplate,
-		}); err != nil {
+	var mutex sync.Mutex
+	defer mutex.TryLock()
+	if mutex.TryLock() {
+		switch nodeAddDto.NodeTypeId {
+		case constant.Xray:
+			if err := xray.StartXray(dto.XrayConfigDto{
+				ApiPort:        nodeAddDto.Port + 30000,
+				Port:           nodeAddDto.Port,
+				Protocol:       nodeAddDto.XrayProtocol,
+				Settings:       nodeAddDto.XraySettings,
+				StreamSettings: nodeAddDto.XrayStreamSettings,
+				Tag:            nodeAddDto.XrayTag,
+				Sniffing:       nodeAddDto.XraySniffing,
+				Allocate:       nodeAddDto.XrayAllocate,
+				Template:       nodeAddDto.XrayTemplate,
+			}); err != nil {
+				return err
+			}
+		case constant.TrojanGo:
+			if err := trojango.StartTrojanGo(dto.TrojanGoConfigDto{
+				ApiPort:         nodeAddDto.Port + 30000,
+				Port:            nodeAddDto.Port,
+				Domain:          nodeAddDto.Domain,
+				Sni:             nodeAddDto.TrojanGoSni,
+				MuxEnable:       nodeAddDto.TrojanGoMuxEnable,
+				WebsocketEnable: nodeAddDto.TrojanGoWebsocketEnable,
+				WebsocketPath:   nodeAddDto.TrojanGoWebsocketPath,
+				WebsocketHost:   nodeAddDto.TrojanGoWebsocketHost,
+				SSEnable:        nodeAddDto.TrojanGoSSEnable,
+				SSMethod:        nodeAddDto.TrojanGoSSMethod,
+				SSPassword:      nodeAddDto.TrojanGoSSPassword,
+			}); err != nil {
+				return err
+			}
+		case constant.Hysteria:
+			if err := hysteria.StartHysteria(dto.HysteriaConfigDto{
+				ApiPort:  nodeAddDto.Port + 30000,
+				Port:     nodeAddDto.Port,
+				Protocol: nodeAddDto.HysteriaProtocol,
+				Domain:   nodeAddDto.Domain,
+				UpMbps:   nodeAddDto.HysteriaUpMbps,
+				DownMbps: nodeAddDto.HysteriaDownMbps,
+			}); err != nil {
+				return err
+			}
+		case constant.NaiveProxy:
+			if err := naiveproxy.StartNaiveProxy(dto.NaiveProxyConfigDto{
+				ApiPort: nodeAddDto.Port + 30000,
+				Port:    nodeAddDto.Port,
+				Domain:  nodeAddDto.Domain,
+			}); err != nil {
+				return err
+			}
+		default:
+			return errors.New(constant.NodeTypeNotExist)
+		}
+
+		nodeConfig := module.NodeConfig{
+			ApiPort:      nodeAddDto.Port + 30000,
+			NodeTypeId:   nodeAddDto.NodeTypeId,
+			Protocol:     nodeAddDto.XrayProtocol,
+			XrayFlow:     nodeAddDto.XrayFlow,
+			XraySSMethod: nodeAddDto.XraySSMethod,
+		}
+		if err := dao.InsertNodeConfig(nodeConfig); err != nil {
 			return err
 		}
-	case constant.TrojanGo:
-		if err := trojango.StartTrojanGo(dto.TrojanGoConfigDto{
-			ApiPort:         nodeAddDto.Port + 30000,
-			Port:            nodeAddDto.Port,
-			Domain:          nodeAddDto.Domain,
-			Sni:             nodeAddDto.TrojanGoSni,
-			MuxEnable:       nodeAddDto.TrojanGoMuxEnable,
-			WebsocketEnable: nodeAddDto.TrojanGoWebsocketEnable,
-			WebsocketPath:   nodeAddDto.TrojanGoWebsocketPath,
-			WebsocketHost:   nodeAddDto.TrojanGoWebsocketHost,
-			SSEnable:        nodeAddDto.TrojanGoSSEnable,
-			SSMethod:        nodeAddDto.TrojanGoSSMethod,
-			SSPassword:      nodeAddDto.TrojanGoSSPassword,
-		}); err != nil {
-			return err
-		}
-	case constant.Hysteria:
-		if err := hysteria.StartHysteria(dto.HysteriaConfigDto{
-			ApiPort:  nodeAddDto.Port + 30000,
-			Port:     nodeAddDto.Port,
-			Protocol: nodeAddDto.HysteriaProtocol,
-			Domain:   nodeAddDto.Domain,
-			UpMbps:   nodeAddDto.HysteriaUpMbps,
-			DownMbps: nodeAddDto.HysteriaDownMbps,
-		}); err != nil {
-			return err
-		}
-	case constant.NaiveProxy:
-		if err := naiveproxy.StartNaiveProxy(dto.NaiveProxyConfigDto{
-			ApiPort: nodeAddDto.Port + 30000,
-			Port:    nodeAddDto.Port,
-			Domain:  nodeAddDto.Domain,
-		}); err != nil {
-			return err
-		}
-	default:
-		return errors.New(constant.NodeTypeNotExist)
 	}
 	return nil
 }
 
-func StopApp(apiPort uint, nodeType uint) error {
-	switch nodeType {
-	case constant.Xray:
-		if err := xray.StopXray(apiPort, true); err != nil {
+func StopApp(apiPort uint, nodeTypeId uint) error {
+	var mutex sync.Mutex
+	defer mutex.TryLock()
+	if mutex.TryLock() {
+		switch nodeTypeId {
+		case constant.Xray:
+			if err := xray.StopXray(apiPort, true); err != nil {
+				return err
+			}
+		case constant.TrojanGo:
+			if err := trojango.StopTrojanGo(apiPort, true); err != nil {
+				return err
+			}
+		case constant.Hysteria:
+			if err := hysteria.StopHysteria(apiPort, true); err != nil {
+				return err
+			}
+		case constant.NaiveProxy:
+			if err := naiveproxy.StopNaiveProxy(apiPort, true); err != nil {
+				return err
+			}
+		default:
+			return errors.New(constant.NodeTypeNotExist)
+		}
+
+		if err := dao.DeleteNodeConfigByNodeTypeIdAndApiPort(apiPort, nodeTypeId); err != nil {
 			return err
 		}
-	case constant.TrojanGo:
-		if err := trojango.StopTrojanGo(apiPort, true); err != nil {
-			return err
-		}
-	case constant.Hysteria:
-		if err := hysteria.StopHysteria(apiPort, true); err != nil {
-			return err
-		}
-	case constant.NaiveProxy:
-		if err := naiveproxy.StopNaiveProxy(apiPort, true); err != nil {
-			return err
-		}
-	default:
-		return errors.New(constant.NodeTypeNotExist)
 	}
 	return nil
 }
 
-func RestartApp(apiPort uint, nodeType uint) error {
-	switch nodeType {
+func RestartApp(apiPort uint, nodeTypeId uint) error {
+	switch nodeTypeId {
 	case constant.Xray:
 		if err := xray.RestartXray(apiPort); err != nil {
 			return err

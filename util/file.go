@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"testing"
 	"trojan-panel-core/module/constant"
 )
 
@@ -55,6 +56,7 @@ func init() {
 	flag.StringVar(&keyPath, "key-path", "", "key秘钥")
 	flag.BoolVar(&version, "version", false, "打印版本信息")
 	flag.Usage = usage
+	testing.Init()
 	flag.Parse()
 	if version {
 		_, _ = fmt.Fprint(os.Stdout, constant.TrojanPanelCoreVersion)
@@ -121,6 +123,23 @@ compress=true
 			logrus.Errorf("config.ini文件写入异常 err: %v", err)
 			panic(err)
 		}
+	}
+
+	sqlitePath := constant.SqlitePath
+	if !Exists(sqlitePath) {
+		if err := os.MkdirAll(sqlitePath, os.ModePerm); err != nil {
+			logrus.Errorf("创建sqlite文件夹异常 err: %v", err)
+			panic(err)
+		}
+	}
+	sqliteFilePath := constant.SqliteFilePath
+	if !Exists(sqliteFilePath) {
+		file, err := os.Create(sqliteFilePath)
+		if err != nil {
+			logrus.Errorf("创建node_config.db文件异常 err: %v", err)
+			panic(err)
+		}
+		defer file.Close()
 	}
 }
 

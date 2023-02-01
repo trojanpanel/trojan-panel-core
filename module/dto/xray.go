@@ -1,7 +1,5 @@
 package dto
 
-import "github.com/xtls/xray-core/proxy/shadowsocks"
-
 type XrayConfigDto struct {
 	ApiPort        uint
 	Port           uint
@@ -15,7 +13,6 @@ type XrayConfigDto struct {
 }
 
 type XrayAddUserDto struct {
-	Protocol   string // 协议
-	Password   string
-	CipherType shadowsocks.CipherType // 加密方式
+	Protocol string // 协议
+	Password string
 }

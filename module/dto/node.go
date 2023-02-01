@@ -1,11 +1,13 @@
 package dto
 
 type NodeAddDto struct {
-	NodeTypeId uint   `json:"nodeType" form:"nodeType" validate:"required"`
+	NodeTypeId uint   `json:"nodeTypeId" form:"nodeTypeId" validate:"required"`
 	Port       uint   `json:"port" form:"port" validate:"omitempty"`
 	Domain     string `json:"domain" form:"domain" validate:"omitempty"`
 
 	XrayTemplate       string `json:"xrayTemplate" form:"xrayTemplate" validate:"omitempty"`
+	XrayFlow           string `json:"xrayFlow" form:"xrayFlow" validate:"omitempty"`
+	XraySSMethod       string `json:"xraySSMethod" form:"xraySSMethod" validate:"omitempty"`
 	XrayProtocol       string `json:"xrayProtocol" form:"xrayProtocol" validate:"omitempty"`
 	XraySettings       string `json:"xraySettings" form:"xraySettings" validate:"omitempty"`
 	XrayStreamSettings string `json:"xrayStreamSettings" form:"xrayStreamSettings" validate:"omitempty"`
@@ -25,9 +27,4 @@ type NodeAddDto struct {
 	HysteriaProtocol string `json:"hysteriaProtocol" form:"hysteriaProtocol" validate:"omitempty"`
 	HysteriaUpMbps   int    `json:"hysteriaUpMbps" form:"hysteriaUpMbps" validate:"omitempty"`
 	HysteriaDownMbps int    `json:"hysteriaDownMbps" form:"hysteriaDownMbps" validate:"omitempty"`
-}
-
-type NodeRemoveDto struct {
-	NodeType uint `json:"nodeType" form:"nodeType" validate:"required"`
-	ApiPort  uint `json:"apiPort" form:"apiPort" validate:"required"`
 }

@@ -17,6 +17,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"strings"
 	"time"
+	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
@@ -143,9 +144,30 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 		return nil
 	}
 
+	nodeConfig, err := dao.SelectNodeConfigByNodeTypeIdAndApiPort(x.apiPort, constant.Xray)
+	if err != nil {
+		return nil
+	}
+
 	handlerServiceClient := command.NewHandlerServiceClient(conn)
 	switch dto.Protocol {
 	case constant.ProtocolShadowsocks:
+		var cipherType shadowsocks.CipherType
+		switch nodeConfig.XraySSMethod {
+		case "aes-128-gcm":
+			cipherType = shadowsocks.CipherType_AES_128_GCM
+		case "aes-256-gcm":
+			cipherType = shadowsocks.CipherType_AES_256_GCM
+		case "chacha20-poly1305":
+			cipherType = shadowsocks.CipherType_CHACHA20_POLY1305
+		case "xchacha20-poly1305":
+			cipherType = shadowsocks.CipherType_XCHACHA20_POLY1305
+		case "none":
+			cipherType = shadowsocks.CipherType_NONE
+		default:
+			cipherType = shadowsocks.CipherType_UNKNOWN
+		}
+
 		_, err = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
 			Tag: "user",
 			Operation: serial.ToTypedMessage(
@@ -155,7 +177,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Level: 0,
 						Account: serial.ToTypedMessage(&shadowsocks.Account{
 							Password:   dto.Password,
-							CipherType: dto.CipherType,
+							CipherType: cipherType,
 						}),
 					},
 				}),
@@ -170,7 +192,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Level: 0,
 						Account: serial.ToTypedMessage(&trojan.Account{
 							Password: dto.Password,
-							Flow:     "xtls-rprx-direct",
+							Flow:     nodeConfig.XrayFlow,
 						}),
 					},
 				}),
@@ -185,7 +207,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Level: 0,
 						Account: serial.ToTypedMessage(&vless.Account{
 							Id:         util.GenerateUUID(dto.Password),
-							Flow:       "xtls-rprx-direct",
+							Flow:       nodeConfig.XrayFlow,
 							Encryption: "none",
 						}),
 					},
