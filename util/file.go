@@ -34,6 +34,7 @@ var (
 	redisWait      string
 	crtPath        string
 	keyPath        string
+	grpcPort       string
 	version        bool
 )
 
@@ -53,6 +54,7 @@ func init() {
 	flag.StringVar(&redisWait, "redisWait", "true", "Redis是否等待")
 	flag.StringVar(&crtPath, "crt-path", "", "crt秘钥")
 	flag.StringVar(&keyPath, "key-path", "", "key秘钥")
+	flag.StringVar(&grpcPort, "grpc-port", "", "gRPC端口")
 	flag.BoolVar(&version, "version", false, "打印版本信息")
 	flag.Usage = usage
 	flag.Parse()
@@ -115,8 +117,10 @@ max_size=1
 max_backups=5
 max_age=30
 compress=true
+[grpc]
+port=%s
 `, host, user, password, port, database, accountTable, redisHost, redisPort, redisPassword, redisDb,
-			redisMaxIdle, redisMaxIdle, redisWait, crtPath, keyPath))
+			redisMaxIdle, redisMaxIdle, redisWait, crtPath, keyPath, grpcPort))
 		if err != nil {
 			logrus.Errorf("config.ini文件写入异常 err: %v", err)
 			panic(err)

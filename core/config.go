@@ -21,6 +21,7 @@ type AppConfig struct {
 	RedisConfig `ini:"redis"`
 	CertConfig  `ini:"cert"`
 	LogConfig   `ini:"log"`
+	GrpcConfig  `ini:"grpc"`
 }
 
 // MySQLConfig MySQL
@@ -55,4 +56,9 @@ type LogConfig struct {
 	MaxBackups int    `ini:"max_backups"` // 最大保留过期文件个数
 	MaxAge     int    `ini:"max_age"`     // 保留过期文件的最大时间间隔,单位是天
 	Compress   bool   `ini:"compress"`    // 是否需要压缩滚动日志, 使用的 gzip 压缩
+}
+
+// GrpcConfig gRPC
+type GrpcConfig struct {
+	Port string `ini:"port"` // gRPC端口
 }
