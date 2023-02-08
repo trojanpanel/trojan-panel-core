@@ -2,7 +2,7 @@ package dao
 
 import (
 	"errors"
-	"fmt"
+	"github.com/sirupsen/logrus"
 	"trojan-panel-core/module"
 	"trojan-panel-core/module/constant"
 )
@@ -13,10 +13,17 @@ func SelectNodeConfigByNodeTypeIdAndApiPort(apiPortParam uint, nodeTypeIdParam u
 		return nil, errors.New(constant.SysError)
 	}
 	rows, err := stmt.Query(apiPortParam, nodeTypeIdParam)
-	if err != nil || rows.Err() != nil {
+	if err != nil {
+		logrus.Errorf("SelectNodeConfigByNodeTypeIdAndApiPort err: %v", err)
+		return nil, errors.New(constant.SysError)
+	} else if rows.Err() != nil {
+		logrus.Errorf("SelectNodeConfigByNodeTypeIdAndApiPort err: %v", rows.Err())
 		return nil, errors.New(constant.SysError)
 	}
-	defer rows.Close()
+	defer func() {
+		rows.Close()
+		stmt.Close()
+	}()
 
 	var (
 		id           uint
@@ -28,7 +35,6 @@ func SelectNodeConfigByNodeTypeIdAndApiPort(apiPortParam uint, nodeTypeIdParam u
 	)
 	for rows.Next() {
 		if err := rows.Scan(&id, &apiPort, &nodeTypeId, &protocol, &xrayFlow, &xraySSMethod); err != nil {
-			fmt.Println(err.Error())
 			return nil, errors.New(constant.SysError)
 		}
 		break
