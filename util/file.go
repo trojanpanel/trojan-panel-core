@@ -54,7 +54,7 @@ func init() {
 	flag.StringVar(&redisWait, "redisWait", "true", "Redis是否等待")
 	flag.StringVar(&crtPath, "crt-path", "", "crt秘钥")
 	flag.StringVar(&keyPath, "key-path", "", "key秘钥")
-	flag.StringVar(&grpcPort, "grpc-port", "", "gRPC端口")
+	flag.StringVar(&grpcPort, "grpc-port", "8100", "gRPC端口")
 	flag.BoolVar(&version, "version", false, "打印版本信息")
 	flag.Usage = usage
 	flag.Parse()
@@ -147,7 +147,7 @@ port=%s
 
 func usage() {
 	_, _ = fmt.Fprintln(os.Stdout, `trojan panel core manage help
-Usage: trojan-panel-core [-host] [-password] [-port] [-database] [-account-table] [-redisHost] [-redisPort] [-redisPassword] [-redisDb] [-redisMaxIdle] [-redisMaxActive] [-redisWait] [-crt-path] [-key-path] [-h] [-version]`)
+Usage: trojan-panel-core [-host] [-password] [-port] [-database] [-account-table] [-redisHost] [-redisPort] [-redisPassword] [-redisDb] [-redisMaxIdle] [-redisMaxActive] [-redisWait] [-crt-path] [-key-path] [-grpc-port] [-h] [-version]`)
 	flag.PrintDefaults()
 }
 
