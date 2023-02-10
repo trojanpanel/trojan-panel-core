@@ -51,7 +51,7 @@ func SelectNodeConfigByNodeTypeIdAndApiPort(apiPortParam uint, nodeTypeIdParam u
 }
 
 func InsertNodeConfig(nodeConfig module.NodeConfig) error {
-	stmt, err := sqliteDb.Prepare("insert into node_config(node_type_id,api_port,protocol,xray_flow,xray_ss_method) values(?,?,?,?,?,?)")
+	stmt, err := sqliteDb.Prepare("insert into node_config(node_type_id,api_port,protocol,xray_flow,xray_ss_method) values(?,?,?,?,?)")
 	if err != nil {
 		return errors.New(constant.SysError)
 	}
