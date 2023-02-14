@@ -13,6 +13,7 @@ ENV mariadb_ip=127.0.0.1 \
     redis_pass=123456 \
     crt_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.crt \
     key_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.key \
+    grpc_port=8100 \
     TZ=Asia/Shanghai
 ARG TARGETOS
 ARG TARGETARCH
@@ -37,9 +38,10 @@ ENTRYPOINT chmod 777 ./trojan-panel-core && \
     -user=${mariadb_user} \
     -password=${mariadb_pas} \
     -database=${database} \
-    -account-table=${account_table} \
+    -accountTable=${account_table} \
     -redisHost=${redis_host} \
     -redisPort=${redis_port} \
     -redisPassword=${redis_pass} \
-    -crt-path=${crt_path} \
-    -key-path=${key_path}
+    -crtPath=${crt_path} \
+    -keyPath=${key_path} \
+    -grpcPort=${grpc_port}

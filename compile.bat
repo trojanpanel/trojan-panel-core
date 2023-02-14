@@ -10,6 +10,7 @@ go install mvdan.cc/garble@v0.7.2
 ::SET GOARCH=amd64
 ::garble -literals -tiny build -o build/trojan-panel-core-darwin-amd64 -trimpath -ldflags "-s -w -buildid="
 ::Linux 386
+SET CGO_ENABLED=1
 SET CGO_ENABLED=0
 SET GOOS=linux
 SET GOARCH=386
