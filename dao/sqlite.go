@@ -3,7 +3,7 @@ package dao
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/logoove/sqlite"
 	"github.com/sirupsen/logrus"
 	"strings"
 	"trojan-panel-core/module/constant"
