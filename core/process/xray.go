@@ -49,7 +49,7 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 		}
 		cmd := exec.Command(binaryFilePath, "-c", configFilePath)
 		x.cmdMap.Store(apiPort, cmd)
-		if err := cmd.Start(); err != nil {
+		if err := cmd.Start(); err != nil || cmd.Err != nil {
 			if err = util.RemoveFile(configFilePath); err != nil {
 				return err
 			}
