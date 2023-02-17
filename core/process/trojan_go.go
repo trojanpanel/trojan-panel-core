@@ -49,7 +49,7 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
 		}
 		cmd := exec.Command(binaryFilePath, "-config", configFilePath)
 		t.cmdMap.Store(apiPort, cmd)
-		if err := cmd.Start(); err != nil {
+		if err := cmd.Start(); err != nil || cmd.Err != nil {
 			if err = util.RemoveFile(configFilePath); err != nil {
 				return err
 			}
