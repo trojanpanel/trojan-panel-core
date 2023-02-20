@@ -144,7 +144,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 		return nil
 	}
 
-	nodeConfig, err := dao.SelectNodeConfigByNodeTypeIdAndApiPort(x.apiPort, constant.Xray)
+	nodeConfig, err := dao.SelectNodeConfig(x.apiPort, constant.Xray)
 	if err != nil {
 		return nil
 	}
