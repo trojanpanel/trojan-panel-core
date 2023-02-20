@@ -48,14 +48,28 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
 			return err
 		}
 		cmd := exec.Command(binaryFilePath, "-config", configFilePath)
-		t.cmdMap.Store(apiPort, cmd)
-		if err := cmd.Start(); err != nil || cmd.Err != nil {
+		if cmd.Err != nil {
+			if err = util.RemoveFile(configFilePath); err != nil {
+				return err
+			}
+			logrus.Errorf("trojan-go command error err: %v", err)
+			return errors.New(constant.XrayStartError)
+		}
+		if err := cmd.Start(); err != nil {
 			if err = util.RemoveFile(configFilePath); err != nil {
 				return err
 			}
 			logrus.Errorf("start trojan-go error err: %v", err)
-			return errors.New(constant.TrojanGoStartError)
+			return errors.New(constant.XrayStartError)
 		}
+		if !cmd.ProcessState.Success() {
+			if err = util.RemoveFile(configFilePath); err != nil {
+				return err
+			}
+			logrus.Errorf("trojan-go process error err: %v", err)
+			return errors.New(constant.XrayStartError)
+		}
+		t.cmdMap.Store(apiPort, cmd)
 		return nil
 	}
 	logrus.Errorf("start trojan-go error err: lock not acquired")

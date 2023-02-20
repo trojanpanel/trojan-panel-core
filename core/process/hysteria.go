@@ -48,14 +48,28 @@ func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
 			return err
 		}
 		cmd := exec.Command(binaryFilePath, "-c", configFilePath, "server")
-		h.cmdMap.Store(apiPort, cmd)
-		if err := cmd.Start(); err != nil || cmd.Err != nil {
+		if cmd.Err != nil {
+			if err = util.RemoveFile(configFilePath); err != nil {
+				return err
+			}
+			logrus.Errorf("hysteria command error err: %v", err)
+			return errors.New(constant.XrayStartError)
+		}
+		if err := cmd.Start(); err != nil {
 			if err = util.RemoveFile(configFilePath); err != nil {
 				return err
 			}
 			logrus.Errorf("start hysteria error err: %v", err)
-			return errors.New(constant.HysteriaStartError)
+			return errors.New(constant.XrayStartError)
 		}
+		if !cmd.ProcessState.Success() {
+			if err = util.RemoveFile(configFilePath); err != nil {
+				return err
+			}
+			logrus.Errorf("hysteria process error err: %v", err)
+			return errors.New(constant.XrayStartError)
+		}
+		h.cmdMap.Store(apiPort, cmd)
 		return nil
 	}
 	logrus.Errorf("start hysteria error err: lock not acquired")
