@@ -53,21 +53,21 @@ func (n *NaiveProxyProcess) StartNaiveProxy(apiPort uint) error {
 				return err
 			}
 			logrus.Errorf("naiveproxy command error err: %v", err)
-			return errors.New(constant.XrayStartError)
+			return errors.New(constant.NaiveProxyStartError)
 		}
 		if err := cmd.Start(); err != nil {
 			if err = util.RemoveFile(configFilePath); err != nil {
 				return err
 			}
 			logrus.Errorf("start naiveproxy error err: %v", err)
-			return errors.New(constant.XrayStartError)
+			return errors.New(constant.NaiveProxyStartError)
 		}
 		if !cmd.ProcessState.Success() {
 			if err = util.RemoveFile(configFilePath); err != nil {
 				return err
 			}
 			logrus.Errorf("naiveproxy process error err: %v", err)
-			return errors.New(constant.XrayStartError)
+			return errors.New(constant.NaiveProxyStartError)
 		}
 		n.cmdMap.Store(apiPort, cmd)
 		return nil

@@ -53,21 +53,21 @@ func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
 				return err
 			}
 			logrus.Errorf("hysteria command error err: %v", err)
-			return errors.New(constant.XrayStartError)
+			return errors.New(constant.HysteriaStartError)
 		}
 		if err := cmd.Start(); err != nil {
 			if err = util.RemoveFile(configFilePath); err != nil {
 				return err
 			}
 			logrus.Errorf("start hysteria error err: %v", err)
-			return errors.New(constant.XrayStartError)
+			return errors.New(constant.HysteriaStartError)
 		}
 		if !cmd.ProcessState.Success() {
 			if err = util.RemoveFile(configFilePath); err != nil {
 				return err
 			}
 			logrus.Errorf("hysteria process error err: %v", err)
-			return errors.New(constant.XrayStartError)
+			return errors.New(constant.HysteriaStartError)
 		}
 		h.cmdMap.Store(apiPort, cmd)
 		return nil

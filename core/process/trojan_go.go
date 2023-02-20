@@ -53,21 +53,21 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
 				return err
 			}
 			logrus.Errorf("trojan-go command error err: %v", err)
-			return errors.New(constant.XrayStartError)
+			return errors.New(constant.TrojanGoStartError)
 		}
 		if err := cmd.Start(); err != nil {
 			if err = util.RemoveFile(configFilePath); err != nil {
 				return err
 			}
 			logrus.Errorf("start trojan-go error err: %v", err)
-			return errors.New(constant.XrayStartError)
+			return errors.New(constant.TrojanGoStartError)
 		}
 		if !cmd.ProcessState.Success() {
 			if err = util.RemoveFile(configFilePath); err != nil {
 				return err
 			}
 			logrus.Errorf("trojan-go process error err: %v", err)
-			return errors.New(constant.XrayStartError)
+			return errors.New(constant.TrojanGoStartError)
 		}
 		t.cmdMap.Store(apiPort, cmd)
 		return nil
