@@ -62,14 +62,24 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
 			logrus.Errorf("start trojan-go error err: %v", err)
 			return errors.New(constant.TrojanGoStartError)
 		}
-		if !cmd.ProcessState.Success() {
-			if err = util.RemoveFile(configFilePath); err != nil {
-				return err
-			}
-			logrus.Errorf("trojan-go process error err: %v", err)
-			return errors.New(constant.TrojanGoStartError)
-		}
 		t.cmdMap.Store(apiPort, cmd)
+		go func() {
+			if err := cmd.Wait(); err != nil {
+				logrus.Errorf("trojan-go process wait error err: %v", err)
+			}
+			if !cmd.ProcessState.Success() {
+				logrus.Errorf("trojan-go process state fail err: %v", err)
+				if err := cmd.Process.Release(); err != nil {
+					logrus.Errorf("trojan-go process release error err: %v", err)
+					return
+				}
+				if err = util.RemoveFile(configFilePath); err != nil {
+					logrus.Errorf("trojan-go process remove file error err: %v", err)
+					return
+				}
+				t.cmdMap.Delete(apiPort)
+			}
+		}()
 		return nil
 	}
 	logrus.Errorf("start trojan-go error err: lock not acquired")

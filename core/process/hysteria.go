@@ -62,14 +62,24 @@ func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
 			logrus.Errorf("start hysteria error err: %v", err)
 			return errors.New(constant.HysteriaStartError)
 		}
-		if !cmd.ProcessState.Success() {
-			if err = util.RemoveFile(configFilePath); err != nil {
-				return err
-			}
-			logrus.Errorf("hysteria process error err: %v", err)
-			return errors.New(constant.HysteriaStartError)
-		}
 		h.cmdMap.Store(apiPort, cmd)
+		go func() {
+			if err := cmd.Wait(); err != nil {
+				logrus.Errorf("hysteria process wait error err: %v", err)
+			}
+			if !cmd.ProcessState.Success() {
+				logrus.Errorf("hysteria process state fail err: %v", err)
+				if err := cmd.Process.Release(); err != nil {
+					logrus.Errorf("hysteria process release error err: %v", err)
+					return
+				}
+				if err = util.RemoveFile(configFilePath); err != nil {
+					logrus.Errorf("hysteria process remove file error err: %v", err)
+					return
+				}
+				h.cmdMap.Delete(apiPort)
+			}
+		}()
 		return nil
 	}
 	logrus.Errorf("start hysteria error err: lock not acquired")

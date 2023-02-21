@@ -62,14 +62,24 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 			logrus.Errorf("start xray error err: %v", err)
 			return errors.New(constant.XrayStartError)
 		}
-		if !cmd.ProcessState.Success() {
-			if err = util.RemoveFile(configFilePath); err != nil {
-				return err
-			}
-			logrus.Errorf("xray process error err: %v", err)
-			return errors.New(constant.XrayStartError)
-		}
 		x.cmdMap.Store(apiPort, cmd)
+		go func() {
+			if err := cmd.Wait(); err != nil {
+				logrus.Errorf("xray process wait error err: %v", err)
+			}
+			if !cmd.ProcessState.Success() {
+				logrus.Errorf("xray process state fail err: %v", err)
+				if err := cmd.Process.Release(); err != nil {
+					logrus.Errorf("xray process release error err: %v", err)
+					return
+				}
+				if err = util.RemoveFile(configFilePath); err != nil {
+					logrus.Errorf("xray process remove file error err: %v", err)
+					return
+				}
+				x.cmdMap.Delete(apiPort)
+			}
+		}()
 		return nil
 	}
 	logrus.Errorf("start xray error err: lock not acquired")

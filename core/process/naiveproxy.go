@@ -62,14 +62,24 @@ func (n *NaiveProxyProcess) StartNaiveProxy(apiPort uint) error {
 			logrus.Errorf("start naiveproxy error err: %v", err)
 			return errors.New(constant.NaiveProxyStartError)
 		}
-		if !cmd.ProcessState.Success() {
-			if err = util.RemoveFile(configFilePath); err != nil {
-				return err
-			}
-			logrus.Errorf("naiveproxy process error err: %v", err)
-			return errors.New(constant.NaiveProxyStartError)
-		}
 		n.cmdMap.Store(apiPort, cmd)
+		go func() {
+			if err := cmd.Wait(); err != nil {
+				logrus.Errorf("naiveproxy process wait error err: %v", err)
+			}
+			if !cmd.ProcessState.Success() {
+				logrus.Errorf("naiveproxy process state fail err: %v", err)
+				if err := cmd.Process.Release(); err != nil {
+					logrus.Errorf("naiveproxy process release error err: %v", err)
+					return
+				}
+				if err = util.RemoveFile(configFilePath); err != nil {
+					logrus.Errorf("naiveproxy process remove file error err: %v", err)
+					return
+				}
+				n.cmdMap.Delete(apiPort)
+			}
+		}()
 		return nil
 	}
 	logrus.Errorf("start naiveproxy error err: lock not acquired")
