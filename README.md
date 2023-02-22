@@ -46,7 +46,7 @@ create table trojan_panel_db.account
 
 | Trojan Panel Core | Xray   | Trojan Go | Hysteria | Caddy（NaiveProxy） |
 |-------------------|--------|-----------|----------|-------------------|
-| v2.0.2            | v1.7.2 | v0.10.6   | v1.3.2   | v2.6.2            |
+| v2.0.3            | v1.7.5 | v0.10.6   | v1.3.3   | v2.6.4            |
 
 ## 防止循环依赖
 
