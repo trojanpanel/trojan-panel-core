@@ -85,3 +85,8 @@ func (n *NaiveProxyProcess) StartNaiveProxy(apiPort uint) error {
 	logrus.Errorf("start naiveproxy error err: lock not acquired")
 	return errors.New(constant.NaiveProxyStartError)
 }
+
+func GetNaiveProxyState(apiPort uint) bool {
+	_, ok := NewNaiveProxyInstance().GetCmdMap().Load(apiPort)
+	return ok
+}

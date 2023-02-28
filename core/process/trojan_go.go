@@ -85,3 +85,8 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
 	logrus.Errorf("start trojan-go error err: lock not acquired")
 	return errors.New(constant.TrojanGoStartError)
 }
+
+func GetTrojanGoState(apiPort uint) bool {
+	_, ok := NewTrojanGoInstance().GetCmdMap().Load(apiPort)
+	return ok
+}

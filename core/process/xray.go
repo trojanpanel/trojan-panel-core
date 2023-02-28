@@ -85,3 +85,8 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 	logrus.Errorf("start xray error err: lock not acquired")
 	return errors.New(constant.XrayStartError)
 }
+
+func GetXrayState(apiPort uint) bool {
+	_, ok := NewXrayProcess().GetCmdMap().Load(apiPort)
+	return ok
+}

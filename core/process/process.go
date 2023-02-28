@@ -70,3 +70,18 @@ func (p *process) Stop(apiPort uint, removeFile bool) error {
 	logrus.Errorf("stop process error err: lock not acquired")
 	return errors.New(constant.ProcessStopError)
 }
+
+func GetState(nodeTypeId uint, apiPort uint) bool {
+	switch nodeTypeId {
+	case constant.Xray:
+		return GetXrayState(apiPort)
+	case constant.TrojanGo:
+		return GetTrojanGoState(apiPort)
+	case constant.Hysteria:
+		return GetHysteriaState(apiPort)
+	case constant.NaiveProxy:
+		return GetNaiveProxyState(apiPort)
+	default:
+		return false
+	}
+}

@@ -85,3 +85,8 @@ func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
 	logrus.Errorf("start hysteria error err: lock not acquired")
 	return errors.New(constant.HysteriaStartError)
 }
+
+func GetHysteriaState(apiPort uint) bool {
+	_, ok := NewHysteriaInstance().GetCmdMap().Load(apiPort)
+	return ok
+}

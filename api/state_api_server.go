@@ -4,6 +4,7 @@ import (
 	"context"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+	"trojan-panel-core/core/process"
 	"trojan-panel-core/module/constant"
 )
 
@@ -17,10 +18,15 @@ func (s *StateApiServer) Ping(ctx context.Context, stateDto *StateDto) (*Respons
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-
+	nodeState := process.GetState(uint(stateDto.GetNodeTypeId()), uint(stateDto.GetPort())+30000)
+	var nodeStateInt int64 = 0
+	if nodeState {
+		nodeStateInt = 1
+	}
 	stateVo := &StateVo{
-		State:   1,
-		Version: constant.TrojanPanelCoreVersion,
+		State:     1,
+		NodeState: nodeStateInt,
+		Version:   constant.TrojanPanelCoreVersion,
 	}
 	data, err := anypb.New(proto.Message(stateVo))
 	if err != nil {
