@@ -70,7 +70,8 @@ message AccountRemoveDto {
 message StateDto {}
 
 message StateVo {
-  string version = 1;
+  int64 state = 1;
+  string version = 2;
 }
 
 message Response {

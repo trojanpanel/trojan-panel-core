@@ -19,6 +19,7 @@ func (s *StateApiServer) Ping(ctx context.Context, stateDto *StateDto) (*Respons
 	}
 
 	stateVo := &StateVo{
+		State:   1,
 		Version: constant.TrojanPanelCoreVersion,
 	}
 	data, err := anypb.New(proto.Message(stateVo))
