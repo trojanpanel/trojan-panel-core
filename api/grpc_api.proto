@@ -69,6 +69,10 @@ message AccountRemoveDto {
 
 message StateDto {}
 
+message StateVo {
+  string version = 1;
+}
+
 message Response {
   bool success = 1;
   string msg = 2;
