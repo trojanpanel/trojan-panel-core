@@ -18,15 +18,13 @@ func (s *StateApiServer) Ping(ctx context.Context, stateDto *StateDto) (*Respons
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-	nodeState := process.GetState(uint(stateDto.GetNodeTypeId()), uint(stateDto.GetPort())+30000)
-	var nodeStateInt int64 = 0
-	if nodeState {
-		nodeStateInt = 1
-	}
+	state := process.GetState(uint(stateDto.GetNodeTypeId()), uint(stateDto.GetPort())+30000)
 	stateVo := &StateVo{
-		State:     1,
-		NodeState: nodeStateInt,
+		NodeState: 0,
 		Version:   constant.TrojanPanelCoreVersion,
+	}
+	if state {
+		stateVo.NodeState = 1
 	}
 	data, err := anypb.New(proto.Message(stateVo))
 	if err != nil {
