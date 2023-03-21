@@ -13,7 +13,7 @@ type NodeServerApiServer struct {
 func (s *NodeServerApiServer) mustEmbedUnimplementedApiNodeServerServiceServer() {
 }
 
-func (s *NodeServerApiServer) NodeServerState(ctx context.Context, nodeServerGroupDto *NodeServerGroupDto) (*Response, error) {
+func (s *NodeServerApiServer) GetNodeServerInfo(ctx context.Context, nodeServerInfoDto *NodeServerInfoDto) (*Response, error) {
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
@@ -23,12 +23,12 @@ func (s *NodeServerApiServer) NodeServerState(ctx context.Context, nodeServerGro
 	if err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-	nodeServerGroupVo := &NodeServerGroupVo{
+	nodeServerInfoVo := &NodeServerInfoVo{
 		CpuUsed:  float32(cpuUsed),
 		MemUsed:  float32(memUsed),
 		DiskUsed: float32(diskUsed),
 	}
-	data, err := anypb.New(proto.Message(nodeServerGroupVo))
+	data, err := anypb.New(proto.Message(nodeServerInfoVo))
 	if err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}

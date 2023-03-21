@@ -10,7 +10,7 @@ service ApiNodeService {
 }
 
 service ApiNodeServerService {
-  rpc NodeServerState(NodeServerGroupDto) returns (Response) {}
+  rpc GetNodeServerInfo(NodeServerInfoDto) returns (Response) {}
 }
 
 service ApiAccountService {
@@ -18,7 +18,8 @@ service ApiAccountService {
 }
 
 service ApiStateService {
-  rpc Ping(StateDto) returns (Response) {}
+  rpc GetNodeState(NodeStateDto) returns (Response) {}
+  rpc GetNodeServerState(NodeServerStateDto) returns (Response) {}
 }
 
 message NodeAddDto {
@@ -55,9 +56,9 @@ message NodeRemoveDto {
   uint64 port = 2;
 }
 
-message NodeServerGroupDto {}
+message NodeServerInfoDto {}
 
-message NodeServerGroupVo {
+message NodeServerInfoVo {
   float cpuUsed = 1;
   float memUsed = 2;
   float diskUsed = 3;
@@ -67,13 +68,18 @@ message AccountRemoveDto {
   string password = 1;
 }
 
-message StateDto {
+message NodeStateDto {
   uint64 nodeTypeId = 1;
   uint64 port = 2;
 }
 
-message StateVo {
-  int64 nodeState = 1;
+message NodeStateVo {
+  uint64 status = 1;
+}
+
+message NodeServerStateDto {}
+
+message NodeServerStateVo {
   string version = 2;
 }
 
