@@ -20,7 +20,7 @@ func InitMySQL() {
 	db, err = manager.
 		New(mySQLConfig.Database, mySQLConfig.User, mySQLConfig.Password, mySQLConfig.Host).
 		Set(
-			manager.SetCharset("utf8"),
+			manager.SetCharset("utf8mb4"),
 			manager.SetAllowCleartextPasswords(true),
 			manager.SetInterpolateParams(true),
 			manager.SetTimeout(1*time.Second),
