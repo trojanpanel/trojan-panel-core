@@ -37,11 +37,8 @@ func GetJWTKey() (string, error) {
 	get := redis.Client.String.
 		Get("trojan-panel:jwt-key")
 	reply, err := get.String()
-	if err != nil {
+	if err != nil || reply == "" {
 		return "", errors.New(constant.SysError)
 	}
-	if reply != "" {
-		return reply, nil
-	}
-	return "", errors.New(constant.SysError)
+	return reply, nil
 }
