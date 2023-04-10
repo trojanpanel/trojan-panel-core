@@ -3,11 +3,10 @@ package util
 import (
 	"errors"
 	"github.com/golang-jwt/jwt"
+	"trojan-panel-core/dao/redis"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/vo"
 )
-
-var MySecret = []byte("4eb01fa4acef754ad4fa94f4467fd343")
 
 type MyClaims struct {
 	AccountVo vo.AccountVo `json:"accountVo"`
@@ -16,9 +15,13 @@ type MyClaims struct {
 
 // ParseToken 解析Token
 func ParseToken(tokenString string) (*MyClaims, error) {
+	mySecret, err := GetJWTKey()
+	if err != nil {
+		return nil, errors.New(constant.SysError)
+	}
 	// 解析Token
 	token, err := jwt.ParseWithClaims(tokenString, &MyClaims{}, func(token *jwt.Token) (i interface{}, err error) {
-		return MySecret, nil
+		return mySecret, nil
 	})
 	if err != nil {
 		return nil, errors.New(constant.IllegalTokenError)
@@ -28,4 +31,17 @@ func ParseToken(tokenString string) (*MyClaims, error) {
 		return claims, nil
 	}
 	return nil, errors.New(constant.TokenExpiredError)
+}
+
+func GetJWTKey() (string, error) {
+	get := redis.Client.String.
+		Get("trojan-panel:jwt-key")
+	reply, err := get.String()
+	if err != nil {
+		return "", errors.New(constant.SysError)
+	}
+	if reply != "" {
+		return reply, nil
+	}
+	return "", errors.New(constant.SysError)
 }

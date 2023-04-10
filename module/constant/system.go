@@ -1,9 +1,6 @@
 package constant
 
 const (
-	// SaltKey 加密 盐
-	SaltKey string = "well_very_funny!"
-
 	// LogPath 日志文件夹路径
 	LogPath string = "logs"
 
