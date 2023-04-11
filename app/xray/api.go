@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/xtls/xray-core/app/proxyman/command"
+	statsService "github.com/xtls/xray-core/app/stats/command"
 	statscmd "github.com/xtls/xray-core/app/stats/command"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/common/serial"
@@ -284,4 +285,23 @@ func (x *xrayApi) DeleteUser(email string) error {
 		return errors.New(constant.GrpcError)
 	}
 	return nil
+}
+
+// GetSysStats 获取运行数据
+func (x *xrayApi) GetSysStats() (stats *statsService.SysStatsResponse, err error) {
+	conn, ctx, clo, err := apiClient(x.apiPort)
+	defer clo()
+	if err != nil {
+		return nil, err
+	}
+	statsServiceClient := statscmd.NewStatsServiceClient(conn)
+	sysStats, err := statsServiceClient.GetSysStats(ctx, &statsService.SysStatsRequest{})
+	if err != nil {
+		if strings.HasSuffix(err.Error(), "not found.") {
+			return nil, nil
+		}
+		logrus.Errorf("xray get sys stats err: %v", err)
+		return nil, errors.New(constant.GrpcError)
+	}
+	return sysStats, nil
 }
