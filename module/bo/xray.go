@@ -26,11 +26,12 @@ type InboundBo struct {
 }
 
 type StreamSettings struct {
-	Network      string                       `json:"network"`
-	Security     string                       `json:"security"`
-	TlsSettings  TlsSettings                  `json:"tlsSettings"`
-	XtlsSettings XtlsSettings                 `json:"xtlsSettings"`
-	WsSettings   XrayStreamSettingsWsSettings `json:"wsSettings"`
+	Network         string                       `json:"network"`
+	Security        string                       `json:"security"`
+	TlsSettings     TlsSettings                  `json:"tlsSettings"`
+	XtlsSettings    XtlsSettings                 `json:"xtlsSettings"`
+	RealitySettings RealitySettings              `json:"realitySettings"`
+	WsSettings      XrayStreamSettingsWsSettings `json:"wsSettings"`
 }
 
 type TlsSettings struct {
@@ -40,6 +41,13 @@ type TlsSettings struct {
 
 type XtlsSettings struct {
 	Certificates []Certificate `json:"certificates"`
+}
+
+type RealitySettings struct {
+	Dest        string   `json:"dest"`
+	ServerNames []string `json:"serverNames"`
+	PrivateKey  string   `json:"privateKey"`
+	ShortIds    []string `json:"shortIds"`
 }
 
 type Certificate struct {

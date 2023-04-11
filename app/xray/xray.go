@@ -151,6 +151,8 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 				streamSettings.TlsSettings.Alpn = []string{"http/1.1"}
 			} else if streamSettings.Security == "xtls" {
 				streamSettings.XtlsSettings.Certificates = certificates
+			} else if streamSettings.Security == "reality" {
+
 			}
 		}
 
