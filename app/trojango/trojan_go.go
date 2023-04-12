@@ -81,7 +81,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
   "run_type": "server",
   "local_addr": "0.0.0.0",
   "local_port": ${port},
-  "remote_addr": "127.0.0.1",
+  "remote_addr": "${remote_addr}",
   "remote_port": 80,
   "log_level": 1,
   "log_file": "",
@@ -104,7 +104,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
     "session_ticket": true,
     "reuse_session": true,
     "plain_http_response": "",
-    "fallback_addr": "",
+    "fallback_addr": "${fallback_addr}",
     "fallback_port": 80,
     "fingerprint": ""
   },
@@ -146,6 +146,14 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
 	configContent = strings.ReplaceAll(configContent, "${sni}", trojanGoConfigDto.Sni)
+	// 自定义证书 指向微软
+	if certConfig.CrtPath != "" && strings.Contains(certConfig.CrtPath, "custom_cert") {
+		configContent = strings.ReplaceAll(configContent, "${remote_addr}", "www.microsoft.com")
+		configContent = strings.ReplaceAll(configContent, "${fallback_addr}", "www.microsoft.com")
+	} else {
+		configContent = strings.ReplaceAll(configContent, "${remote_addr}", "127.0.0.1")
+		configContent = strings.ReplaceAll(configContent, "${fallback_addr}", "127.0.0.1")
+	}
 	var muxEnableStr string
 	if trojanGoConfigDto.MuxEnable == 1 {
 		muxEnableStr = "true"
