@@ -122,7 +122,7 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
                                             "handle": [
                                                 {
                                                     "handler": "file_server",
-                                                    "root": "/tpdata/caddy/srv/",
+                                                    "root": "/tpdata/web/",
                                                     "index_names": [
                                                         "index.html","index.htm"
                                                     ]
