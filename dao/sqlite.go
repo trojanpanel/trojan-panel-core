@@ -34,6 +34,12 @@ func InitSqlLite() {
 	}
 }
 
+func CloseSqliteDb() {
+	if err := sqliteDb.Close(); err != nil {
+		logrus.Errorf("sqlite close err: %v", err)
+	}
+}
+
 func SqlInit(sqlStr string) error {
 	sqls := strings.Split(strings.Replace(sqlStr, "\r\n", "\n", -1), ";\n")
 	for _, s := range sqls {

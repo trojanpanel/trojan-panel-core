@@ -16,6 +16,7 @@ func main() {
 	r := gin.Default()
 	router.Router(r)
 	_ = r.Run(":8082")
+	defer closeResource()
 }
 
 func init() {
@@ -30,4 +31,9 @@ func init() {
 	api.InitValidator()
 	api.InitGrpcServer()
 	app.InitApp()
+}
+func closeResource() {
+	dao.CloseDb()
+	dao.CloseSqliteDb()
+	redis.CloseRedis()
 }

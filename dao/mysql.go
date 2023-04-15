@@ -33,3 +33,9 @@ func InitMySQL() {
 		panic(err)
 	}
 }
+
+func CloseDb() {
+	if err := db.Close(); err != nil {
+		logrus.Errorf("db close err: %v", err)
+	}
+}
