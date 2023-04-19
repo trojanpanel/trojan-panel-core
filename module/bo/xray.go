@@ -45,6 +45,7 @@ type XtlsSettings struct {
 
 type RealitySettings struct {
 	Dest        string   `json:"dest"`
+	Xver        int      `json:"xver"`
 	ServerNames []string `json:"serverNames"`
 	PrivateKey  string   `json:"privateKey"`
 	ShortIds    []string `json:"shortIds"`
