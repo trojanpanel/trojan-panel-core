@@ -29,7 +29,6 @@ type StreamSettings struct {
 	Network         string                       `json:"network"`
 	Security        string                       `json:"security"`
 	TlsSettings     TlsSettings                  `json:"tlsSettings"`
-	XtlsSettings    XtlsSettings                 `json:"xtlsSettings"`
 	RealitySettings RealitySettings              `json:"realitySettings"`
 	WsSettings      XrayStreamSettingsWsSettings `json:"wsSettings"`
 }
@@ -37,10 +36,6 @@ type StreamSettings struct {
 type TlsSettings struct {
 	Certificates []Certificate `json:"certificates"`
 	Alpn         []string      `json:"alpn"`
-}
-
-type XtlsSettings struct {
-	Certificates []Certificate `json:"certificates"`
 }
 
 type RealitySettings struct {
