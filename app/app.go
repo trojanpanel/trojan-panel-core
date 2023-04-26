@@ -19,6 +19,8 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 	defer mutex.Unlock()
 	if mutex.TryLock() {
 		var protocol string
+		var xrayFlow string
+		var xraySSMethod string
 		switch nodeAddDto.NodeTypeId {
 		case constant.Xray:
 			if err := xray.StartXray(dto.XrayConfigDto{
@@ -35,6 +37,8 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 				return err
 			}
 			protocol = nodeAddDto.XrayProtocol
+			xrayFlow = nodeAddDto.XrayFlow
+			xraySSMethod = nodeAddDto.XraySSMethod
 		case constant.TrojanGo:
 			if err := trojango.StartTrojanGo(dto.TrojanGoConfigDto{
 				ApiPort:         nodeAddDto.Port + 30000,
@@ -78,8 +82,8 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 			ApiPort:      nodeAddDto.Port + 30000,
 			NodeTypeId:   nodeAddDto.NodeTypeId,
 			Protocol:     protocol,
-			XrayFlow:     nodeAddDto.XrayFlow,
-			XraySSMethod: nodeAddDto.XraySSMethod,
+			XrayFlow:     xrayFlow,
+			XraySSMethod: xraySSMethod,
 		}
 		if err := dao.InsertNodeConfig(nodeConfig); err != nil {
 			return err
