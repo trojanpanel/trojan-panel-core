@@ -20,7 +20,11 @@ func IsPortAvailable(port uint, network string) bool {
 			IP:   net.IPv4(0, 0, 0, 0),
 			Port: int(port),
 		})
-		defer listener.Close()
+		defer func() {
+			if listener != nil {
+				listener.Close()
+			}
+		}()
 		if err != nil {
 			logrus.Warnf("port %d is taken err: %s", port, err)
 			return false
@@ -31,7 +35,11 @@ func IsPortAvailable(port uint, network string) bool {
 			IP:   net.IPv4(0, 0, 0, 0),
 			Port: int(port),
 		})
-		defer listener.Close()
+		defer func() {
+			if listener != nil {
+				listener.Close()
+			}
+		}()
 		if err != nil {
 			logrus.Warnf("port %d is taken err: %s", port, err)
 			return false

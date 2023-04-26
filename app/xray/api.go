@@ -41,7 +41,9 @@ func apiClient(apiPort uint) (conn *grpc.ClientConn, ctx context.Context, clo fu
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	clo = func() {
 		cancel()
-		conn.Close()
+		if conn != nil {
+			conn.Close()
+		}
 	}
 	if err != nil {
 		logrus.Errorf("gRPC初始化失败 err: %v", err)

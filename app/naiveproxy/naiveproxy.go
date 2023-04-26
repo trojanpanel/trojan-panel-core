@@ -73,7 +73,11 @@ func initNaiveProxy(naiveProxyConfigDto dto.NaiveProxyConfigDto) error {
 		logrus.Errorf("创建naiveproxy %s文件异常 err: %v", naiveProxyConfigFilePath, err)
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		if file != nil {
+			file.Close()
+		}
+	}()
 
 	certConfig := core.Config.CertConfig
 	configContent := `{

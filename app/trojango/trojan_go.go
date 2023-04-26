@@ -73,7 +73,11 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 		logrus.Errorf("创建trojan go %s文件异常 err: %v", trojanGoConfigFilePath, err)
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		if file != nil {
+			file.Close()
+		}
+	}()
 
 	certConfig := core.Config.CertConfig
 

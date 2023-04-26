@@ -76,7 +76,11 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 		logrus.Errorf("创建hysteria %s文件异常 err: %v", hysteriaConfigFilePath, err)
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		if file != nil {
+			file.Close()
+		}
+	}()
 
 	certConfig := core.Config.CertConfig
 	configContent := `{

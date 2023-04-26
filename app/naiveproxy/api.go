@@ -33,7 +33,11 @@ func (n *naiveProxyApi) ListUsers() (*[]bo.HandleAuth, error) {
 		return nil, errors.New(constant.SysError)
 	}
 	resp, err := http.DefaultClient.Do(req)
-	defer resp.Body.Close()
+	defer func() {
+		if resp != nil {
+			resp.Body.Close()
+		}
+	}()
 	if err != nil || resp.StatusCode != 200 {
 		logrus.Errorf("naiveproxy list users http request err: %v", err)
 		return nil, errors.New(constant.SysError)
@@ -103,7 +107,11 @@ func (n *naiveProxyApi) AddUser(dto dto.NaiveProxyAddUserDto) error {
 	}
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
-	defer resp.Body.Close()
+	defer func() {
+		if resp != nil {
+			resp.Body.Close()
+		}
+	}()
 	if err != nil || resp.StatusCode != 200 {
 		logrus.Errorf("naiveproxy add user http request err: %v", err)
 		return errors.New(constant.SysError)
@@ -125,7 +133,11 @@ func (n *naiveProxyApi) DeleteUser(pass string) error {
 			return errors.New(constant.SysError)
 		}
 		resp, err := http.DefaultClient.Do(req)
-		defer resp.Body.Close()
+		defer func() {
+			if resp != nil {
+				resp.Body.Close()
+			}
+		}()
 		if err != nil || resp.StatusCode != 200 {
 			logrus.Errorf("naiveproxy add user http request err: %v", err)
 			return errors.New(constant.SysError)

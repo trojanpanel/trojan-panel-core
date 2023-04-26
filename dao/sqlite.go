@@ -35,8 +35,10 @@ func InitSqlLite() {
 }
 
 func CloseSqliteDb() {
-	if err := sqliteDb.Close(); err != nil {
-		logrus.Errorf("sqlite close err: %v", err)
+	if sqliteDb != nil {
+		if err := sqliteDb.Close(); err != nil {
+			logrus.Errorf("sqlite close err: %v", err)
+		}
 	}
 }
 

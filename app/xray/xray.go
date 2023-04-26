@@ -73,7 +73,11 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 		logrus.Errorf("创建xray %s文件异常 err: %v", xrayConfigFilePath, err)
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		if file != nil {
+			file.Close()
+		}
+	}()
 
 	// 根据不同的协议生成对应的配置文件，用户信息通过新建同步协程
 	if xrayConfigDto.Template == "" {

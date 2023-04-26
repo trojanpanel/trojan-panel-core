@@ -16,7 +16,7 @@ import (
 
 func StartApp(nodeAddDto dto.NodeAddDto) error {
 	var mutex sync.Mutex
-	defer mutex.TryLock()
+	defer mutex.Unlock()
 	if mutex.TryLock() {
 		switch nodeAddDto.NodeTypeId {
 		case constant.Xray:
@@ -88,7 +88,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 
 func StopApp(apiPort uint, nodeTypeId uint) error {
 	var mutex sync.Mutex
-	defer mutex.TryLock()
+	defer mutex.Unlock()
 	if mutex.TryLock() {
 		switch nodeTypeId {
 		case constant.Xray:

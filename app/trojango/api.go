@@ -32,7 +32,9 @@ func apiClient(apiPort uint) (clent service.TrojanServerServiceClient, ctx conte
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	clo = func() {
 		cancel()
-		conn.Close()
+		if conn != nil {
+			conn.Close()
+		}
 	}
 	if err != nil {
 		logrus.Errorf("Trojan Go gRPC初始化失败 err: %v", err)

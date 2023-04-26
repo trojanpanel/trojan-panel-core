@@ -156,7 +156,11 @@ func DownloadFile(url string, fileName string) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if resp != nil {
+			resp.Body.Close()
+		}
+	}()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -185,7 +189,11 @@ func Unzip(src string, dest string) error {
 	if err != nil {
 		return err
 	}
-	defer r.Close()
+	defer func() {
+		if r != nil {
+			r.Close()
+		}
+	}()
 
 	// 遍历压缩文件内的文件，写入磁盘
 	for _, f := range r.File {
