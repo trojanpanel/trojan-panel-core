@@ -1,10 +1,12 @@
 package process
 
 import (
+	"context"
 	"errors"
 	"github.com/sirupsen/logrus"
 	"os/exec"
 	"sync"
+	"time"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/util"
 )
@@ -63,27 +65,48 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 			return errors.New(constant.XrayStartError)
 		}
 		x.cmdMap.Store(apiPort, cmd)
+
+		// 等待超时
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		done := make(chan error)
 		go func() {
-			if err := cmd.Wait(); err != nil {
-				logrus.Errorf("xray process wait error err: %v", err)
-			}
-			if !cmd.ProcessState.Success() {
-				logrus.Errorf("xray process state fail err: %v", err)
-				if err := cmd.Process.Release(); err != nil {
-					logrus.Errorf("xray process release error err: %v", err)
-					return
+			done <- cmd.Wait()
+			select {
+			case err := <-done:
+				if err != nil {
+					x.releaseProcess(apiPort)
+				} else {
+
 				}
-				if err = util.RemoveFile(configFilePath); err != nil {
-					logrus.Errorf("xray process remove file error err: %v", err)
-					return
-				}
-				x.cmdMap.Delete(apiPort)
+			case <-ctx.Done():
+				x.releaseProcess(apiPort)
 			}
 		}()
 		return nil
 	}
 	logrus.Errorf("start xray error err: lock not acquired")
 	return errors.New(constant.XrayStartError)
+}
+
+func (x *XrayProcess) releaseProcess(apiPort uint) {
+	load, ok := NewXrayProcess().GetCmdMap().Load(apiPort)
+	cmd := load.(*exec.Cmd)
+	if ok && !cmd.ProcessState.Success() {
+		if err := cmd.Process.Release(); err != nil {
+			logrus.Errorf("xray process release error err: %v", err)
+			return
+		}
+		configFilePath, err := util.GetConfigFile(constant.Xray, apiPort)
+		if err != nil {
+			return
+		}
+		if err := util.RemoveFile(configFilePath); err != nil {
+			logrus.Errorf("xray process remove file error err: %v", err)
+			return
+		}
+		x.cmdMap.Delete(apiPort)
+	}
 }
 
 func GetXrayState(apiPort uint) bool {
