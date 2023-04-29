@@ -1,10 +1,12 @@
 package process
 
 import (
+	"context"
 	"errors"
 	"github.com/sirupsen/logrus"
 	"os/exec"
 	"sync"
+	"time"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/util"
 )
@@ -63,27 +65,44 @@ func (t *TrojanGoProcess) StartTrojanGo(apiPort uint) error {
 			return errors.New(constant.TrojanGoStartError)
 		}
 		t.cmdMap.Store(apiPort, cmd)
+
+		// 等待超时
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		done := make(chan error)
 		go func() {
-			if err := cmd.Wait(); err != nil {
-				logrus.Errorf("trojan-go process wait error err: %v", err)
-			}
-			if !cmd.ProcessState.Success() {
-				logrus.Errorf("trojan-go process state fail err: %v", err)
-				if err := cmd.Process.Release(); err != nil {
-					logrus.Errorf("trojan-go process release error err: %v", err)
-					return
+			done <- cmd.Wait()
+			select {
+			case err := <-done:
+				if err != nil {
+					logrus.Errorf("trojan-go process wait error err: %v", err)
+					t.releaseProcess(apiPort, configFilePath)
 				}
-				if err = util.RemoveFile(configFilePath); err != nil {
-					logrus.Errorf("trojan-go process remove file error err: %v", err)
-					return
-				}
-				t.cmdMap.Delete(apiPort)
+			case <-ctx.Done():
+				logrus.Errorf("trojan-go process wait timeout err: %v", err)
+				t.releaseProcess(apiPort, configFilePath)
 			}
 		}()
 		return nil
 	}
 	logrus.Errorf("start trojan-go error err: lock not acquired")
 	return errors.New(constant.TrojanGoStartError)
+}
+
+func (t *TrojanGoProcess) releaseProcess(apiPort uint, configFilePath string) {
+	load, ok := NewTrojanGoInstance().GetCmdMap().Load(apiPort)
+	if ok {
+		cmd := load.(*exec.Cmd)
+		if !cmd.ProcessState.Success() {
+			t.cmdMap.Delete(apiPort)
+			if err := cmd.Process.Release(); err != nil {
+				logrus.Errorf("trojan-go process release error err: %v", err)
+			}
+			if err := util.RemoveFile(configFilePath); err != nil {
+				logrus.Errorf("trojan-go process remove file error err: %v", err)
+			}
+		}
+	}
 }
 
 func GetTrojanGoState(apiPort uint) bool {

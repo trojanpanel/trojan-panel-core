@@ -1,10 +1,12 @@
 package process
 
 import (
+	"context"
 	"errors"
 	"github.com/sirupsen/logrus"
 	"os/exec"
 	"sync"
+	"time"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/util"
 )
@@ -63,27 +65,44 @@ func (h *HysteriaProcess) StartHysteria(apiPort uint) error {
 			return errors.New(constant.HysteriaStartError)
 		}
 		h.cmdMap.Store(apiPort, cmd)
+
+		// 等待超时
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		done := make(chan error)
 		go func() {
-			if err := cmd.Wait(); err != nil {
-				logrus.Errorf("hysteria process wait error err: %v", err)
-			}
-			if !cmd.ProcessState.Success() {
-				logrus.Errorf("hysteria process state fail err: %v", err)
-				if err := cmd.Process.Release(); err != nil {
-					logrus.Errorf("hysteria process release error err: %v", err)
-					return
+			done <- cmd.Wait()
+			select {
+			case err := <-done:
+				if err != nil {
+					logrus.Errorf("hysteria process wait error err: %v", err)
+					h.releaseProcess(apiPort, configFilePath)
 				}
-				if err = util.RemoveFile(configFilePath); err != nil {
-					logrus.Errorf("hysteria process remove file error err: %v", err)
-					return
-				}
-				h.cmdMap.Delete(apiPort)
+			case <-ctx.Done():
+				logrus.Errorf("hysteria process wait timeout err: %v", err)
+				h.releaseProcess(apiPort, configFilePath)
 			}
 		}()
 		return nil
 	}
 	logrus.Errorf("start hysteria error err: lock not acquired")
 	return errors.New(constant.HysteriaStartError)
+}
+
+func (h *HysteriaProcess) releaseProcess(apiPort uint, configFilePath string) {
+	load, ok := NewHysteriaInstance().GetCmdMap().Load(apiPort)
+	if ok {
+		cmd := load.(*exec.Cmd)
+		if !cmd.ProcessState.Success() {
+			h.cmdMap.Delete(apiPort)
+			if err := cmd.Process.Release(); err != nil {
+				logrus.Errorf("hysteria process release error err: %v", err)
+			}
+			if err := util.RemoveFile(configFilePath); err != nil {
+				logrus.Errorf("hysteria process remove file error err: %v", err)
+			}
+		}
+	}
 }
 
 func GetHysteriaState(apiPort uint) bool {

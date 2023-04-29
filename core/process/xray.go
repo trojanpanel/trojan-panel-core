@@ -75,12 +75,12 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 			select {
 			case err := <-done:
 				if err != nil {
-					x.releaseProcess(apiPort)
-				} else {
-
+					logrus.Errorf("xray process wait error err: %v", err)
+					x.releaseProcess(apiPort, configFilePath)
 				}
 			case <-ctx.Done():
-				x.releaseProcess(apiPort)
+				logrus.Errorf("xray process wait timeout err: %v", err)
+				x.releaseProcess(apiPort, configFilePath)
 			}
 		}()
 		return nil
@@ -89,23 +89,19 @@ func (x *XrayProcess) StartXray(apiPort uint) error {
 	return errors.New(constant.XrayStartError)
 }
 
-func (x *XrayProcess) releaseProcess(apiPort uint) {
+func (x *XrayProcess) releaseProcess(apiPort uint, configFilePath string) {
 	load, ok := NewXrayProcess().GetCmdMap().Load(apiPort)
-	cmd := load.(*exec.Cmd)
-	if ok && !cmd.ProcessState.Success() {
-		if err := cmd.Process.Release(); err != nil {
-			logrus.Errorf("xray process release error err: %v", err)
-			return
+	if ok {
+		cmd := load.(*exec.Cmd)
+		if !cmd.ProcessState.Success() {
+			x.cmdMap.Delete(apiPort)
+			if err := cmd.Process.Release(); err != nil {
+				logrus.Errorf("xray process release error err: %v", err)
+			}
+			if err := util.RemoveFile(configFilePath); err != nil {
+				logrus.Errorf("xray process remove file error err: %v", err)
+			}
 		}
-		configFilePath, err := util.GetConfigFile(constant.Xray, apiPort)
-		if err != nil {
-			return
-		}
-		if err := util.RemoveFile(configFilePath); err != nil {
-			logrus.Errorf("xray process remove file error err: %v", err)
-			return
-		}
-		x.cmdMap.Delete(apiPort)
 	}
 }
 

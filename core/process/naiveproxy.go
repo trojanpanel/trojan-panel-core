@@ -1,10 +1,12 @@
 package process
 
 import (
+	"context"
 	"errors"
 	"github.com/sirupsen/logrus"
 	"os/exec"
 	"sync"
+	"time"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/util"
 )
@@ -63,27 +65,44 @@ func (n *NaiveProxyProcess) StartNaiveProxy(apiPort uint) error {
 			return errors.New(constant.NaiveProxyStartError)
 		}
 		n.cmdMap.Store(apiPort, cmd)
+
+		// 等待超时
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		done := make(chan error)
 		go func() {
-			if err := cmd.Wait(); err != nil {
-				logrus.Errorf("naiveproxy process wait error err: %v", err)
-			}
-			if !cmd.ProcessState.Success() {
-				logrus.Errorf("naiveproxy process state fail err: %v", err)
-				if err := cmd.Process.Release(); err != nil {
-					logrus.Errorf("naiveproxy process release error err: %v", err)
-					return
+			done <- cmd.Wait()
+			select {
+			case err := <-done:
+				if err != nil {
+					logrus.Errorf("naiveproxy process wait error err: %v", err)
+					n.releaseProcess(apiPort, configFilePath)
 				}
-				if err = util.RemoveFile(configFilePath); err != nil {
-					logrus.Errorf("naiveproxy process remove file error err: %v", err)
-					return
-				}
-				n.cmdMap.Delete(apiPort)
+			case <-ctx.Done():
+				logrus.Errorf("naiveproxy process wait timeout err: %v", err)
+				n.releaseProcess(apiPort, configFilePath)
 			}
 		}()
 		return nil
 	}
 	logrus.Errorf("start naiveproxy error err: lock not acquired")
 	return errors.New(constant.NaiveProxyStartError)
+}
+
+func (n *NaiveProxyProcess) releaseProcess(apiPort uint, configFilePath string) {
+	load, ok := NewNaiveProxyInstance().GetCmdMap().Load(apiPort)
+	if ok {
+		cmd := load.(*exec.Cmd)
+		if !cmd.ProcessState.Success() {
+			n.cmdMap.Delete(apiPort)
+			if err := cmd.Process.Release(); err != nil {
+				logrus.Errorf("naiveproxy process release error err: %v", err)
+			}
+			if err := util.RemoveFile(configFilePath); err != nil {
+				logrus.Errorf("naiveproxy process remove file error err: %v", err)
+			}
+		}
+	}
 }
 
 func GetNaiveProxyState(apiPort uint) bool {
