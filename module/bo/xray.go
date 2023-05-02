@@ -34,7 +34,11 @@ type StreamSettings struct {
 }
 
 type TlsSettings struct {
-	Certificates []Certificate `json:"certificates"`
+	Certificates  []Certificate `json:"certificates"`
+	ServerName    string        `json:"serverName"`
+	Alpn          []string      `json:"alpn"`
+	AllowInsecure bool          `json:"allowInsecure"`
+	Fingerprint   string        `json:"fingerprint"`
 }
 
 type RealitySettings struct {
