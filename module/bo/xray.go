@@ -45,6 +45,7 @@ type RealitySettings struct {
 	Fingerprint string   `json:"fingerprint"`
 	PrivateKey  string   `json:"privateKey"`
 	ShortIds    []string `json:"shortIds"`
+	SpiderX     string   `json:"spiderX"`
 }
 
 type Certificate struct {
