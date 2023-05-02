@@ -150,9 +150,8 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 				KeyFile:         certConfig.KeyPath,
 			}
 			certificates = append(certificates, certificate)
-			if streamSettings.Security == "tls" {
+			if streamSettings.Security == "tls" && len(streamSettings.TlsSettings.Certificates) == 0 {
 				streamSettings.TlsSettings.Certificates = certificates
-				streamSettings.TlsSettings.Alpn = []string{"http/1.1"}
 			} else if streamSettings.Security == "reality" {
 
 			}

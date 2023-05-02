@@ -35,7 +35,6 @@ type StreamSettings struct {
 
 type TlsSettings struct {
 	Certificates []Certificate `json:"certificates"`
-	Alpn         []string      `json:"alpn"`
 }
 
 type RealitySettings struct {
