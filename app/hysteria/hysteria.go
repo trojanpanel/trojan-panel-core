@@ -88,7 +88,7 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
   "protocol": "${protocol}",
   "cert": "${crt_path}",
   "key": "${key_path}",
-  "obfs": "${obfs}"
+  "obfs": "${obfs}",
   "up_mbps": ${up_mbps},
   "down_mbps": ${down_mbps},
   "auth": {
