@@ -26,37 +26,22 @@ type InboundBo struct {
 }
 
 type StreamSettings struct {
-	Network         string                       `json:"network"`
-	Security        string                       `json:"security"`
-	TlsSettings     TlsSettings                  `json:"tlsSettings"`
-	RealitySettings RealitySettings              `json:"realitySettings"`
-	WsSettings      XrayStreamSettingsWsSettings `json:"wsSettings"`
+	Network         string      `json:"network"`
+	Security        string      `json:"security"`
+	TlsSettings     TlsSettings `json:"tlsSettings"`
+	RealitySettings TypeMessage `json:"realitySettings"`
+	WsSettings      TypeMessage `json:"wsSettings"`
 }
 
 type TlsSettings struct {
 	Certificates  []Certificate `json:"certificates"`
-	ServerName    string        `json:"serverName"`
-	Alpn          []string      `json:"alpn"`
-	AllowInsecure bool          `json:"allowInsecure"`
-	Fingerprint   string        `json:"fingerprint"`
-}
-
-type RealitySettings struct {
-	Dest        string   `json:"dest"`
-	Xver        int      `json:"xver"`
-	ServerNames []string `json:"serverNames"`
-	Fingerprint string   `json:"fingerprint"`
-	PrivateKey  string   `json:"privateKey"`
-	ShortIds    []string `json:"shortIds"`
-	SpiderX     string   `json:"spiderX"`
+	ServerName    TypeMessage   `json:"serverName"`
+	Alpn          TypeMessage   `json:"alpn"`
+	AllowInsecure TypeMessage   `json:"allowInsecure"`
+	Fingerprint   TypeMessage   `json:"fingerprint"`
 }
 
 type Certificate struct {
 	CertificateFile string `json:"certificateFile"`
 	KeyFile         string `json:"keyFile"`
-}
-
-type XrayStreamSettingsWsSettings struct {
-	Path string `json:"path"`
-	Host string `json:"host"`
 }
