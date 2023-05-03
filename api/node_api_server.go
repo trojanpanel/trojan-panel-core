@@ -67,6 +67,7 @@ func (s *NodeApiServer) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		TrojanGoSSPassword:      nodeAddDto.TrojanGoSSPassword,
 		// Hysteria
 		HysteriaProtocol: nodeAddDto.HysteriaProtocol,
+		HysteriaObfs:     nodeAddDto.HysteriaObfs,
 		HysteriaUpMbps:   int(nodeAddDto.HysteriaUpMbps),
 		HysteriaDownMbps: int(nodeAddDto.HysteriaDownMbps),
 	}); err != nil {

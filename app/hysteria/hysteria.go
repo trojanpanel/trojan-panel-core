@@ -88,6 +88,7 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
   "protocol": "${protocol}",
   "cert": "${crt_path}",
   "key": "${key_path}",
+  "obfs": "${obfs}"
   "up_mbps": ${up_mbps},
   "down_mbps": ${down_mbps},
   "auth": {
@@ -99,6 +100,7 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 }`
 	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(hysteriaConfigDto.Port), 10))
 	configContent = strings.ReplaceAll(configContent, "${protocol}", hysteriaConfigDto.Protocol)
+	configContent = strings.ReplaceAll(configContent, "${obfs}", hysteriaConfigDto.Obfs)
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
 	configContent = strings.ReplaceAll(configContent, "${up_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.UpMbps), 10))

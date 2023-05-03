@@ -47,8 +47,9 @@ message NodeAddDto {
   string trojanGoSSPassword = 20;
 
   string hysteriaProtocol = 21;
-  int64 hysteriaUpMbps = 22;
-  int64 hysteriaDownMbps = 23;
+  string hysteriaObfs = 22;
+  int64 hysteriaUpMbps = 23;
+  int64 hysteriaDownMbps = 24;
 }
 
 message NodeRemoveDto {

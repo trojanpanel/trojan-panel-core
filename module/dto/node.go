@@ -25,6 +25,7 @@ type NodeAddDto struct {
 	TrojanGoSSPassword      string `json:"trojanGoSSPassword" form:"trojanGoSSPassword" validate:"omitempty"`
 
 	HysteriaProtocol string `json:"hysteriaProtocol" form:"hysteriaProtocol" validate:"omitempty"`
+	HysteriaObfs     string `json:"hysteriaObfs" form:"hysteriaObfs" validate:"omitempty"`
 	HysteriaUpMbps   int    `json:"hysteriaUpMbps" form:"hysteriaUpMbps" validate:"omitempty"`
 	HysteriaDownMbps int    `json:"hysteriaDownMbps" form:"hysteriaDownMbps" validate:"omitempty"`
 }

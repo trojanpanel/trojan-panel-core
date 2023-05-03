@@ -60,6 +60,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 				ApiPort:  nodeAddDto.Port + 30000,
 				Port:     nodeAddDto.Port,
 				Protocol: nodeAddDto.HysteriaProtocol,
+				Obfs:     nodeAddDto.HysteriaObfs,
 				Domain:   nodeAddDto.Domain,
 				UpMbps:   nodeAddDto.HysteriaUpMbps,
 				DownMbps: nodeAddDto.HysteriaDownMbps,

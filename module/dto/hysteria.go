@@ -5,6 +5,7 @@ type HysteriaConfigDto struct {
 	Port     uint // hysteria端口
 	Protocol string
 	Domain   string
+	Obfs     string
 	UpMbps   int
 	DownMbps int
 }
