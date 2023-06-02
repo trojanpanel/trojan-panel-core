@@ -17,11 +17,12 @@ func InitConfig() {
 }
 
 type AppConfig struct {
-	MySQLConfig `ini:"mysql"`
-	RedisConfig `ini:"redis"`
-	CertConfig  `ini:"cert"`
-	LogConfig   `ini:"log"`
-	GrpcConfig  `ini:"grpc"`
+	MySQLConfig  `ini:"mysql"`
+	RedisConfig  `ini:"redis"`
+	CertConfig   `ini:"cert"`
+	LogConfig    `ini:"log"`
+	GrpcConfig   `ini:"grpc"`
+	ServerConfig `ini:"server"`
 }
 
 // MySQLConfig MySQL
@@ -61,4 +62,8 @@ type LogConfig struct {
 // GrpcConfig gRPC
 type GrpcConfig struct {
 	Port string `ini:"port"` // gRPC端口
+}
+
+type ServerConfig struct {
+	Port int `ini:"port"` // 服务器端口
 }

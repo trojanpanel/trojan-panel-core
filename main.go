@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"trojan-panel-core/api"
 	"trojan-panel-core/app"
@@ -13,9 +14,10 @@ import (
 )
 
 func main() {
+	serverConfig := core.Config.ServerConfig
 	r := gin.Default()
 	router.Router(r)
-	_ = r.Run(":8082")
+	_ = r.Run(fmt.Sprintf(":%d", serverConfig.Port))
 	defer closeResource()
 }
 

@@ -35,6 +35,7 @@ var (
 	crtPath        string
 	keyPath        string
 	grpcPort       string
+	serverPort     string
 	version        bool
 )
 
@@ -55,6 +56,7 @@ func init() {
 	flag.StringVar(&crtPath, "crtPath", "", "crt秘钥")
 	flag.StringVar(&keyPath, "keyPath", "", "key秘钥")
 	flag.StringVar(&grpcPort, "grpcPort", "8100", "gRPC端口")
+	flag.StringVar(&serverPort, "serverPort", "8082", "服务端口")
 	flag.BoolVar(&version, "version", false, "打印版本信息")
 	flag.Usage = usage
 	flag.Parse()
@@ -119,8 +121,10 @@ max_age=30
 compress=true
 [grpc]
 port=%s
+[server]
+port=%s
 `, host, user, password, port, database, accountTable, redisHost, redisPort, redisPassword, redisDb,
-			redisMaxIdle, redisMaxIdle, redisWait, crtPath, keyPath, grpcPort))
+			redisMaxIdle, redisMaxIdle, redisWait, crtPath, keyPath, grpcPort, serverPort))
 		if err != nil {
 			logrus.Errorf("config.ini文件写入异常 err: %v", err)
 			panic(err)
@@ -147,7 +151,7 @@ port=%s
 
 func usage() {
 	_, _ = fmt.Fprintln(os.Stdout, `trojan panel core manage help
-Usage: trojan-panel-core [-host] [-password] [-port] [-database] [-account-table] [-redisHost] [-redisPort] [-redisPassword] [-redisDb] [-redisMaxIdle] [-redisMaxActive] [-redisWait] [-crt-path] [-key-path] [-grpc-port] [-h] [-version]`)
+Usage: trojan-panel-core [-host] [-user] [-password] [-port] [-database] [-accountTable] [-redisHost] [-redisPort] [-redisPassword] [-redisDb] [-redisMaxIdle] [-redisMaxActive] [-redisWait] [-crtPath] [-keyPath] [-grpcPort] [-serverPort] [-h] [-version]`)
 	flag.PrintDefaults()
 }
 
