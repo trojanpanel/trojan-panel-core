@@ -120,63 +120,65 @@ func CronHandlerUser() {
 
 // CronHandlerDownloadAndUpload 定时任务 更新数据库中用户的下载和上传流量 Hysteria暂不支持流量统计
 func CronHandlerDownloadAndUpload() {
+	// xray
 	go func() {
 		xrayInstance := process.NewXrayProcess()
 		xrayCmdMap := xrayInstance.GetCmdMap()
 		xrayCmdMap.Range(func(apiPort, cmd any) bool {
 			xrayApi := xray.NewXrayApi(apiPort.(uint))
 			stats, err := xrayApi.QueryStats("", true)
-			if err != nil {
-				logrus.Errorf("数据库同步至Xray apiPort: %d 查询用户失败 err: %v", apiPort, err)
-			} else {
-				accountUpdateBos := make([]bo.AccountUpdateBo, 0)
-				for _, stat := range stats {
-					submatch := userLinkRegex.FindStringSubmatch(stat.Name)
-					if len(submatch) == 3 {
-						isDown := submatch[2] == "downlink"
-						var setFlag = false
-						if isDown {
-							for index := range accountUpdateBos {
-								if accountUpdateBos[index].Pass == submatch[1] {
-									accountUpdateBos[index].Download = stat.Value
-									setFlag = true
-									break
+			if err == nil {
+				go func() {
+					accountUpdateBos := make([]bo.AccountUpdateBo, 0)
+					for _, stat := range stats {
+						submatch := userLinkRegex.FindStringSubmatch(stat.Name)
+						if len(submatch) == 3 {
+							isDown := submatch[2] == "downlink"
+							var setFlag = false
+							if isDown {
+								for index := range accountUpdateBos {
+									if accountUpdateBos[index].Pass == submatch[1] {
+										accountUpdateBos[index].Download = stat.Value
+										setFlag = true
+										break
+									}
 								}
-							}
-							if !setFlag {
-								accountUpdateBo := bo.AccountUpdateBo{}
-								accountUpdateBo.Pass = submatch[1]
-								accountUpdateBo.Download = stat.Value
-								accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
-							}
-						} else {
-							for index := range accountUpdateBos {
-								if accountUpdateBos[index].Pass == submatch[1] {
-									accountUpdateBos[index].Upload = stat.Value
-									setFlag = true
-									break
+								if !setFlag {
+									accountUpdateBo := bo.AccountUpdateBo{}
+									accountUpdateBo.Pass = submatch[1]
+									accountUpdateBo.Download = stat.Value
+									accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
 								}
-							}
-							if !setFlag {
-								accountUpdateBo := bo.AccountUpdateBo{}
-								accountUpdateBo.Pass = submatch[1]
-								accountUpdateBo.Upload = stat.Value
-								accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
+							} else {
+								for index := range accountUpdateBos {
+									if accountUpdateBos[index].Pass == submatch[1] {
+										accountUpdateBos[index].Upload = stat.Value
+										setFlag = true
+										break
+									}
+								}
+								if !setFlag {
+									accountUpdateBo := bo.AccountUpdateBo{}
+									accountUpdateBo.Pass = submatch[1]
+									accountUpdateBo.Upload = stat.Value
+									accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
+								}
 							}
 						}
 					}
-				}
-				for _, account := range accountUpdateBos {
-					if err = dao.UpdateAccountFlowByPassOrHash(&account.Pass, nil, account.Download, account.Upload); err != nil {
-						logrus.Errorf("Xray同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
-						continue
+					for _, account := range accountUpdateBos {
+						if err = dao.UpdateAccountFlowByPassOrHash(&account.Pass, nil, account.Download, account.Upload); err != nil {
+							logrus.Errorf("Xray同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
+							continue
+						}
 					}
-				}
+				}()
 			}
 			return true
 		})
 	}()
 
+	// trojango
 	go func() {
 		trojanGoInstance := process.NewTrojanGoInstance()
 		trojanGoCmdMap := trojanGoInstance.GetCmdMap()
@@ -184,20 +186,22 @@ func CronHandlerDownloadAndUpload() {
 			trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
 			users, err := trojanGoApi.ListUsers()
 			if err == nil {
-				for _, user := range users {
-					downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
-					uploadTraffic := int(user.GetTrafficTotal().GetUploadTraffic())
-					hash := user.GetUser().GetHash()
-					if err = trojanGoApi.ReSetUserTrafficByHash(hash); err != nil {
-						logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 重设Trojan Go用户流量失败 err: %v", apiPort, err)
-						continue
+				go func() {
+					for _, user := range users {
+						downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
+						uploadTraffic := int(user.GetTrafficTotal().GetUploadTraffic())
+						hash := user.GetUser().GetHash()
+						if err = trojanGoApi.ReSetUserTrafficByHash(hash); err != nil {
+							logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 重设Trojan Go用户流量失败 err: %v", apiPort, err)
+							continue
+						}
+						if err = dao.UpdateAccountFlowByPassOrHash(nil, &hash, downloadTraffic,
+							uploadTraffic); err != nil {
+							logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
+							continue
+						}
 					}
-					if err = dao.UpdateAccountFlowByPassOrHash(nil, &hash, downloadTraffic,
-						uploadTraffic); err != nil {
-						logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
-						continue
-					}
-				}
+				}()
 			}
 			return true
 		})
