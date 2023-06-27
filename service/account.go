@@ -299,7 +299,7 @@ func CronHandlerDownloadAndUpload() {
 							continue
 						}
 					}
-					defer redis.RsUnLock(mutex)
+					redis.RsUnLock(mutex)
 				}(stats)
 			}
 			return true
@@ -342,7 +342,7 @@ func CronHandlerDownloadAndUpload() {
 							continue
 						}
 					}
-					defer redis.RsUnLock(mutex)
+					redis.RsUnLock(mutex)
 				}(users)
 			}
 			return true
