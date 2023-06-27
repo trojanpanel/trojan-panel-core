@@ -54,8 +54,8 @@ func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upl
 	return nil
 }
 
-// SelectAccounts 查询全量账户密码
-func SelectAccounts(ban bool) ([]bo.AccountBo, error) {
+// SelectAccounts 查询全量有效的账户
+func SelectAccounts() ([]bo.AccountBo, error) {
 	mySQLConfig := core.Config.MySQLConfig
 	var accounts []module.Account
 	var (
@@ -63,12 +63,7 @@ func SelectAccounts(ban bool) ([]bo.AccountBo, error) {
 		err    error
 	)
 
-	sql := fmt.Sprintf("select id,username,pass from %s where", mySQLConfig.AccountTable)
-	if ban {
-		sql += " quota = 0 or (quota > 0 and quota <= download + upload)"
-	} else {
-		sql += " quota < 0 or (quota > download + upload)"
-	}
+	sql := fmt.Sprintf("select id,username,pass from %s where quota < 0 or (quota > download + upload)", mySQLConfig.AccountTable)
 	rows, err := db.Query(sql, values...)
 	if err != nil {
 		logrus.Errorln(err.Error())
