@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"regexp"
 	"trojan-panel-core/app/naiveproxy"
@@ -8,7 +9,9 @@ import (
 	"trojan-panel-core/app/xray"
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/dao"
+	"trojan-panel-core/dao/redis"
 	"trojan-panel-core/module/bo"
+	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
 	"trojan-panel-core/util"
@@ -166,12 +169,17 @@ func CronHandlerDownloadAndUpload() {
 							}
 						}
 					}
+					mutex, err := redis.RsLock(fmt.Sprintf(constant.LockXrayUpdate))
+					if err != nil {
+						return
+					}
 					for _, account := range accountUpdateBos {
 						if err = dao.UpdateAccountFlowByPassOrHash(&account.Pass, nil, account.Download, account.Upload); err != nil {
 							logrus.Errorf("Xray同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
 							continue
 						}
 					}
+					redis.RsUnLock(mutex)
 				}()
 			}
 			return true
@@ -187,20 +195,34 @@ func CronHandlerDownloadAndUpload() {
 			users, err := trojanGoApi.ListUsers()
 			if err == nil {
 				go func() {
+					accountUpdateBos := make([]bo.AccountUpdateBo, 0)
 					for _, user := range users {
+						hash := user.GetUser().GetHash()
 						downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
 						uploadTraffic := int(user.GetTrafficTotal().GetUploadTraffic())
-						hash := user.GetUser().GetHash()
 						if err = trojanGoApi.ReSetUserTrafficByHash(hash); err != nil {
 							logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 重设Trojan Go用户流量失败 err: %v", apiPort, err)
 							continue
 						}
-						if err = dao.UpdateAccountFlowByPassOrHash(nil, &hash, downloadTraffic,
-							uploadTraffic); err != nil {
+						accountUpdateBo := bo.AccountUpdateBo{}
+						accountUpdateBo.Hash = hash
+						accountUpdateBo.Download = downloadTraffic
+						accountUpdateBo.Upload = uploadTraffic
+						accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
+					}
+
+					mutex, err := redis.RsLock(fmt.Sprintf(constant.LockTrojanGoUpdate))
+					if err != nil {
+						return
+					}
+					for _, account := range accountUpdateBos {
+						if err = dao.UpdateAccountFlowByPassOrHash(nil, &account.Hash, account.Download,
+							account.Upload); err != nil {
 							logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
 							continue
 						}
 					}
+					redis.RsUnLock(mutex)
 				}()
 			}
 			return true

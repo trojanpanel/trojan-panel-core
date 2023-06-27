@@ -2,6 +2,7 @@ package bo
 
 type AccountUpdateBo struct {
 	Pass     string
+	Hash     string
 	Download int
 	Upload   int
 }

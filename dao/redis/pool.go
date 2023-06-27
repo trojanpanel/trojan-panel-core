@@ -2,13 +2,19 @@ package redis
 
 import (
 	"fmt"
+	"github.com/go-redsync/redsync/v4"
+	"github.com/go-redsync/redsync/v4/redis/goredis/v9"
 	"github.com/gomodule/redigo/redis"
 	"github.com/sirupsen/logrus"
 	"time"
 	"trojan-panel-core/core"
 )
 
+// 连接池
 var pool *redis.Pool
+
+// 分布式锁
+var rs *redsync.Redsync
 
 func InitRedis() {
 	redisConfig := core.Config.RedisConfig
@@ -35,6 +41,7 @@ func InitRedis() {
 			return conn, nil
 		},
 	}
+	rs = redsync.New(goredis.NewPool(pool))
 }
 
 func CloseRedis() {
