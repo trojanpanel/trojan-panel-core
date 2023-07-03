@@ -16,10 +16,7 @@ Trojan Panel内核
 
 主要逻辑：
 
-1. api实时更新（数据库同步至应用）
-    - 删除场景 条件：account.quota = 0 or account.download + account.upload >= account.quota and account.quota > 0
-    - 添加场景 如果存在则不操作，如果不存在则添加：account.download + account.upload <
-      account.quota or account.quota < 0
+1. api实时更新（数据库同步至应用）有效账户：account.quota < 0 or account.download + account.upload < account.quota
 2. 定时更新account.download,account.upload
 3. account.quota=0，则禁用用户
 
