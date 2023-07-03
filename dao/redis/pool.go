@@ -3,7 +3,7 @@ package redis
 import (
 	"fmt"
 	"github.com/go-redsync/redsync/v4"
-	"github.com/go-redsync/redsync/v4/redis/goredis/v9"
+	"github.com/go-redsync/redsync/v4/redis/redigo"
 	"github.com/gomodule/redigo/redis"
 	"github.com/sirupsen/logrus"
 	"time"
@@ -41,7 +41,7 @@ func InitRedis() {
 			return conn, nil
 		},
 	}
-	rs = redsync.New(goredis.NewPool(pool))
+	rs = redsync.New(redigo.NewPool(pool))
 }
 
 func CloseRedis() {
