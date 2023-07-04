@@ -3,8 +3,8 @@ package dao
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
+	_ "modernc.org/sqlite"
 	"strings"
 	"trojan-panel-core/module/constant"
 )
@@ -14,7 +14,7 @@ var sqliteDb *sql.DB
 // InitSqlLite 初始化sqlite数据文件
 func InitSqlLite() {
 	var err error
-	sqliteDb, err = sql.Open("sqlite3", fmt.Sprintf("file:%s", constant.SqliteFilePath))
+	sqliteDb, err = sql.Open("sqlite", fmt.Sprintf("file:%s", constant.SqliteFilePath))
 	if err != nil {
 		logrus.Errorf("sqlite连接异常 err: %v", err)
 		panic(err)
