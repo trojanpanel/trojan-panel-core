@@ -29,7 +29,7 @@ func CronHandlerUser() {
 	}
 
 	// xray
-	go func() {
+	go func(accountBos []bo.AccountBo) {
 		xrayInstance := process.NewXrayProcess()
 		xrayCmdMap := xrayInstance.GetCmdMap()
 		xrayCmdMap.Range(func(apiPort, cmd any) bool {
@@ -105,10 +105,10 @@ func CronHandlerUser() {
 			}()
 			return true
 		})
-	}()
+	}(accountBos)
 
 	// trojan go
-	go func() {
+	go func(accountBos []bo.AccountBo) {
 		trojanGoInstance := process.NewTrojanGoInstance()
 		trojanGoCmdMap := trojanGoInstance.GetCmdMap()
 		trojanGoCmdMap.Range(func(apiPort, cmd any) bool {
@@ -173,10 +173,10 @@ func CronHandlerUser() {
 			}()
 			return true
 		})
-	}()
+	}(accountBos)
 
 	// naiveproxy
-	go func() {
+	go func(accountBos []bo.AccountBo) {
 		naiveProxyInstance := process.NewNaiveProxyInstance()
 		naiveProxyCmdMap := naiveProxyInstance.GetCmdMap()
 		naiveProxyCmdMap.Range(func(apiPort, cmd any) bool {
@@ -243,7 +243,7 @@ func CronHandlerUser() {
 			}()
 			return true
 		})
-	}()
+	}(accountBos)
 }
 
 // CronHandlerDownloadAndUpload 定时任务 更新数据库中用户的下载和上传流量 Hysteria暂不支持流量统计
