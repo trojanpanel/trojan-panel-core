@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/p4gefau1t/trojan-go/api/service"
 	"github.com/sirupsen/logrus"
 	"regexp"
@@ -295,7 +294,7 @@ func CronHandlerDownloadAndUpload() {
 							}
 						}
 					}
-					mutex, err := redis.RsLock(fmt.Sprintf(constant.LockXrayUpdate))
+					mutex, err := redis.RsLock(constant.LockXrayUpdate)
 					if err != nil {
 						return
 					}
@@ -337,7 +336,7 @@ func CronHandlerDownloadAndUpload() {
 						accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
 					}
 
-					mutex, err := redis.RsLock(fmt.Sprintf(constant.LockTrojanGoUpdate))
+					mutex, err := redis.RsLock(constant.LockTrojanGoUpdate)
 					if err != nil {
 						return
 					}
