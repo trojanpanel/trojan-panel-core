@@ -45,18 +45,21 @@ func CronHandlerUser() {
 				// 删除的账户
 				var banAccountBos []bo.AccountBo
 				for _, stat := range stats {
-					pass := userLinkRegex.FindStringSubmatch(stat.Name)[1]
-					var addFlag = true
-					for _, account := range accountBos {
-						if account.Pass == pass {
-							addFlag = false
-							continue
+					submatch := userLinkRegex.FindStringSubmatch(stat.Name)
+					if len(submatch) == 2 {
+						pass := submatch[1]
+						var addFlag = true
+						for _, account := range accountBos {
+							if account.Pass == pass {
+								addFlag = false
+								continue
+							}
 						}
-					}
-					if addFlag {
-						banAccountBos = append(banAccountBos, bo.AccountBo{
-							Pass: pass,
-						})
+						if addFlag {
+							banAccountBos = append(banAccountBos, bo.AccountBo{
+								Pass: pass,
+							})
+						}
 					}
 				}
 				for _, item := range banAccountBos {
@@ -71,16 +74,19 @@ func CronHandlerUser() {
 				for _, account := range accountBos {
 					var addFlag = true
 					for _, stat := range stats {
-						pass := userLinkRegex.FindStringSubmatch(stat.Name)[1]
-						if account.Pass == pass {
-							addFlag = false
-							continue
+						submatch := userLinkRegex.FindStringSubmatch(stat.Name)
+						if len(submatch) == 2 {
+							pass := submatch[1]
+							if account.Pass == pass {
+								addFlag = false
+								continue
+							}
 						}
-					}
-					if addFlag {
-						addAccountBos = append(addAccountBos, bo.AccountBo{
-							Pass: account.Pass,
-						})
+						if addFlag {
+							addAccountBos = append(addAccountBos, bo.AccountBo{
+								Pass: account.Pass,
+							})
+						}
 					}
 				}
 				protocol, err := util.GetXrayProtocolByApiPort(apiPort.(uint))
