@@ -48,14 +48,14 @@ func CronHandlerUser() {
 					submatch := userLinkRegex.FindStringSubmatch(stat.Name)
 					if len(submatch) == 2 {
 						pass := submatch[1]
-						var addFlag = true
+						var banFlag = true
 						for _, account := range accountBos {
 							if account.Pass == pass {
-								addFlag = false
-								continue
+								banFlag = false
+								break
 							}
 						}
-						if addFlag {
+						if banFlag {
 							banAccountBos = append(banAccountBos, bo.AccountBo{
 								Pass: pass,
 							})
@@ -79,14 +79,14 @@ func CronHandlerUser() {
 							pass := submatch[1]
 							if account.Pass == pass {
 								addFlag = false
-								continue
+								break
 							}
 						}
-						if addFlag {
-							addAccountBos = append(addAccountBos, bo.AccountBo{
-								Pass: account.Pass,
-							})
-						}
+					}
+					if addFlag {
+						addAccountBos = append(addAccountBos, bo.AccountBo{
+							Pass: account.Pass,
+						})
 					}
 				}
 				protocol, err := util.GetXrayProtocolByApiPort(apiPort.(uint))
@@ -124,14 +124,14 @@ func CronHandlerUser() {
 				var banAccountBos []bo.AccountBo
 				for _, user := range users {
 					pass := user.GetUser().GetPassword()
-					var addFlag = true
+					var banFlag = true
 					for _, account := range accountBos {
 						if account.Pass == pass {
-							addFlag = false
-							continue
+							banFlag = false
+							break
 						}
 					}
-					if addFlag {
+					if banFlag {
 						banAccountBos = append(banAccountBos, bo.AccountBo{
 							Pass: pass,
 						})
@@ -153,7 +153,7 @@ func CronHandlerUser() {
 						pass := user.GetUser().GetPassword()
 						if account.Pass == pass {
 							addFlag = false
-							continue
+							break
 						}
 					}
 					if addFlag {
@@ -192,14 +192,14 @@ func CronHandlerUser() {
 				var banAccountBos []bo.AccountBo
 				for _, user := range *users {
 					pass := user.AuthPassDeprecated
-					var addFlag = true
+					var banFlag = true
 					for _, account := range accountBos {
 						if account.Pass == pass {
-							addFlag = false
-							continue
+							banFlag = false
+							break
 						}
 					}
-					if addFlag {
+					if banFlag {
 						banAccountBos = append(banAccountBos, bo.AccountBo{
 							Pass: pass,
 						})
@@ -221,7 +221,7 @@ func CronHandlerUser() {
 						pass := user.AuthPassDeprecated
 						if account.Pass == pass {
 							addFlag = false
-							continue
+							break
 						}
 					}
 					if addFlag {
