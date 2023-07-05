@@ -1,6 +1,6 @@
 package constant
 
 const (
-	LockXrayUpdate     = "xray-update-mutex"
-	LockTrojanGoUpdate = "trojango-update-mutex"
+	LockXrayUpdate     = "lock:xray-update-mutex"
+	LockTrojanGoUpdate = "lock:trojango-update-mutex"
 )
