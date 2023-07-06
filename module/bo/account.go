@@ -10,4 +10,5 @@ type AccountUpdateBo struct {
 type AccountBo struct {
 	Username string
 	Pass     string
+	Hash     string
 }

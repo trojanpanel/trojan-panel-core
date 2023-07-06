@@ -122,23 +122,23 @@ func CronHandlerUser() {
 				// 删除的账户
 				var banAccountBos []bo.AccountBo
 				for _, user := range users {
-					pass := user.GetUser().GetPassword()
+					hash := user.GetUser().GetHash()
 					var banFlag = true
 					for _, account := range accountBos {
-						if account.Pass == pass {
+						if account.Hash == hash {
 							banFlag = false
 							break
 						}
 					}
 					if banFlag {
 						banAccountBos = append(banAccountBos, bo.AccountBo{
-							Pass: pass,
+							Hash: hash,
 						})
 					}
 				}
 				for _, item := range banAccountBos {
 					// 调用api删除用户
-					if err = trojanGoApi.DeleteUser(item.Pass); err != nil {
+					if err = trojanGoApi.DeleteUser(item.Hash); err != nil {
 						logrus.Errorf("TrojanGo DeleteUser err: %v", err)
 						continue
 					}
@@ -149,22 +149,22 @@ func CronHandlerUser() {
 				for _, account := range accountBos {
 					var addFlag = true
 					for _, user := range users {
-						pass := user.GetUser().GetPassword()
-						if account.Pass == pass {
+						hash := user.GetUser().GetHash()
+						if account.Hash == hash {
 							addFlag = false
 							break
 						}
 					}
 					if addFlag {
 						addAccountBos = append(addAccountBos, bo.AccountBo{
-							Pass: account.Pass,
+							Hash: account.Hash,
 						})
 					}
 				}
 				for _, item := range addAccountBos {
 					// 调用api添加用户
 					if err = trojanGoApi.AddUser(dto.TrojanGoAddUserDto{
-						Password: item.Pass,
+						Hash: item.Hash,
 					}); err != nil {
 						logrus.Errorf("TrojanGo AddUser err: %v", err)
 						continue

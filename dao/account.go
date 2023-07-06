@@ -63,7 +63,7 @@ func SelectAccounts() ([]bo.AccountBo, error) {
 		err    error
 	)
 
-	sql := fmt.Sprintf("select id,username,pass from %s where quota < 0 or (quota > download + upload)", mySQLConfig.AccountTable)
+	sql := fmt.Sprintf("select id,username,pass,hash from %s where quota < 0 or (quota > download + upload)", mySQLConfig.AccountTable)
 	rows, err := db.Query(sql, values...)
 	if err != nil {
 		logrus.Errorln(err.Error())
@@ -81,6 +81,7 @@ func SelectAccounts() ([]bo.AccountBo, error) {
 			accountBo := bo.AccountBo{
 				Username: *item.Username,
 				Pass:     *item.Pass,
+				Hash:     *item.Hash,
 			}
 			accountBos = append(accountBos, accountBo)
 		}

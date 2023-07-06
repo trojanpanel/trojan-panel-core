@@ -78,7 +78,7 @@ func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 }
 
 // GetUser 查询节点上的用户
-func (t *trojanGoApi) GetUser(password string) (*service.UserStatus, error) {
+func (t *trojanGoApi) GetUser(hash string) (*service.UserStatus, error) {
 	client, ctx, clo, err := apiClient(t.apiPort)
 	if err != nil {
 		return nil, err
@@ -94,12 +94,11 @@ func (t *trojanGoApi) GetUser(password string) (*service.UserStatus, error) {
 		}
 		clo()
 	}()
-	err = stream.Send(&service.GetUsersRequest{
+	if err = stream.Send(&service.GetUsersRequest{
 		User: &service.User{
-			Password: password,
+			Hash: hash,
 		},
-	})
-	if err != nil {
+	}); err != nil {
 		logrus.Errorf("TrojanGo GetUser stream send err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
@@ -163,11 +162,11 @@ func (t *trojanGoApi) ReSetUserTrafficByHash(hash string) error {
 }
 
 // SetUserIpLimit 节点上设置用户设备数
-func (t *trojanGoApi) SetUserIpLimit(password string, ipLimit uint) error {
+func (t *trojanGoApi) SetUserIpLimit(hash string, ipLimit uint) error {
 	req := &service.SetUsersRequest{
 		Status: &service.UserStatus{
 			User: &service.User{
-				Password: password,
+				Hash: hash,
 			},
 			IpLimit: int32(ipLimit),
 		},
@@ -177,11 +176,11 @@ func (t *trojanGoApi) SetUserIpLimit(password string, ipLimit uint) error {
 }
 
 // SetUserSpeedLimit 节点上设置用户限速
-func (t *trojanGoApi) SetUserSpeedLimit(password string, uploadSpeedLimit int, downloadSpeedLimit int) error {
+func (t *trojanGoApi) SetUserSpeedLimit(hash string, uploadSpeedLimit int, downloadSpeedLimit int) error {
 	req := &service.SetUsersRequest{
 		Status: &service.UserStatus{
 			User: &service.User{
-				Password: password,
+				Hash: hash,
 			},
 			SpeedLimit: &service.Speed{
 				UploadSpeed:   uint64(uploadSpeedLimit),
@@ -194,8 +193,8 @@ func (t *trojanGoApi) SetUserSpeedLimit(password string, uploadSpeedLimit int, d
 }
 
 // DeleteUser 节点上删除用户
-func (t *trojanGoApi) DeleteUser(password string) error {
-	userStatus, err := t.GetUser(password)
+func (t *trojanGoApi) DeleteUser(hash string) error {
+	userStatus, err := t.GetUser(hash)
 	if err != nil {
 		return err
 	}
@@ -205,7 +204,7 @@ func (t *trojanGoApi) DeleteUser(password string) error {
 	req := &service.SetUsersRequest{
 		Status: &service.UserStatus{
 			User: &service.User{
-				Password: password,
+				Hash: hash,
 			},
 		},
 		Operation: service.SetUsersRequest_Delete,
@@ -215,7 +214,7 @@ func (t *trojanGoApi) DeleteUser(password string) error {
 
 // AddUser 节点上添加用户
 func (t *trojanGoApi) AddUser(dto dto.TrojanGoAddUserDto) error {
-	userStatus, err := t.GetUser(dto.Password)
+	userStatus, err := t.GetUser(dto.Hash)
 	if err != nil {
 		return err
 	}
@@ -225,7 +224,7 @@ func (t *trojanGoApi) AddUser(dto dto.TrojanGoAddUserDto) error {
 	req := &service.SetUsersRequest{
 		Status: &service.UserStatus{
 			User: &service.User{
-				Password: dto.Password,
+				Hash: dto.Hash,
 			},
 			TrafficTotal: &service.Traffic{
 				UploadTraffic:   uint64(dto.UploadTraffic),
