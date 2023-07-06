@@ -9,7 +9,7 @@ import (
 var userLinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>(downlink|uplink)")
 
 func TestXrayListUsers(t *testing.T) {
-	api := NewXrayApi(30452)
+	api := NewXrayApi(30451)
 	xrayStatsVos, err := api.QueryStats("", false)
 	if err != nil {
 		fmt.Printf("%v\n", err)
