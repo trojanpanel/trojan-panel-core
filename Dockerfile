@@ -14,7 +14,8 @@ ENV mariadb_ip=127.0.0.1 \
     key_path=/tpdata/trojan-panel-core/cert/trojan-panel-core.key \
     grpc_port=8100 \
     server_port=8082 \
-    TZ=Asia/Shanghai
+    TZ=Asia/Shanghai \
+    GIN_MODE=release
 ARG TARGETOS
 ARG TARGETARCH
 ARG TARGETVARIANT
