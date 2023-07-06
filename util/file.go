@@ -12,6 +12,8 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
+	"strconv"
 	"strings"
 	"trojan-panel-core/module/constant"
 )
@@ -50,8 +52,8 @@ func init() {
 	flag.StringVar(&redisPort, "redisPort", "6379", "Redis端口")
 	flag.StringVar(&redisPassword, "redisPassword", "123456", "Redis密码")
 	flag.StringVar(&redisDb, "redisDb", "0", "Redis默认数据库")
-	flag.StringVar(&redisMaxIdle, "redisMaxIdle", "2", "Redis最大空闲连接数")
-	flag.StringVar(&redisMaxActive, "redisMaxActive", "2", "Redis最大连接数")
+	flag.StringVar(&redisMaxIdle, "redisMaxIdle", strconv.FormatInt(int64(runtime.NumCPU()*2), 10), "Redis最大空闲连接数")
+	flag.StringVar(&redisMaxActive, "redisMaxActive", strconv.FormatInt(int64(runtime.NumCPU()*2+2), 10), "Redis最大连接数")
 	flag.StringVar(&redisWait, "redisWait", "true", "Redis是否等待")
 	flag.StringVar(&crtPath, "crtPath", "", "crt秘钥")
 	flag.StringVar(&keyPath, "keyPath", "", "key秘钥")
@@ -124,7 +126,7 @@ port=%s
 [server]
 port=%s
 `, host, user, password, port, database, accountTable, redisHost, redisPort, redisPassword, redisDb,
-			redisMaxIdle, redisMaxIdle, redisWait, crtPath, keyPath, grpcPort, serverPort))
+			redisMaxIdle, redisMaxActive, redisWait, crtPath, keyPath, grpcPort, serverPort))
 		if err != nil {
 			logrus.Errorf("config.ini文件写入异常 err: %v", err)
 			panic(err)
