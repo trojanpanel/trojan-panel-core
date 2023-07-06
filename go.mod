@@ -26,6 +26,7 @@ require (
 require (
 	github.com/BurntSushi/toml v1.2.0 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/avast/retry-go v3.0.0+incompatible // indirect
 	github.com/dgryski/go-metro v0.0.0-20211217172704-adc40b04c140 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

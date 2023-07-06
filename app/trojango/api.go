@@ -37,7 +37,7 @@ func apiClient(apiPort uint) (clent service.TrojanServerServiceClient, ctx conte
 		}
 	}
 	if err != nil {
-		logrus.Errorf("Trojan Go gRPC初始化失败 err: %v", err)
+		logrus.Errorf("TrojanGo apiClient init err: %v", err)
 		err = errors.New(constant.GrpcError)
 	}
 	return
@@ -51,7 +51,7 @@ func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 	}
 	stream, err := client.ListUsers(ctx, &service.ListUsersRequest{})
 	if err != nil {
-		logrus.Errorf("trojan go list users stream err: %v", err)
+		logrus.Errorf("TrojanGo ListUsers err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	defer func() {
@@ -67,9 +67,8 @@ func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 			if err == io.EOF {
 				break
 			}
-			// 加入重试机制
-			logrus.Errorf("trojan go list users recv err: %v", err)
-			return nil, err
+			logrus.Errorf("TrojanGo ListUsers recv err: %v", err)
+			return nil, errors.New(constant.GrpcError)
 		}
 		if resp != nil {
 			userStatus = append(userStatus, resp.Status)
@@ -86,7 +85,7 @@ func (t *trojanGoApi) GetUser(password string) (*service.UserStatus, error) {
 	}
 	stream, err := client.GetUsers(ctx)
 	if err != nil {
-		logrus.Errorf("trojan go get user stream err: %v", err)
+		logrus.Errorf("TrojanGo GetUser err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	defer func() {
@@ -101,12 +100,12 @@ func (t *trojanGoApi) GetUser(password string) (*service.UserStatus, error) {
 		},
 	})
 	if err != nil {
-		logrus.Errorf("trojan go get users stream send err: %v", err)
+		logrus.Errorf("TrojanGo GetUser stream send err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	resp, err := stream.Recv()
 	if resp == nil || err != nil {
-		logrus.Errorf("trojan go get users stream recv err: %v", err)
+		logrus.Errorf("TrojanGo GetUser stream recv err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	return resp.Status, nil
@@ -120,7 +119,7 @@ func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
 	}
 	stream, err := client.SetUsers(ctx)
 	if err != nil {
-		logrus.Errorf("trojan go set users stream err: %v", err)
+		logrus.Errorf("TrojanGo setUser err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	defer func() {
@@ -131,17 +130,16 @@ func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
 	}()
 	err = stream.Send(setUsersRequest)
 	if err != nil {
-		logrus.Errorf("trojan go set user stream send err: %v", err)
+		logrus.Errorf("TrojanGo setUser send err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	resp, err := stream.Recv()
 	if err != nil {
-		logrus.Errorf("trojan go set user recv recv err: %v", err)
+		logrus.Errorf("TrojanGo setUser recv err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	if resp != nil && !resp.Success {
-		logrus.Errorf("trojan go set user fail resp info: %v", resp.Info)
-		// 重试
+		logrus.Errorf("TrojanGo setUser err resp info: %v", resp.Info)
 		return errors.New(constant.GrpcError)
 	}
 	return nil
