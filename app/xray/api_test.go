@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"testing"
+	"trojan-panel-core/module/dto"
 )
 
 var userLinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>(downlink|uplink)")
@@ -16,11 +17,21 @@ func TestXrayListUsers(t *testing.T) {
 	}
 
 	for _, stat := range xrayStatsVos {
-		submatch := userLinkRegex.FindStringSubmatch(stat.Name)
-		if len(submatch) == 2 {
-			fmt.Println(stat.Name)
-			fmt.Println(stat.Value)
-		}
-
+		//submatch := userLinkRegex.FindStringSubmatch(stat.Name)
+		//if len(submatch) == 2 {
+		//	fmt.Println(stat.Name)
+		//	fmt.Println(stat.Value)
+		//}
+		fmt.Println(stat.Name)
+		fmt.Println(stat.Value)
 	}
+}
+
+func TestXrayAddUser(t *testing.T) {
+	api := NewXrayApi(30451)
+	api.AddUser(dto.XrayAddUserDto{
+		Protocol: "vless",
+		Password: "123123",
+	})
+	TestXrayListUsers(t)
 }
