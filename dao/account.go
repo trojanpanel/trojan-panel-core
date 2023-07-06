@@ -95,8 +95,8 @@ func SelectAccountByPass(pass string) (*vo.AccountHysteriaVo, error) {
 
 	selectFields := []string{"id"}
 	where := map[string]interface{}{
-		"quota <>": 0,
-		"pass":     pass,
+		"quota >": "download + upload",
+		"pass":    pass,
 	}
 	buildSelect, values, err := builder.BuildSelect(mySQLConfig.AccountTable, where, selectFields)
 	if err != nil {
