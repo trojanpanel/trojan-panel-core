@@ -29,7 +29,7 @@ func (n *naiveProxyApi) ListUsers() (*[]bo.HandleAuth, error) {
 	url := fmt.Sprintf("http://127.0.0.1:%d/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/", n.apiPort)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		logrus.Errorf("naiveproxy list user new request err: %v", err)
+		logrus.Errorf("NaiveProxy ListUsers NewRequest err: %v", err)
 		return nil, errors.New(constant.SysError)
 	}
 	resp, err := http.DefaultClient.Do(req)
@@ -39,17 +39,17 @@ func (n *naiveProxyApi) ListUsers() (*[]bo.HandleAuth, error) {
 		}
 	}()
 	if err != nil || resp.StatusCode != 200 {
-		logrus.Errorf("naiveproxy list users http request err: %v", err)
+		logrus.Errorf("NaiveProxy ListUsers http resp err: %v", err)
 		return nil, errors.New(constant.SysError)
 	}
 	contentByte, err := io.ReadAll(resp.Body)
 	if err != nil {
-		logrus.Errorf("naiveproxy list users IO err: %v", err)
+		logrus.Errorf("NaiveProxy ListUsers IO err: %v", err)
 		return nil, errors.New(constant.SysError)
 	}
 	var handleAuths *[]bo.HandleAuth
 	if err = json.Unmarshal(contentByte, &handleAuths); err != nil {
-		logrus.Errorf("naiveproxy list users 返序列化异常 err: %v", err)
+		logrus.Errorf("NaiveProxy ListUsers Unmarshal err: %v", err)
 		return nil, errors.New(constant.SysError)
 	}
 	return handleAuths, nil
@@ -87,14 +87,14 @@ func (n *naiveProxyApi) AddUser(dto dto.NaiveProxyAddUserDto) error {
 }`
 	var handleAuth *bo.HandleAuth
 	if err = json.Unmarshal([]byte(authJsonStr), &handleAuth); err != nil {
-		logrus.Errorf("naiveproxy add user 反序列化异常 err: %v", err)
+		logrus.Errorf("NaiveProxy AddUser Unmarshal err: %v", err)
 		return errors.New(constant.SysError)
 	}
 	handleAuth.AuthUserDeprecated = dto.Username
 	handleAuth.AuthPassDeprecated = dto.Pass
 	addUserDtoByte, err := json.Marshal(handleAuth)
 	if err != nil {
-		logrus.Errorf("naiveproxy add user 序列化异常 err: %v", err)
+		logrus.Errorf("NaiveProxy AddUser Marshal err: %v", err)
 		return errors.New(constant.SysError)
 	}
 
@@ -102,7 +102,7 @@ func (n *naiveProxyApi) AddUser(dto dto.NaiveProxyAddUserDto) error {
 	req, err := http.NewRequest("POST", url,
 		bytes.NewBuffer(addUserDtoByte))
 	if err != nil {
-		logrus.Errorf("naiveproxy add user new request err: %v", err)
+		logrus.Errorf("NaiveProxy AddUser NewRequest err: %v", err)
 		return errors.New(constant.SysError)
 	}
 	req.Header.Set("Content-Type", "application/json")
@@ -113,7 +113,7 @@ func (n *naiveProxyApi) AddUser(dto dto.NaiveProxyAddUserDto) error {
 		}
 	}()
 	if err != nil || resp.StatusCode != 200 {
-		logrus.Errorf("naiveproxy add user http request err: %v", err)
+		logrus.Errorf("NaiveProxy AddUser resp err: %v", err)
 		return errors.New(constant.SysError)
 	}
 	return nil
@@ -129,7 +129,7 @@ func (n *naiveProxyApi) DeleteUser(pass string) error {
 		url := fmt.Sprintf("http://127.0.0.1:%d/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/%d", n.apiPort, *index)
 		req, err := http.NewRequest("DELETE", url, nil)
 		if err != nil {
-			logrus.Errorf("naiveproxy delete user new request err: %v", err)
+			logrus.Errorf("NaiveProxy DeleteUser NewRequest err: %v", err)
 			return errors.New(constant.SysError)
 		}
 		resp, err := http.DefaultClient.Do(req)
@@ -139,7 +139,7 @@ func (n *naiveProxyApi) DeleteUser(pass string) error {
 			}
 		}()
 		if err != nil || resp.StatusCode != 200 {
-			logrus.Errorf("naiveproxy add user http request err: %v", err)
+			logrus.Errorf("NaiveProxy DeleteUser resp err: %v", err)
 			return errors.New(constant.SysError)
 		}
 		return nil

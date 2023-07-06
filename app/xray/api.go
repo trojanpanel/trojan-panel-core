@@ -46,7 +46,7 @@ func apiClient(apiPort uint) (conn *grpc.ClientConn, ctx context.Context, clo fu
 		}
 	}
 	if err != nil {
-		logrus.Errorf("gRPC初始化失败 err: %v", err)
+		logrus.Errorf("Xray apiClient init err: %v", err)
 		err = errors.New(constant.GrpcError)
 	}
 	return
@@ -65,7 +65,7 @@ func (x *xrayApi) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, erro
 		Reset_:  reset,
 	})
 	if err != nil {
-		logrus.Errorf("xray query stats err: %v", err)
+		logrus.Errorf("Xray QueryStats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 
@@ -85,7 +85,7 @@ func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset boo
 	conn, ctx, clo, err := apiClient(x.apiPort)
 	defer clo()
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 	statsServiceClient := statscmd.NewStatsServiceClient(conn)
 	downLinkResponse, err := statsServiceClient.GetStats(ctx, &statscmd.GetStatsRequest{
@@ -96,7 +96,7 @@ func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset boo
 		if strings.HasSuffix(err.Error(), "not found.") {
 			return nil, nil
 		}
-		logrus.Errorf("xray get bound stats err: %v", err)
+		logrus.Errorf("Xray GetBoundStats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	statsVo := vo.XrayStatsVo{
@@ -122,7 +122,7 @@ func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayS
 		if strings.HasSuffix(err.Error(), "not found.") {
 			return nil, nil
 		}
-		logrus.Errorf("xray get user stats err: %v", err)
+		logrus.Errorf("Xray GetUserStats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	statsVo := vo.XrayStatsVo{
@@ -236,7 +236,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 		if strings.HasSuffix(err.Error(), "already exists.") {
 			return nil
 		}
-		logrus.Errorf("xray add user err: %v", err)
+		logrus.Errorf("Xray AddUser err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	return nil
@@ -254,7 +254,7 @@ func (x *xrayApi) RemoveInboundHandler(tag string) error {
 		Tag: tag,
 	})
 	if err != nil {
-		logrus.Errorf("xray remove inbound err: %v", err)
+		logrus.Errorf("Xray RemoveInboundHandler err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	return nil
@@ -283,7 +283,7 @@ func (x *xrayApi) DeleteUser(email string) error {
 		if strings.HasSuffix(err.Error(), "not found.") {
 			return nil
 		}
-		logrus.Errorf("xray remove user err: %v", err)
+		logrus.Errorf("Xray DeleteUser err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	return nil
@@ -302,7 +302,7 @@ func (x *xrayApi) GetSysStats() (stats *statsService.SysStatsResponse, err error
 		if strings.HasSuffix(err.Error(), "not found.") {
 			return nil, nil
 		}
-		logrus.Errorf("xray get sys stats err: %v", err)
+		logrus.Errorf("Xray GetSysStats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	return sysStats, nil
