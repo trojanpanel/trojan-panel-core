@@ -67,7 +67,9 @@ func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 			if err == io.EOF {
 				break
 			}
+			// 加入重试机制
 			logrus.Errorf("trojan go list users recv err: %v", err)
+			return nil, err
 		}
 		if resp != nil {
 			userStatus = append(userStatus, resp.Status)
