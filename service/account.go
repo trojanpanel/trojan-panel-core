@@ -63,7 +63,7 @@ func CronHandlerUser() {
 				}
 				for _, item := range banAccountBos {
 					if err = xrayApi.DeleteUser(item.Pass); err != nil {
-						logrus.Errorf("Xray调用api删除用户错误 err: %v", err)
+						logrus.Errorf("Xray DeleteUser err: %v", err)
 						continue
 					}
 				}
@@ -90,14 +90,14 @@ func CronHandlerUser() {
 				}
 				protocol, err := util.GetXrayProtocolByApiPort(apiPort.(uint))
 				if err != nil {
-					logrus.Errorf("Xray查询协议错误 apiPort: %s err: %v", apiPort, err)
+					logrus.Errorf("Xray get protocol err apiPort: %s err: %v", apiPort, err)
 				} else {
 					for _, item := range addAccountBos {
 						if err = xrayApi.AddUser(dto.XrayAddUserDto{
 							Protocol: protocol,
 							Password: item.Pass,
 						}); err != nil {
-							logrus.Errorf("Xray调用api添加用户错误 err: %v", err)
+							logrus.Errorf("Xray AddUser err: %v", err)
 							continue
 						}
 					}
@@ -139,7 +139,7 @@ func CronHandlerUser() {
 				for _, item := range banAccountBos {
 					// 调用api删除用户
 					if err = trojanGoApi.DeleteUser(item.Pass); err != nil {
-						logrus.Errorf("TrojanGo调用api删除用户错误 err: %v", err)
+						logrus.Errorf("TrojanGo DeleteUser err: %v", err)
 						continue
 					}
 				}
@@ -166,7 +166,7 @@ func CronHandlerUser() {
 					if err = trojanGoApi.AddUser(dto.TrojanGoAddUserDto{
 						Password: item.Pass,
 					}); err != nil {
-						logrus.Errorf("TrojanGo调用api添加用户错误 err: %v", err)
+						logrus.Errorf("TrojanGo AddUser err: %v", err)
 						continue
 					}
 				}
@@ -207,7 +207,7 @@ func CronHandlerUser() {
 				for _, item := range banAccountBos {
 					// 调用api删除用户
 					if err = naiveProxyApi.DeleteUser(item.Pass); err != nil {
-						logrus.Errorf("NaiveProxy调用api删除用户错误 err: %v", err)
+						logrus.Errorf("NaiveProxy DeleteUser err: %v", err)
 						continue
 					}
 				}
@@ -236,7 +236,7 @@ func CronHandlerUser() {
 						Username: item.Username,
 						Pass:     item.Pass,
 					}); err != nil {
-						logrus.Errorf("NaiveProxy调用api添加用户错误 err: %v", err)
+						logrus.Errorf("NaiveProxy AddUser err: %v", err)
 						continue
 					}
 				}
@@ -300,7 +300,7 @@ func CronHandlerDownloadAndUpload() {
 					}
 					for _, account := range accountUpdateBos {
 						if err = dao.UpdateAccountFlowByPassOrHash(&account.Pass, nil, account.Download, account.Upload); err != nil {
-							logrus.Errorf("Xray同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
+							logrus.Errorf("Xray UpdateAccountFlow err apiPort: %d err: %v", apiPort, err)
 							continue
 						}
 					}
@@ -326,7 +326,7 @@ func CronHandlerDownloadAndUpload() {
 						downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
 						uploadTraffic := int(user.GetTrafficTotal().GetUploadTraffic())
 						if err = trojanGoApi.ReSetUserTrafficByHash(hash); err != nil {
-							logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 重设Trojan Go用户流量失败 err: %v", apiPort, err)
+							logrus.Errorf("TrojanGo ReSetUserTraffic err apiPort: %d err: %v", apiPort, err)
 							continue
 						}
 						accountUpdateBo := bo.AccountUpdateBo{}
@@ -343,7 +343,7 @@ func CronHandlerDownloadAndUpload() {
 					for _, account := range accountUpdateBos {
 						if err = dao.UpdateAccountFlowByPassOrHash(nil, &account.Hash, account.Download,
 							account.Upload); err != nil {
-							logrus.Errorf("Trojan Go同步至数据库 apiPort: %d 更新用户失败 err: %v", apiPort, err)
+							logrus.Errorf("TrojanGo UpdateAccountFlow err apiPort: %d err: %v", apiPort, err)
 							continue
 						}
 					}
@@ -377,7 +377,7 @@ func RemoveAccount(password string) error {
 			go func(password string) {
 				xrayApi := xray.NewXrayApi(apiPort.(uint))
 				if err := xrayApi.DeleteUser(password); err != nil {
-					logrus.Errorf("Xray调用api删除用户错误 err: %v", err)
+					logrus.Errorf("Xray DeleteUser err: %v", err)
 				}
 			}(password)
 			return true
@@ -393,7 +393,7 @@ func RemoveAccount(password string) error {
 				trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
 				// 调用api删除用户
 				if err := trojanGoApi.DeleteUser(password); err != nil {
-					logrus.Errorf("TrojanGo调用api删除用户错误 err: %v", err)
+					logrus.Errorf("TrojanGo DeleteUser err: %v", err)
 				}
 			}(password)
 			return true
@@ -409,7 +409,7 @@ func RemoveAccount(password string) error {
 				naiveProxyApi := naiveproxy.NewNaiveProxyApi(apiPort.(uint))
 				// 调用api删除用户
 				if err := naiveProxyApi.DeleteUser(password); err != nil {
-					logrus.Errorf("NavieProxy调用api删除用户错误 err: %v", err)
+					logrus.Errorf("NavieProxy DeleteUser err: %v", err)
 				}
 			}(password)
 			return true
