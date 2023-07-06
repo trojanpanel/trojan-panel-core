@@ -45,7 +45,7 @@ func CronHandlerUser() {
 				var banAccountBos []bo.AccountBo
 				for _, stat := range stats {
 					submatch := userLinkRegex.FindStringSubmatch(stat.Name)
-					if len(submatch) == 2 {
+					if len(submatch) == 3 {
 						pass := submatch[1]
 						var banFlag = true
 						for _, account := range accountBos {
@@ -74,7 +74,7 @@ func CronHandlerUser() {
 					var addFlag = true
 					for _, stat := range stats {
 						submatch := userLinkRegex.FindStringSubmatch(stat.Name)
-						if len(submatch) == 2 {
+						if len(submatch) == 3 {
 							pass := submatch[1]
 							if account.Pass == pass {
 								addFlag = false

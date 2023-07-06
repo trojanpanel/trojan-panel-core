@@ -17,13 +17,11 @@ func TestXrayListUsers(t *testing.T) {
 	}
 
 	for _, stat := range xrayStatsVos {
-		//submatch := userLinkRegex.FindStringSubmatch(stat.Name)
-		//if len(submatch) == 2 {
-		//	fmt.Println(stat.Name)
-		//	fmt.Println(stat.Value)
-		//}
-		fmt.Println(stat.Name)
-		fmt.Println(stat.Value)
+		submatch := userLinkRegex.FindStringSubmatch(stat.Name)
+		if len(submatch) == 3 {
+			fmt.Println(stat.Name)
+			fmt.Println(stat.Value)
+		}
 	}
 }
 
