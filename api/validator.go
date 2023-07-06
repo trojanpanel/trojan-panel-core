@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"trojan-panel-core/dao/redis"
 	"trojan-panel-core/module/constant"
+	"trojan-panel-core/service"
 	"trojan-panel-core/util"
 )
 
@@ -28,7 +29,7 @@ func authRequest(ctx context.Context) error {
 	if val, ok := md["token"]; ok {
 		token = val[0]
 	}
-	myClaims, err := util.ParseToken(token)
+	myClaims, err := service.ParseToken(token)
 	if err != nil {
 		return errors.New(constant.UnauthorizedError)
 	}
