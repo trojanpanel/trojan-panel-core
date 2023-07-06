@@ -10,7 +10,6 @@ import (
 	"trojan-panel-core/dao/redis"
 	"trojan-panel-core/middleware"
 	"trojan-panel-core/router"
-	"trojan-panel-core/util"
 )
 
 func main() {
@@ -22,7 +21,6 @@ func main() {
 }
 
 func init() {
-	util.InitFile()
 	core.InitConfig()
 	middleware.InitLog()
 	dao.InitMySQL()

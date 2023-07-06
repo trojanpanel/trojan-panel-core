@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
+	"regexp"
 	"strconv"
 	"strings"
 	"trojan-panel-core/module/constant"
 )
+
+var configFileNameReg = regexp.MustCompile("^config-([1-9]\\d*)[\\s\\S]*\\.json$")
 
 func GetBinaryFile(binaryType int) (string, error) {
 	binaryFile, err := GetBinaryFilePath(binaryType)
