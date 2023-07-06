@@ -152,34 +152,34 @@ func RestartApp(apiPort uint, nodeTypeId uint) error {
 func InitApp() {
 	InitBinFile()
 	if err := xray.InitXrayApp(); err != nil {
-		logrus.Errorf("Xray app 初始化失败 err: %s", err.Error())
+		logrus.Errorf("Xray app init err: %s", err.Error())
 	}
 	if err := trojango.InitTrojanGoApp(); err != nil {
-		logrus.Errorf("TrojanGo app 初始化失败 err: %s", err.Error())
+		logrus.Errorf("TrojanGo app init err: %s", err.Error())
 	}
 	if err := hysteria.InitHysteriaApp(); err != nil {
-		logrus.Errorf("Hysteria app 初始化失败 err: %s", err.Error())
+		logrus.Errorf("Hysteria app init err: %s", err.Error())
 	}
 	if err := naiveproxy.InitNaiveProxyApp(); err != nil {
-		logrus.Errorf("NaiveProxy app 初始化失败 err: %s", err.Error())
+		logrus.Errorf("NaiveProxy app init err: %s", err.Error())
 	}
 }
 
 func InitBinFile() {
 	if err := xray.InitXrayBinFile(); err != nil {
-		logrus.Errorf("下载Xray文件异常 err: %v", err)
+		logrus.Errorf("Download Xray file err: %v", err)
 		panic(err)
 	}
 	if err := trojango.InitTrojanGoBinFile(); err != nil {
-		logrus.Errorf("下载TrojanGo文件异常 err: %v", err)
+		logrus.Errorf("Download TrojanGo file err: %v", err)
 		panic(err)
 	}
 	if err := hysteria.InitHysteriaBinFile(); err != nil {
-		logrus.Errorf("下载Hysteria文件异常 err: %v", err)
+		logrus.Errorf("Download Hysteria file err: %v", err)
 		panic(err)
 	}
 	if err := naiveproxy.InitNaiveProxyBinFile(); err != nil {
-		logrus.Errorf("下载NaiveProxy文件异常 err: %v", err)
+		logrus.Errorf("Download NaiveProxy file err: %v", err)
 		panic(err)
 	}
 }
