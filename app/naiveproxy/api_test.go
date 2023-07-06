@@ -10,7 +10,7 @@ func TestNaiveProxyListUsers(t *testing.T) {
 	api := NewNaiveProxyApi(30883)
 	users, err := api.ListUsers()
 	if err != nil {
-		fmt.Sprintf("%v\n", err)
+		fmt.Printf("%v\n", err)
 	}
 	for _, user := range *users {
 		fmt.Println(user.AuthUserDeprecated)
@@ -22,7 +22,7 @@ func TestNaiveProxyGetUser(t *testing.T) {
 	api := NewNaiveProxyApi(30883)
 	user, index, err := api.GetUser("111111")
 	if err != nil {
-		fmt.Sprintf("%v\n", err)
+		fmt.Printf("%v\n", err)
 	}
 	if user != nil {
 		fmt.Println(user.AuthUserDeprecated)
@@ -37,12 +37,12 @@ func TestNaiveProxyAddUser(t *testing.T) {
 		Pass:     "111111",
 	}
 	if err := api.AddUser(userDto); err != nil {
-		fmt.Sprintf("%v\n", err)
+		fmt.Printf("%v\n", err)
 	}
 }
 func TestNaiveProxyDeleteUser(t *testing.T) {
 	api := NewNaiveProxyApi(30883)
 	if err := api.DeleteUser("111111"); err != nil {
-		fmt.Sprintf("%v\n", err)
+		fmt.Printf("%v\n", err)
 	}
 }
