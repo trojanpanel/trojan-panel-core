@@ -93,12 +93,11 @@ func SelectAccountByPass(pass string) (*vo.AccountHysteriaVo, error) {
 	mySQLConfig := core.Config.MySQLConfig
 	var account module.Account
 
-	selectFields := []string{"id"}
-	where := map[string]interface{}{
-		"quota >": "download + upload",
-		"pass":    pass,
-	}
-	buildSelect, values, err := builder.BuildSelect(mySQLConfig.AccountTable, where, selectFields)
+	buildSelect, values, err := builder.NamedQuery("select id from {{table_name}} where quota > download + upload and pass = {{pass}}",
+		map[string]interface{}{
+			"table_name": mySQLConfig.AccountTable,
+			"pass":       pass,
+		})
 	if err != nil {
 		logrus.Errorln(err.Error())
 		return nil, errors.New(constant.SysError)
