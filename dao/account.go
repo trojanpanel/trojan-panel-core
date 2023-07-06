@@ -93,7 +93,7 @@ func SelectAccountByPass(pass string) (*vo.AccountHysteriaVo, error) {
 	mySQLConfig := core.Config.MySQLConfig
 	var account module.Account
 
-	buildSelect, values, err := builder.NamedQuery("select id from {{table_name}} where quota > download + upload and pass = {{pass}}",
+	buildSelect, values, err := builder.NamedQuery("select id from {{table_name}} where (quota < 0 or quota > download + upload) and pass = {{pass}}",
 		map[string]interface{}{
 			"table_name": mySQLConfig.AccountTable,
 			"pass":       pass,
