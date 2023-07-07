@@ -51,7 +51,7 @@ create table trojan_panel_db.account
 
 ## 防止循环依赖
 
-router,api,middleware->service->dao,app->core
+router->api->middleware->app->service/dao->core
 
 # 编译命令
 
