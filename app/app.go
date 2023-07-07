@@ -8,10 +8,10 @@ import (
 	"trojan-panel-core/app/naiveproxy"
 	"trojan-panel-core/app/trojango"
 	"trojan-panel-core/app/xray"
-	"trojan-panel-core/dao"
 	"trojan-panel-core/module"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
+	"trojan-panel-core/service"
 )
 
 func StartApp(nodeAddDto dto.NodeAddDto) error {
@@ -86,7 +86,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 			XrayFlow:     xrayFlow,
 			XraySSMethod: xraySSMethod,
 		}
-		if err := dao.InsertNodeConfig(nodeConfig); err != nil {
+		if err := service.InsertNodeConfig(nodeConfig); err != nil {
 			return err
 		}
 	}
@@ -118,7 +118,7 @@ func StopApp(apiPort uint, nodeTypeId uint) error {
 			return errors.New(constant.NodeTypeNotExist)
 		}
 
-		if err := dao.DeleteNodeConfigByNodeTypeIdAndApiPort(apiPort, nodeTypeId); err != nil {
+		if err := service.DeleteNodeConfigByNodeTypeIdAndApiPort(apiPort, nodeTypeId); err != nil {
 			return err
 		}
 	}

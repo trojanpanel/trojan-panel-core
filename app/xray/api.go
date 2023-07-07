@@ -18,10 +18,10 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"strings"
 	"time"
-	"trojan-panel-core/dao"
 	"trojan-panel-core/module/constant"
 	"trojan-panel-core/module/dto"
 	"trojan-panel-core/module/vo"
+	"trojan-panel-core/service"
 	"trojan-panel-core/util"
 )
 
@@ -147,7 +147,7 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 		return nil
 	}
 
-	nodeConfig, err := dao.SelectNodeConfig(x.apiPort, constant.Xray)
+	nodeConfig, err := service.SelectNodeConfigByNodeTypeIdAndApiPort(x.apiPort, constant.Xray)
 	if err != nil {
 		return nil
 	}
