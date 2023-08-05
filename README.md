@@ -1,26 +1,26 @@
-# Trojan Panel Core
+## Trojan Panel Core
 
-Trojan Panel内核
+Trojan Panel Core
 
-# 支持的节点类型
+## Supported node types
 
 1. Xray
 2. Trojan Go
 3. Hysteria
 4. NaiveProxy
 
-默认数据处理：
+default data processing：
 
 1. 读取/写入account中username,pass、hash、quota、download、upload、ip_limit、download_speed_limit、upload_speed_limit
    pass、hash需要进行hash，quota、upload、download、download_speed_limit、upload_speed_limit单位是byte
 
-主要逻辑：
+main logic：
 
 1. api实时更新（数据库同步至应用）有效账户：account.quota < 0 or account.download + account.upload < account.quota
 2. 定时更新account.download,account.upload
 3. account.quota=0，则禁用用户
 
-# 建表语句示例
+## Create database tables
 
 ```sql
 create table trojan_panel_db.account
@@ -39,7 +39,7 @@ create table trojan_panel_db.account
 );
 ```
 
-## 版本对应关系
+## Version relationship
 
 | Trojan Panel Core | Xray   | Trojan Go | Hysteria | Caddy（NaiveProxy） |
 |-------------------|--------|-----------|----------|-------------------|
@@ -49,25 +49,26 @@ create table trojan_panel_db.account
 | v2.1.1            | v1.8.0 | v0.10.6   | v1.3.4   | v2.6.4            |
 | v2.1.2            | v1.8.0 | v0.10.6   | v1.3.4   | v2.6.4            |
 
-## 防止循环依赖
+## Dependencies
 
 router->api->middleware->app->service/dao->core
 
-# 编译命令
+# Compile
 
 [compile.bat](./compile.bat)
 
-# Author
+## Author
 
 [jonssonyan](https://github.com/jonssonyan)
 
-# Community
+## Community
 
-- Telegram Channel: [Trojan Panel](https://t.me/TrojanPanel)
+Telegram Channel: [Trojan Panel](https://t.me/TrojanPanel)
 
-# Thanks
+## Support
 
-- [trojan-gfw](https://github.com/trojan-gfw/trojan)
+- [trojan](https://github.com/trojan-gfw/trojan)
 - [trojan-go](https://github.com/p4gefau1t/trojan-go)
+- [Xray-core](https://github.com/XTLS/Xray-core)
 - [hysteria](https://github.com/HyNetwork/hysteria)
 - [naiveproxy](https://github.com/klzgrad/naiveproxy)
