@@ -1,10 +1,9 @@
 package hysteria
 
 import (
-	"fmt"
+	"errors"
 	"github.com/sirupsen/logrus"
 	"os"
-	"runtime"
 	"strconv"
 	"strings"
 	"trojan-panel-core/core"
@@ -14,7 +13,6 @@ import (
 	"trojan-panel-core/util"
 )
 
-// InitHysteriaApp 初始化Hysteria应用
 func InitHysteriaApp() error {
 	apiPorts, err := util.GetConfigApiPorts(constant.HysteriaPath)
 	if err != nil {
@@ -32,7 +30,6 @@ func InitHysteriaApp() error {
 	return nil
 }
 
-// StartHysteria 启动Hysteria
 func StartHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	var err error
 	if err = initHysteria(hysteriaConfigDto); err != nil {
@@ -44,7 +41,6 @@ func StartHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	return nil
 }
 
-// StopHysteria 暂停Hysteria
 func StopHysteria(apiPort uint, removeFile bool) error {
 	if err := process.NewHysteriaInstance().Stop(apiPort, removeFile); err != nil {
 		logrus.Errorf("hysteria stop err: %v", err)
@@ -53,7 +49,6 @@ func StopHysteria(apiPort uint, removeFile bool) error {
 	return nil
 }
 
-// RestartHysteria 重启Hysteria
 func RestartHysteria(apiPort uint) error {
 	if err := StopHysteria(apiPort, false); err != nil {
 		return err
@@ -64,16 +59,14 @@ func RestartHysteria(apiPort uint) error {
 	return nil
 }
 
-// 初始化Hysteria文件
 func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
-	// 初始化配置
 	hysteriaConfigFilePath, err := util.GetConfigFilePath(constant.Hysteria, hysteriaConfigDto.ApiPort)
 	if err != nil {
 		return err
 	}
 	file, err := os.OpenFile(hysteriaConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {
-		logrus.Errorf("创建hysteria %s文件异常 err: %v", hysteriaConfigFilePath, err)
+		logrus.Errorf("create hysteria file %s err: %v", hysteriaConfigFilePath, err)
 		return err
 	}
 	defer func() {
@@ -107,33 +100,28 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 	configContent = strings.ReplaceAll(configContent, "${down_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.DownMbps), 10))
 	_, err = file.WriteString(configContent)
 	if err != nil {
-		logrus.Errorf("hysteria config.json文件写入异常 err: %v", err)
+		logrus.Errorf("hysteria config.json file write err: %v", err)
 		return err
 	}
 	return nil
 }
 
 func InitHysteriaBinFile() error {
-	// 初始化文件夹
 	hysteriaPath := constant.HysteriaPath
 	if !util.Exists(hysteriaPath) {
 		if err := os.MkdirAll(hysteriaPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建Hysteria文件夹异常 err: %v", err)
+			logrus.Errorf("create hysteria folder err: %v", err)
 			return err
 		}
 	}
 
-	// 下载二进制文件
 	binaryFilePath, err := util.GetBinaryFilePath(constant.Hysteria)
 	if err != nil {
 		return err
 	}
 	if !util.Exists(binaryFilePath) {
-		if err = util.DownloadFile(fmt.Sprintf("%s/hysteria-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
-			binaryFilePath); err != nil {
-			logrus.Errorf("Hysteria二进制文件下载失败 err: %v", err)
-			return err
-		}
+		logrus.Errorf("hysteria binary does not exist")
+		return errors.New(constant.BinaryFileNotExist)
 	}
 	return nil
 }

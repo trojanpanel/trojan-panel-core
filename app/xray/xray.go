@@ -2,10 +2,10 @@ package xray
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
-	"runtime"
 	"trojan-panel-core/core"
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/module/bo"
@@ -14,7 +14,6 @@ import (
 	"trojan-panel-core/util"
 )
 
-// InitXrayApp 初始化Xray应用
 func InitXrayApp() error {
 	apiPorts, err := util.GetConfigApiPorts(constant.XrayPath)
 	if err != nil {
@@ -22,7 +21,6 @@ func InitXrayApp() error {
 	}
 	xrayProcess := process.NewXrayProcess()
 	for _, apiPort := range apiPorts {
-		// 启动xray
 		if err = xrayProcess.StartXray(apiPort); err != nil {
 			return err
 		}
@@ -30,7 +28,6 @@ func InitXrayApp() error {
 	return nil
 }
 
-// StartXray 启动Xray
 func StartXray(xrayConfigDto dto.XrayConfigDto) error {
 	var err error
 	if err = initXray(xrayConfigDto); err != nil {
@@ -42,7 +39,6 @@ func StartXray(xrayConfigDto dto.XrayConfigDto) error {
 	return nil
 }
 
-// StopXray 暂停Xray
 func StopXray(apiPort uint, removeFile bool) error {
 	if err := process.NewXrayProcess().Stop(apiPort, removeFile); err != nil {
 		logrus.Errorf("xray stop err: %v", err)
@@ -51,7 +47,6 @@ func StopXray(apiPort uint, removeFile bool) error {
 	return nil
 }
 
-// RestartXray 重启Xray
 func RestartXray(apiPort uint) error {
 	if err := StopXray(apiPort, false); err != nil {
 		return err
@@ -64,13 +59,12 @@ func RestartXray(apiPort uint) error {
 	return nil
 }
 
-// 初始化Xray文件
 func initXray(xrayConfigDto dto.XrayConfigDto) error {
-	// 初始化配置 文件名称格式：config-[apiPort]-[protocol].json
+	// initialization configuration file name format: config-[apiPort]-[protocol].json
 	xrayConfigFilePath := fmt.Sprintf("%s/config-%d-%s.json", constant.XrayPath, xrayConfigDto.ApiPort, xrayConfigDto.Protocol)
 	file, err := os.OpenFile(xrayConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
 	if err != nil {
-		logrus.Errorf("创建xray %s文件异常 err: %v", xrayConfigFilePath, err)
+		logrus.Errorf("create xray file %s err: %v", xrayConfigFilePath, err)
 		return err
 	}
 	defer func() {
@@ -79,7 +73,7 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 		}
 	}()
 
-	// 根据不同的协议生成对应的配置文件，用户信息通过新建同步协程
+	// generate corresponding configuration files according to different protocols, and account information is created through a new synchronous coroutine
 	if xrayConfigDto.Template == "" {
 		xrayConfigDto.Template = `{
     "log": {
@@ -126,23 +120,23 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 }`
 	}
 	xrayConfig := &bo.XrayConfigBo{}
-	// 将json字符串映射到模板对象
+	// map json strings to template objects
 	if err = json.Unmarshal([]byte(xrayConfigDto.Template), xrayConfig); err != nil {
-		logrus.Errorf("xray template config反序列化异常 err: %v", err)
+		logrus.Errorf("xray template config deserialization err: %v", err)
 		return err
 	}
 
-	// 设置streamSettings字段
+	// set the streamSettings field
 	streamSettingsStr := []byte("{}")
 	if xrayConfigDto.StreamSettings != "" {
 		streamSettings := &bo.StreamSettings{}
 		if err = json.Unmarshal([]byte(xrayConfigDto.StreamSettings), streamSettings); err != nil {
-			logrus.Errorf("xray StreamSettings反序列化异常 err: %v", err)
+			logrus.Errorf("xray StreamSettings deserialization err: %v", err)
 			return err
 		}
 
 		if streamSettings.Security != "none" {
-			// 设置证书
+			// set cert
 			certConfig := core.Config.CertConfig
 			var certificates []bo.Certificate
 			certificate := bo.Certificate{
@@ -159,12 +153,12 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 
 		streamSettingsStr, err = json.MarshalIndent(streamSettings, "", "    ")
 		if err != nil {
-			logrus.Errorf("xray StreamSettings序列化异常 err: %v", err)
+			logrus.Errorf("xray StreamSettings serialization err: %v", err)
 			return err
 		}
 	}
 
-	// 添加入站协议
+	// add inbound protocol
 	xrayConfig.Inbounds = append(xrayConfig.Inbounds, bo.InboundBo{
 		Listen:   "127.0.0.1",
 		Port:     xrayConfigDto.ApiPort,
@@ -185,38 +179,33 @@ func initXray(xrayConfigDto dto.XrayConfigDto) error {
 	})
 	configContentByte, err := json.MarshalIndent(xrayConfig, "", "    ")
 	if err != nil {
-		logrus.Errorf("xray template config反序列化异常 err: %v", err)
+		logrus.Errorf("xray template config deserialization err: %v", err)
 		return err
 	}
 	_, err = file.Write(configContentByte)
 	if err != nil {
-		logrus.Errorf("xray config.json文件写入异常 err: %v", err)
+		logrus.Errorf("xray file config.json write err: %v", err)
 		return err
 	}
 	return nil
 }
 
 func InitXrayBinFile() error {
-	// 初始化文件夹
 	xrayPath := constant.XrayPath
 	if !util.Exists(xrayPath) {
 		if err := os.MkdirAll(xrayPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建Xray文件夹异常 err: %v", err)
+			logrus.Errorf("create xray folder err: %v", err)
 			return err
 		}
 	}
 
-	// 下载二进制文件
 	binaryFilePath, err := util.GetBinaryFilePath(constant.Xray)
 	if err != nil {
 		return err
 	}
 	if !util.Exists(binaryFilePath) {
-		if err = util.DownloadFile(fmt.Sprintf("%s/xray-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
-			binaryFilePath); err != nil {
-			logrus.Errorf("Xray二进制文件下载失败 err: %v", err)
-			return err
-		}
+		logrus.Errorf("xray binary does not exist")
+		return errors.New(constant.BinaryFileNotExist)
 	}
 	return nil
 }

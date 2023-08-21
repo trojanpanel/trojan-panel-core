@@ -46,13 +46,12 @@ func apiClient(apiPort uint) (conn *grpc.ClientConn, ctx context.Context, clo fu
 		}
 	}
 	if err != nil {
-		logrus.Errorf("Xray apiClient init err: %v", err)
+		logrus.Errorf("xray apiClient init err: %v", err)
 		err = errors.New(constant.GrpcError)
 	}
 	return
 }
 
-// QueryStats 全量状态
 func (x *xrayApi) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, error) {
 	conn, ctx, clo, err := apiClient(x.apiPort)
 	defer clo()
@@ -65,7 +64,7 @@ func (x *xrayApi) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, erro
 		Reset_:  reset,
 	})
 	if err != nil {
-		logrus.Errorf("Xray QueryStats err: %v", err)
+		logrus.Errorf("xray QueryStats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 
@@ -80,7 +79,7 @@ func (x *xrayApi) QueryStats(pattern string, reset bool) ([]vo.XrayStatsVo, erro
 	return xrayStatsVos, nil
 }
 
-// GetBoundStats 查询入/出站状态
+// GetBoundStats query inbound/outbound status
 func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset bool) (*vo.XrayStatsVo, error) {
 	conn, ctx, clo, err := apiClient(x.apiPort)
 	defer clo()
@@ -96,7 +95,7 @@ func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset boo
 		if strings.HasSuffix(err.Error(), "not found.") {
 			return nil, nil
 		}
-		logrus.Errorf("Xray GetBoundStats err: %v", err)
+		logrus.Errorf("xray GetBoundStats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	statsVo := vo.XrayStatsVo{
@@ -106,7 +105,7 @@ func (x *xrayApi) GetBoundStats(bound string, tag string, link string, reset boo
 	return &statsVo, nil
 }
 
-// GetUserStats 查询用户状态
+// GetUserStats query account status
 func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayStatsVo, error) {
 	conn, ctx, clo, err := apiClient(x.apiPort)
 	defer clo()
@@ -122,7 +121,7 @@ func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayS
 		if strings.HasSuffix(err.Error(), "not found.") {
 			return nil, nil
 		}
-		logrus.Errorf("Xray GetUserStats err: %v", err)
+		logrus.Errorf("xray GetUserStats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	statsVo := vo.XrayStatsVo{
@@ -132,7 +131,7 @@ func (x *xrayApi) GetUserStats(email string, link string, reset bool) (*vo.XrayS
 	return &statsVo, nil
 }
 
-// AddUser 添加用户
+// AddUser add user
 func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 	xrayStatsVo, err := x.GetUserStats(dto.Password, "downlink", false)
 	if err != nil {
@@ -236,13 +235,13 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 		if strings.HasSuffix(err.Error(), "already exists.") {
 			return nil
 		}
-		logrus.Errorf("Xray AddUser err: %v", err)
+		logrus.Errorf("xray AddUser err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	return nil
 }
 
-// RemoveInboundHandler 删除入站
+// RemoveInboundHandler delete inbound
 func (x *xrayApi) RemoveInboundHandler(tag string) error {
 	conn, ctx, clo, err := apiClient(x.apiPort)
 	defer clo()
@@ -254,13 +253,13 @@ func (x *xrayApi) RemoveInboundHandler(tag string) error {
 		Tag: tag,
 	})
 	if err != nil {
-		logrus.Errorf("Xray RemoveInboundHandler err: %v", err)
+		logrus.Errorf("xray RemoveInboundHandler err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	return nil
 }
 
-// DeleteUser 删除用户
+// DeleteUser delete user
 func (x *xrayApi) DeleteUser(email string) error {
 	xrayStatsVo, err := x.GetUserStats(email, "downlink", false)
 	if err != nil {
@@ -283,13 +282,13 @@ func (x *xrayApi) DeleteUser(email string) error {
 		if strings.HasSuffix(err.Error(), "not found.") {
 			return nil
 		}
-		logrus.Errorf("Xray DeleteUser err: %v", err)
+		logrus.Errorf("xray DeleteUser err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	return nil
 }
 
-// GetSysStats 获取运行数据
+// GetSysStats get running status
 func (x *xrayApi) GetSysStats() (stats *statsService.SysStatsResponse, err error) {
 	conn, ctx, clo, err := apiClient(x.apiPort)
 	defer clo()
@@ -302,7 +301,7 @@ func (x *xrayApi) GetSysStats() (stats *statsService.SysStatsResponse, err error
 		if strings.HasSuffix(err.Error(), "not found.") {
 			return nil, nil
 		}
-		logrus.Errorf("Xray GetSysStats err: %v", err)
+		logrus.Errorf("xray GetSysStats err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	return sysStats, nil

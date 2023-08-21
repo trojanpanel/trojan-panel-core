@@ -17,14 +17,13 @@ type naiveProxyApi struct {
 	apiPort uint
 }
 
-// NewNaiveProxyApi 初始化NaiveProxy Api
 func NewNaiveProxyApi(apiPort uint) *naiveProxyApi {
 	return &naiveProxyApi{
 		apiPort: apiPort,
 	}
 }
 
-// ListUsers 查询节点上的所有用户
+// ListUsers query all users on a node
 func (n *naiveProxyApi) ListUsers() (*[]bo.HandleAuth, error) {
 	url := fmt.Sprintf("http://127.0.0.1:%d/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/", n.apiPort)
 	req, err := http.NewRequest("GET", url, nil)
@@ -55,7 +54,7 @@ func (n *naiveProxyApi) ListUsers() (*[]bo.HandleAuth, error) {
 	return handleAuths, nil
 }
 
-// GetUser 查询节点上的用户
+// GetUser query users on a node
 func (n *naiveProxyApi) GetUser(pass string) (*bo.HandleAuth, *int, error) {
 	users, err := n.ListUsers()
 	if err != nil {
@@ -69,7 +68,7 @@ func (n *naiveProxyApi) GetUser(pass string) (*bo.HandleAuth, *int, error) {
 	return nil, nil, nil
 }
 
-// AddUser 节点上添加用户
+// AddUser add user on node
 func (n *naiveProxyApi) AddUser(dto dto.NaiveProxyAddUserDto) error {
 	user, _, err := n.GetUser(dto.Pass)
 	if err != nil {
@@ -119,7 +118,7 @@ func (n *naiveProxyApi) AddUser(dto dto.NaiveProxyAddUserDto) error {
 	return nil
 }
 
-// DeleteUser 节点上删除用户
+// DeleteUser delete user on node
 func (n *naiveProxyApi) DeleteUser(pass string) error {
 	_, index, err := n.GetUser(pass)
 	if err != nil {

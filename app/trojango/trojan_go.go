@@ -1,10 +1,9 @@
 package trojango
 
 import (
-	"fmt"
+	"errors"
 	"github.com/sirupsen/logrus"
 	"os"
-	"runtime"
 	"strconv"
 	"strings"
 	"trojan-panel-core/core"
@@ -14,7 +13,6 @@ import (
 	"trojan-panel-core/util"
 )
 
-// InitTrojanGoApp 初始化TrojanGo应用
 func InitTrojanGoApp() error {
 	apiPorts, err := util.GetConfigApiPorts(constant.TrojanGoPath)
 	if err != nil {
@@ -29,7 +27,6 @@ func InitTrojanGoApp() error {
 	return nil
 }
 
-// StartTrojanGo 启动TrojanGo
 func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	var err error
 	if err = initTrojanGo(trojanGoConfigDto); err != nil {
@@ -41,16 +38,14 @@ func StartTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	return nil
 }
 
-// StopTrojanGo 暂停TrojanGo
 func StopTrojanGo(apiPort uint, removeFile bool) error {
 	if err := process.NewTrojanGoInstance().Stop(apiPort, removeFile); err != nil {
-		logrus.Errorf("trojan go stop err: %v", err)
+		logrus.Errorf("trojango stop err: %v", err)
 		return err
 	}
 	return nil
 }
 
-// RestartTrojanGo 重启TrojanGo
 func RestartTrojanGo(apiPort uint) error {
 	if err := StopTrojanGo(apiPort, false); err != nil {
 		return err
@@ -61,16 +56,14 @@ func RestartTrojanGo(apiPort uint) error {
 	return nil
 }
 
-// 初始化TrojanGo文件
 func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
-	// 初始化配置
 	trojanGoConfigFilePath, err := util.GetConfigFilePath(constant.TrojanGo, trojanGoConfigDto.ApiPort)
 	if err != nil {
 		return err
 	}
 	file, err := os.OpenFile(trojanGoConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
 	if err != nil {
-		logrus.Errorf("创建trojan go %s文件异常 err: %v", trojanGoConfigFilePath, err)
+		logrus.Errorf("create trojango file %s err: %v", trojanGoConfigFilePath, err)
 		return err
 	}
 	defer func() {
@@ -150,7 +143,7 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
 	configContent = strings.ReplaceAll(configContent, "${sni}", trojanGoConfigDto.Sni)
-	// 自定义证书 指向微软
+	// custom cert points to Microsoft
 	if certConfig.CrtPath != "" && strings.Contains(certConfig.CrtPath, "custom_cert") {
 		configContent = strings.ReplaceAll(configContent, "${remote_addr}", "www.microsoft.com")
 		configContent = strings.ReplaceAll(configContent, "${fallback_addr}", "www.microsoft.com")
@@ -186,33 +179,28 @@ func initTrojanGo(trojanGoConfigDto dto.TrojanGoConfigDto) error {
 	configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(trojanGoConfigDto.ApiPort), 10))
 	_, err = file.WriteString(configContent)
 	if err != nil {
-		logrus.Errorf("trojan go config-%d.json文件写入异常 err: %v", trojanGoConfigDto.ApiPort, err)
+		logrus.Errorf("trojango file config-%d.json write err: %v", trojanGoConfigDto.ApiPort, err)
 		return err
 	}
 	return nil
 }
 
 func InitTrojanGoBinFile() error {
-	// 初始化文件夹
 	trojanGoPath := constant.TrojanGoPath
 	if !util.Exists(trojanGoPath) {
 		if err := os.MkdirAll(trojanGoPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建Trojan Go文件夹异常 err: %v", err)
+			logrus.Errorf("create trojango folder err: %v", err)
 			return err
 		}
 	}
 
-	// 下载二进制文件
 	binaryFilePath, err := util.GetBinaryFilePath(constant.TrojanGo)
 	if err != nil {
 		return err
 	}
 	if !util.Exists(binaryFilePath) {
-		if err = util.DownloadFile(fmt.Sprintf("%s/trojan-go-%s-%s", constant.DownloadBaseUrl, runtime.GOOS, runtime.GOARCH),
-			binaryFilePath); err != nil {
-			logrus.Errorf("Trojan Go二进制文件下载失败 err: %v", err)
-			return err
-		}
+		logrus.Errorf("trojango binary file does not exist")
+		return errors.New(constant.BinaryFileNotExist)
 	}
 	return nil
 }

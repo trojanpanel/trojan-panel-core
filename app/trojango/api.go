@@ -18,7 +18,6 @@ type trojanGoApi struct {
 	apiPort uint
 }
 
-// NewTrojanGoApi 初始化Trojan Go Api
 func NewTrojanGoApi(apiPort uint) *trojanGoApi {
 	return &trojanGoApi{
 		apiPort: apiPort,
@@ -37,13 +36,13 @@ func apiClient(apiPort uint) (clent service.TrojanServerServiceClient, ctx conte
 		}
 	}
 	if err != nil {
-		logrus.Errorf("TrojanGo apiClient init err: %v", err)
+		logrus.Errorf("trojango apiClient init err: %v", err)
 		err = errors.New(constant.GrpcError)
 	}
 	return
 }
 
-// ListUsers 查询节点上的所有用户
+// ListUsers query all users on a node
 func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 	client, ctx, clo, err := apiClient(t.apiPort)
 	if err != nil {
@@ -51,7 +50,7 @@ func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 	}
 	stream, err := client.ListUsers(ctx, &service.ListUsersRequest{})
 	if err != nil {
-		logrus.Errorf("TrojanGo ListUsers err: %v", err)
+		logrus.Errorf("trojango ListUsers err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	defer func() {
@@ -67,7 +66,7 @@ func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 			if err == io.EOF {
 				break
 			}
-			logrus.Errorf("TrojanGo ListUsers recv err: %v", err)
+			logrus.Errorf("trojango ListUsers recv err: %v", err)
 			return nil, errors.New(constant.GrpcError)
 		}
 		if resp != nil {
@@ -77,7 +76,7 @@ func (t *trojanGoApi) ListUsers() ([]*service.UserStatus, error) {
 	return userStatus, nil
 }
 
-// GetUser 查询节点上的用户
+// GetUser query users on a node
 func (t *trojanGoApi) GetUser(hash string) (*service.UserStatus, error) {
 	client, ctx, clo, err := apiClient(t.apiPort)
 	if err != nil {
@@ -85,7 +84,7 @@ func (t *trojanGoApi) GetUser(hash string) (*service.UserStatus, error) {
 	}
 	stream, err := client.GetUsers(ctx)
 	if err != nil {
-		logrus.Errorf("TrojanGo GetUser err: %v", err)
+		logrus.Errorf("trojango GetUser err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	defer func() {
@@ -99,18 +98,18 @@ func (t *trojanGoApi) GetUser(hash string) (*service.UserStatus, error) {
 			Hash: hash,
 		},
 	}); err != nil {
-		logrus.Errorf("TrojanGo GetUser stream send err: %v", err)
+		logrus.Errorf("trojango GetUser stream send err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	resp, err := stream.Recv()
 	if resp == nil || err != nil {
-		logrus.Errorf("TrojanGo GetUser stream recv err: %v", err)
+		logrus.Errorf("trojango GetUser stream recv err: %v", err)
 		return nil, errors.New(constant.GrpcError)
 	}
 	return resp.Status, nil
 }
 
-// 节点上设置用户
+// set user on node
 func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
 	client, ctx, clo, err := apiClient(t.apiPort)
 	if err != nil {
@@ -118,7 +117,7 @@ func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
 	}
 	stream, err := client.SetUsers(ctx)
 	if err != nil {
-		logrus.Errorf("TrojanGo setUser err: %v", err)
+		logrus.Errorf("trojango setUser err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	defer func() {
@@ -129,22 +128,22 @@ func (t *trojanGoApi) setUser(setUsersRequest *service.SetUsersRequest) error {
 	}()
 	err = stream.Send(setUsersRequest)
 	if err != nil {
-		logrus.Errorf("TrojanGo setUser send err: %v", err)
+		logrus.Errorf("trojango setUser send err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	resp, err := stream.Recv()
 	if err != nil {
-		logrus.Errorf("TrojanGo setUser recv err: %v", err)
+		logrus.Errorf("trojango setUser recv err: %v", err)
 		return errors.New(constant.GrpcError)
 	}
 	if resp != nil && !resp.Success {
-		logrus.Errorf("TrojanGo setUser err resp info: %v", resp.Info)
+		logrus.Errorf("trojango setUser err resp info: %v", resp.Info)
 		return errors.New(constant.GrpcError)
 	}
 	return nil
 }
 
-// ReSetUserTrafficByHash 重设用户流量
+// ReSetUserTrafficByHash reset user traffic
 func (t *trojanGoApi) ReSetUserTrafficByHash(hash string) error {
 	req := &service.SetUsersRequest{
 		Status: &service.UserStatus{
@@ -161,7 +160,7 @@ func (t *trojanGoApi) ReSetUserTrafficByHash(hash string) error {
 	return t.setUser(req)
 }
 
-// SetUserIpLimit 节点上设置用户设备数
+// SetUserIpLimit set the number of user devices on the node
 func (t *trojanGoApi) SetUserIpLimit(hash string, ipLimit uint) error {
 	req := &service.SetUsersRequest{
 		Status: &service.UserStatus{
@@ -175,7 +174,7 @@ func (t *trojanGoApi) SetUserIpLimit(hash string, ipLimit uint) error {
 	return t.setUser(req)
 }
 
-// SetUserSpeedLimit 节点上设置用户限速
+// SetUserSpeedLimit set user speed limit on the node
 func (t *trojanGoApi) SetUserSpeedLimit(hash string, uploadSpeedLimit int, downloadSpeedLimit int) error {
 	req := &service.SetUsersRequest{
 		Status: &service.UserStatus{
@@ -192,7 +191,7 @@ func (t *trojanGoApi) SetUserSpeedLimit(hash string, uploadSpeedLimit int, downl
 	return t.setUser(req)
 }
 
-// DeleteUser 节点上删除用户
+// DeleteUser delete user on node
 func (t *trojanGoApi) DeleteUser(hash string) error {
 	userStatus, err := t.GetUser(hash)
 	if err != nil {
@@ -212,7 +211,7 @@ func (t *trojanGoApi) DeleteUser(hash string) error {
 	return t.setUser(req)
 }
 
-// AddUser 节点上添加用户
+// AddUser add user on node
 func (t *trojanGoApi) AddUser(dto dto.TrojanGoAddUserDto) error {
 	userStatus, err := t.GetUser(dto.Hash)
 	if err != nil {
