@@ -9,10 +9,10 @@ type XrayConfigDto struct {
 	Tag            string
 	Sniffing       string
 	Allocate       string
-	Template       string // 模板
+	Template       string
 }
 
 type XrayAddUserDto struct {
-	Protocol string // 协议
+	Protocol string
 	Password string
 }

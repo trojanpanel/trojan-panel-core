@@ -1,29 +1,29 @@
 package constant
 
 const (
-	SysError            string = "系统错误,请联系统管理员"
-	ValidateFailed      string = "参数无效"
-	UsernameOrPassError string = "用户名或密码错误"
+	SysError            string = "system error, please contact the system administrator"
+	ValidateFailed      string = "invalid argument"
+	UsernameOrPassError string = "wrong username or password"
 
-	UnauthorizedError string = "未认证"
-	IllegalTokenError string = "认证失败"
-	ForbiddenError    string = "没有权限"
-	TokenExpiredError string = "登录过期"
+	UnauthorizedError string = "not authentication"
+	IllegalTokenError string = "authentication failed"
+	ForbiddenError    string = "permission denied"
+	TokenExpiredError string = "login expired"
 
-	GrpcError            string = "gRPC连接异常"
-	XrayStartError       string = "启动Xray失败"
-	TrojanGoStartError   string = "启动TrojanGo失败"
-	HysteriaStartError   string = "启动Hysteria失败"
-	NaiveProxyStartError string = "启动NaiveProxy失败"
-	ProcessStopError     string = "进程暂停失败"
+	GrpcError            string = "gRPC connection exception"
+	XrayStartError       string = "failed to start xray"
+	TrojanGoStartError   string = "failed to start trojango"
+	HysteriaStartError   string = "failed to start hysteria"
+	NaiveProxyStartError string = "failed to start naiveproxy"
+	ProcessStopError     string = "process suspend failed"
 
-	NodeTypeNotExist   string = "节点类型不存在"
-	RemoveFileError    string = "删除文件失败"
-	BinaryFileNotExist string = "二进制文件不存在"
-	ConfigFileNotExist string = "配置文件不存在"
+	NodeTypeNotExist   string = "node type does not exist"
+	RemoveFileError    string = "failed to delete file"
+	BinaryFileNotExist string = "binary file does not exist"
+	ConfigFileNotExist string = "config file does not exist"
 
-	GetLocalIPError string = "获取本地IP失败"
+	GetLocalIPError string = "failed to obtain local IP"
 
-	PortIsOccupied string = "端口被占用,请检查该端口或选择其他端口"
-	PortRangeError string = "端口范围在100-30000之间"
+	PortIsOccupied string = "the port is occupied, please check the port or choose another port"
+	PortRangeError string = "the port range is between 100-30000"
 )

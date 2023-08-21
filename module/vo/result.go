@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// 返回的对象
+// response object
 type hysteriaResult struct {
 	Ok  bool   `json:"ok"`
 	Msg string `json:"msg"`

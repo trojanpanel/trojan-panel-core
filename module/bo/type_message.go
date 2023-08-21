@@ -2,7 +2,7 @@ package bo
 
 import "errors"
 
-// TypeMessage 自定义类型并自定义序列化方式
+// TypeMessage custom types and custom serialization methods
 type TypeMessage []byte
 
 func (m TypeMessage) MarshalJSON() ([]byte, error) {

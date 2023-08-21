@@ -1,17 +1,17 @@
 package constant
 
 const (
-	// LogPath 日志文件夹路径
+	// LogPath log folder path
 	LogPath string = "logs"
 
-	// ConfigPath 全局配置文件夹路径
+	// ConfigPath global config folder path
 	ConfigPath string = "config"
-	// ConfigFilePath 全局配置文件路径
+	// ConfigFilePath global config file path
 	ConfigFilePath string = "config/config.ini"
 
-	// SqlitePath sqlite文件夹路径
+	// SqlitePath sqlite folder path
 	SqlitePath string = "config/sqlite"
-	// SqliteFilePath sqlite文件路径
+	// SqliteFilePath sqlite file path
 	SqliteFilePath string = "config/sqlite/trojan_panel_core.db"
 
 	XrayPath          string = "bin/xray/config"
@@ -22,7 +22,6 @@ const (
 	TrojanGoBinPath   string = "bin/trojango"
 	HysteriaBinPath   string = "bin/hysteria"
 	NaiveProxyBinPath string = "bin/naiveproxy"
-	DownloadBaseUrl   string = "https://github.com/trojanpanel/install-script/releases/download/v1.0.0"
 
-	TrojanPanelCoreVersion = "v2.1.2"
+	TrojanPanelCoreVersion = "v2.2.0"
 )
