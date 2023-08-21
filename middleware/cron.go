@@ -6,7 +6,7 @@ import (
 	"trojan-panel-core/app"
 )
 
-// InitCron 初始化定时任务
+// InitCron initialize scheduled tasks
 func InitCron() {
 	location, _ := time.LoadLocation("Asia/Shanghai")
 	c := cron.New(cron.WithLocation(location))

@@ -8,9 +8,8 @@ import (
 	"trojan-panel-core/core"
 )
 
-// InitLog 日志初始化
 func InitLog() {
-	// 使用滚动压缩方式记录日志
+	// logging with rolling compression
 	logConfig := core.Config.LogConfig
 	logrus.SetOutput(&lumberjack.Logger{
 		Filename:   logConfig.FileName,
@@ -22,27 +21,19 @@ func InitLog() {
 	})
 	//logrus.SetReportCaller(true)
 	logrus.SetFormatter(&logrus.JSONFormatter{TimestampFormat: "2006-01-02 15:04:05"})
-	// 设置日志记录级别
+	// set logging level
 	logrus.SetLevel(logrus.WarnLevel)
 }
 
 func LogHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 开始时间
 		startTime := time.Now()
-		// 处理请求
 		c.Next()
-		// 结束时间
 		endTime := time.Now()
-		// 执行时间
 		latencyTime := endTime.Sub(startTime)
-		// 请求方式
 		reqMethod := c.Request.Method
-		// 请求路由
 		reqUri := c.Request.RequestURI
-		// 状态码
 		statusCode := c.Writer.Status()
-		// 请求IP
 		clientIP := c.ClientIP()
 
 		logrus.WithFields(logrus.Fields{

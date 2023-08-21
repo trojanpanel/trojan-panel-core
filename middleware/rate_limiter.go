@@ -9,13 +9,11 @@ import (
 
 var limit *limiter.Limiter
 
-// RateLimiterHandler 限流中间件
 func RateLimiterHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 限流
 		httpError := tollbooth.LimitByRequest(limit, c.Writer, c.Request)
 		if httpError != nil {
-			logrus.Warnf("请求太快了 ip: %s", c.ClientIP())
+			logrus.Warnf("request too fast ip: %s", c.ClientIP())
 			c.Abort()
 			return
 		}
@@ -23,7 +21,6 @@ func RateLimiterHandler() gin.HandlerFunc {
 	}
 }
 
-// InitRateLimiter 限流初始化
 func InitRateLimiter() {
 	limit = tollbooth.NewLimiter(5, nil)
 }
