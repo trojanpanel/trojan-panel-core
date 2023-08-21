@@ -114,12 +114,12 @@ func GetConfigApiPorts(dirPth string) ([]uint, error) {
 	}
 	apiPorts := make([]uint, 0)
 	for _, fi := range dir {
-		// 过滤指定格式
+		// filter specified format
 		finds := configFileNameReg.FindStringSubmatch(fi.Name())
 		if len(finds) > 0 {
 			apiPort, err := strconv.Atoi(finds[1])
 			if err != nil {
-				logrus.Errorf("类型转换异常 err: %v", err)
+				logrus.Errorf("type conversion exception err: %v", err)
 				continue
 			}
 			apiPorts = append(apiPorts, uint(apiPort))

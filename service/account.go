@@ -6,7 +6,7 @@ import (
 	"trojan-panel-core/module/vo"
 )
 
-// SelectAccountByPass 用户认证 hysteria
+// SelectAccountByPass hysteria account authentication
 func SelectAccountByPass(pass string) (*vo.AccountHysteriaVo, error) {
 	return dao.SelectAccountByPass(pass)
 }

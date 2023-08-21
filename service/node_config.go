@@ -22,7 +22,7 @@ func SelectNodeConfigByNodeTypeIdAndApiPort(apiPort uint, nodeTypeId uint) (*mod
 	if len(bytes) > 0 {
 		var nodeConfig module.NodeConfig
 		if err = json.Unmarshal(bytes, &nodeConfig); err != nil {
-			logrus.Errorln(fmt.Sprintf("SelectNodeConfigByNodeTypeIdAndApiPort NodeConfig 反序列化失败 err: %v", err))
+			logrus.Errorln(fmt.Sprintf("SelectNodeConfigByNodeTypeIdAndApiPort NodeConfig deserialization err: %v", err))
 			return nil, errors.New(constant.SysError)
 		}
 		return &nodeConfig, nil
@@ -33,7 +33,7 @@ func SelectNodeConfigByNodeTypeIdAndApiPort(apiPort uint, nodeTypeId uint) (*mod
 		}
 		nodeConfigJson, err := json.Marshal(*nodeConfig)
 		if err != nil {
-			logrus.Errorln(fmt.Sprintf("SelectNodeConfigByNodeTypeIdAndApiPort NodeConfig 序列化失败 err: %v", err))
+			logrus.Errorln(fmt.Sprintf("SelectNodeConfigByNodeTypeIdAndApiPort NodeConfig serialization err: %v", err))
 			return nil, errors.New(constant.SysError)
 		}
 		redis.Client.String.Set(fmt.Sprintf("trojan-panel-core:node-config:%d-%d", apiPort, nodeTypeId), nodeConfigJson, time.Hour.Milliseconds()*48/1000)

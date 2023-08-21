@@ -13,7 +13,7 @@ import (
 	"trojan-panel-core/module/constant"
 )
 
-// IsPortAvailable 判断端口是否可用
+// IsPortAvailable determine whether the port is available
 func IsPortAvailable(port uint, network string) bool {
 	if network == "tcp" {
 		listener, err := net.ListenTCP(network, &net.TCPAddr{
@@ -48,14 +48,14 @@ func IsPortAvailable(port uint, network string) bool {
 	return true
 }
 
-// GetLocalIP 获取本机IP地址
+// GetLocalIP get local IP address
 func GetLocalIP() (string, error) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		return "", err
 	}
 	for _, address := range addrs {
-		// 检查ip地址判断是否回环地址
+		// check the ip address to determine whether the loopback address
 		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
 			if ipnet.IP.To4() != nil {
 				return ipnet.IP.String(), nil
@@ -65,7 +65,7 @@ func GetLocalIP() (string, error) {
 	return "", errors.New(constant.GetLocalIPError)
 }
 
-// GetCpuPercent 获取CPU使用率
+// GetCpuPercent get CPU usage
 func GetCpuPercent() (float64, error) {
 	var err error
 	percent, err := cpu.Percent(time.Second, false)
@@ -73,7 +73,7 @@ func GetCpuPercent() (float64, error) {
 	return value, err
 }
 
-// GetMemPercent 获取内存使用率
+// GetMemPercent get memory usage
 func GetMemPercent() (float64, error) {
 	var err error
 	memInfo, err := mem.VirtualMemory()
@@ -81,7 +81,7 @@ func GetMemPercent() (float64, error) {
 	return value, err
 }
 
-// GetDiskPercent 获取硬盘使用率
+// GetDiskPercent get disk usage
 func GetDiskPercent() (float64, error) {
 	var err error
 	parts, err := disk.Partitions(true)

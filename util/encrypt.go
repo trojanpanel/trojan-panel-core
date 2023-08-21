@@ -12,7 +12,6 @@ import (
 
 const saltSize = 16
 
-// Sha1String 加盐
 func Sha1String(plain string) string {
 	buf := make([]byte, saltSize, saltSize+sha1.Size)
 	_, err := io.ReadFull(rand.Reader, buf)
@@ -27,7 +26,7 @@ func Sha1String(plain string) string {
 	return base64.URLEncoding.EncodeToString(h.Sum(buf))
 }
 
-// Sha1Match 匹配
+// Sha1Match match
 func Sha1Match(secret, plain string) bool {
 	data, _ := base64.URLEncoding.DecodeString(secret)
 	if len(data) != saltSize+sha1.Size {

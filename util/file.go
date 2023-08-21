@@ -38,16 +38,16 @@ func DownloadFile(url string, fileName string) error {
 func RemoveFile(fileName string) error {
 	if Exists(fileName) {
 		if err := os.Remove(fileName); err != nil {
-			logrus.Errorf("删除文件失败 fileName: %s err: %v", fileName, err)
+			logrus.Errorf("failed to delete file fileName: %s err: %v", fileName, err)
 			return errors.New(constant.RemoveFileError)
 		}
 	}
 	return nil
 }
 
-// Unzip 解压
+// Unzip decompress
 func Unzip(src string, dest string) error {
-	// 打开读取压缩文件
+	// open and read compressed files
 	r, err := zip.OpenReader(src)
 	if err != nil {
 		return err
@@ -58,15 +58,15 @@ func Unzip(src string, dest string) error {
 		}
 	}()
 
-	// 遍历压缩文件内的文件，写入磁盘
+	// traverse the files in the compressed file and write to disk
 	for _, f := range r.File {
 		filePath := filepath.Join(dest, f.Name)
 
 		if !strings.HasPrefix(filePath, filepath.Clean(dest)+string(os.PathSeparator)) {
-			return fmt.Errorf("%s: 非法的文件路径", filePath)
+			return fmt.Errorf("%s: invalid file path", filePath)
 		}
 
-		// 如果是目录，就创建目录
+		// If it is a directory, create the directory
 		if f.FileInfo().IsDir() {
 			if err = os.MkdirAll(filePath, os.ModePerm); err != nil {
 				return err
@@ -95,9 +95,9 @@ func Unzip(src string, dest string) error {
 	return nil
 }
 
-// Exists 判断文件或者文件夹是否存在
+// Exists check if a file or folder exists
 func Exists(path string) bool {
-	// 获取文件信息
+	// get file info
 	_, err := os.Stat(path)
 	if err != nil {
 		if os.IsExist(err) {
