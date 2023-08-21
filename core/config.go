@@ -34,24 +34,24 @@ var (
 )
 
 func init() {
-	flag.StringVar(&host, "host", "localhost", "数据库地址")
-	flag.StringVar(&user, "user", "root", "数据库用户名")
-	flag.StringVar(&password, "password", "123456", "数据库密码")
-	flag.StringVar(&port, "port", "3306", "数据库端口")
-	flag.StringVar(&database, "database", "trojan_panel_db", "数据库名称")
-	flag.StringVar(&accountTable, "accountTable", "account", "account表名称")
-	flag.StringVar(&redisHost, "redisHost", "127.0.0.1", "Redis地址")
-	flag.StringVar(&redisPort, "redisPort", "6379", "Redis端口")
-	flag.StringVar(&redisPassword, "redisPassword", "123456", "Redis密码")
-	flag.StringVar(&redisDb, "redisDb", "0", "Redis默认数据库")
-	flag.StringVar(&redisMaxIdle, "redisMaxIdle", strconv.FormatInt(int64(runtime.NumCPU()*2), 10), "Redis最大空闲连接数")
-	flag.StringVar(&redisMaxActive, "redisMaxActive", strconv.FormatInt(int64(runtime.NumCPU()*2+2), 10), "Redis最大连接数")
-	flag.StringVar(&redisWait, "redisWait", "true", "Redis是否等待")
-	flag.StringVar(&crtPath, "crtPath", "", "crt秘钥")
-	flag.StringVar(&keyPath, "keyPath", "", "key秘钥")
-	flag.StringVar(&grpcPort, "grpcPort", "8100", "gRPC端口")
-	flag.StringVar(&serverPort, "serverPort", "8082", "服务端口")
-	flag.BoolVar(&version, "version", false, "打印版本信息")
+	flag.StringVar(&host, "host", "localhost", "database address")
+	flag.StringVar(&user, "user", "root", "database username")
+	flag.StringVar(&password, "password", "123456", "database password")
+	flag.StringVar(&port, "port", "3306", "database port")
+	flag.StringVar(&database, "database", "trojan_panel_db", "database name")
+	flag.StringVar(&accountTable, "accountTable", "account", "account table name")
+	flag.StringVar(&redisHost, "redisHost", "127.0.0.1", "redis address")
+	flag.StringVar(&redisPort, "redisPort", "6379", "redis port")
+	flag.StringVar(&redisPassword, "redisPassword", "123456", "redis password")
+	flag.StringVar(&redisDb, "redisDb", "0", "redis default database")
+	flag.StringVar(&redisMaxIdle, "redisMaxIdle", strconv.FormatInt(int64(runtime.NumCPU()*2), 10), "redis maximum number of idle connections")
+	flag.StringVar(&redisMaxActive, "redisMaxActive", strconv.FormatInt(int64(runtime.NumCPU()*2+2), 10), "redis maximum number of connections")
+	flag.StringVar(&redisWait, "redisWait", "true", "does Redis wait")
+	flag.StringVar(&crtPath, "crtPath", "", "crt cert")
+	flag.StringVar(&keyPath, "keyPath", "", "key cert")
+	flag.StringVar(&grpcPort, "grpcPort", "8100", "gRPC port")
+	flag.StringVar(&serverPort, "serverPort", "8082", "service port")
+	flag.BoolVar(&version, "version", false, "print version info")
 	flag.Usage = usage
 	flag.Parse()
 	if version {
@@ -59,20 +59,20 @@ func init() {
 		os.Exit(0)
 	}
 
-	// 初始化日志
+	// initialization log
 	logPath := constant.LogPath
 	if !util.Exists(logPath) {
 		if err := os.MkdirAll(logPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建logs文件夹异常 err: %v", err)
+			logrus.Errorf("create logs folder err: %v", err)
 			panic(err)
 		}
 	}
 
-	// 初始化全局配文件夹
+	// initialize the global distribution folder
 	configPath := constant.ConfigPath
 	if !util.Exists(configPath) {
 		if err := os.MkdirAll(configPath, os.ModePerm); err != nil {
-			logrus.Errorf("创建config文件夹异常 err: %v", err)
+			logrus.Errorf("create config folder err: %v", err)
 			panic(err)
 		}
 	}
@@ -81,7 +81,7 @@ func init() {
 	if !util.Exists(configFilePath) {
 		file, err := os.Create(configFilePath)
 		if err != nil {
-			logrus.Errorf("创建config.ini文件异常 err: %v", err)
+			logrus.Errorf("create config.ini err: %v", err)
 			panic(err)
 		}
 		defer file.Close()
@@ -118,7 +118,7 @@ port=%s
 `, host, user, password, port, database, accountTable, redisHost, redisPort, redisPassword, redisDb,
 			redisMaxIdle, redisMaxActive, redisWait, crtPath, keyPath, grpcPort, serverPort))
 		if err != nil {
-			logrus.Errorf("config.ini文件写入异常 err: %v", err)
+			logrus.Errorf("config.ini file write err: %v", err)
 			panic(err)
 		}
 	}
@@ -126,7 +126,7 @@ port=%s
 	sqlitePath := constant.SqlitePath
 	if !util.Exists(sqlitePath) {
 		if err := os.MkdirAll(sqlitePath, os.ModePerm); err != nil {
-			logrus.Errorf("创建sqlite文件夹异常 err: %v", err)
+			logrus.Errorf("create sqlite folder err: %v", err)
 			panic(err)
 		}
 	}
@@ -134,7 +134,7 @@ port=%s
 	if !util.Exists(sqliteFilePath) {
 		file, err := os.Create(sqliteFilePath)
 		if err != nil {
-			logrus.Errorf("创建node_config.db文件异常 err: %v", err)
+			logrus.Errorf("create trojan_panel_core.db err: %v", err)
 			panic(err)
 		}
 		defer file.Close()
@@ -149,10 +149,10 @@ Usage: trojan-panel-core [-host] [-user] [-password] [-port] [-database] [-accou
 
 var Config = new(AppConfig)
 
-// InitConfig 初始化全局配置文件
+// InitConfig initialize the global configuration file
 func InitConfig() {
 	if err := ini.MapTo(Config, constant.ConfigFilePath); err != nil {
-		logrus.Errorf("配置文件加载失败 err: %v", err)
+		logrus.Errorf("configuration file failed to load err: %v", err)
 		panic(err)
 	}
 }
@@ -193,18 +193,18 @@ type CertConfig struct {
 
 // LogConfig log
 type LogConfig struct {
-	FileName   string `ini:"filename"`    // 日志文件位置
-	MaxSize    int    `ini:"max_size"`    // 单文件最大容量,单位是MB
-	MaxBackups int    `ini:"max_backups"` // 最大保留过期文件个数
-	MaxAge     int    `ini:"max_age"`     // 保留过期文件的最大时间间隔,单位是天
-	Compress   bool   `ini:"compress"`    // 是否需要压缩滚动日志, 使用的 gzip 压缩
+	FileName   string `ini:"filename"`    // log file location
+	MaxSize    int    `ini:"max_size"`    // the maximum capacity of a single file, in MB
+	MaxBackups int    `ini:"max_backups"` // the maximum number of expired files to keep
+	MaxAge     int    `ini:"max_age"`     // the maximum time interval for keeping expired files, in days
+	Compress   bool   `ini:"compress"`    // do you need to compress the rolling log, using gzip compression
 }
 
 // GrpcConfig gRPC
 type GrpcConfig struct {
-	Port string `ini:"port"` // gRPC端口
+	Port string `ini:"port"` // gRPC port
 }
 
 type ServerConfig struct {
-	Port int `ini:"port"` // 服务器端口
+	Port int `ini:"port"` // service port
 }

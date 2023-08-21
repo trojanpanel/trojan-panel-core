@@ -66,7 +66,7 @@ func (n *NaiveProxyProcess) StartNaiveProxy(apiPort uint) error {
 		}
 		n.cmdMap.Store(apiPort, cmd)
 
-		// 等待超时
+		// timeout
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		done := make(chan error)
