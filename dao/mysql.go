@@ -12,7 +12,7 @@ import (
 
 var db *sql.DB
 
-// InitMySQL 初始化数据库
+// InitMySQL initialize the database
 func InitMySQL() {
 	mySQLConfig := core.Config.MySQLConfig
 	var err error
@@ -29,7 +29,7 @@ func InitMySQL() {
 		Port(mySQLConfig.Port).Open(true)
 
 	if err != nil {
-		logrus.Errorf("数据库连接异常 err: %v", err)
+		logrus.Errorf("database connection err: %v", err)
 		panic(err)
 	}
 }

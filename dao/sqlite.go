@@ -11,24 +11,24 @@ import (
 
 var sqliteDb *sql.DB
 
-// InitSqlLite 初始化sqlite数据文件
+// InitSqlLite initialize the sqlite data file
 func InitSqlLite() {
 	var err error
 	sqliteDb, err = sql.Open("sqlite", fmt.Sprintf("file:%s", constant.SqliteFilePath))
 	if err != nil {
-		logrus.Errorf("sqlite连接异常 err: %v", err)
+		logrus.Errorf("sqlite connection err: %v", err)
 		panic(err)
 	}
 
 	var count uint
 	row := sqliteDb.QueryRow("SELECT count(1) FROM sqlite_master WHERE type='table' AND name = 'node_config'")
 	if err = row.Scan(&count); err != nil {
-		logrus.Errorf("查询sqlite数据库异常 err: %v", err)
+		logrus.Errorf("query sqlite database err: %v", err)
 		panic(err)
 	}
 	if count == 0 {
 		if err = SqlInit(sqlInitStr); err != nil {
-			logrus.Errorf("sqlite数据库导入失败 err: %v", err)
+			logrus.Errorf("sqlite database import err: %v", err)
 			panic(err)
 		}
 	}
@@ -48,7 +48,7 @@ func SqlInit(sqlStr string) error {
 		s = strings.TrimSpace(s)
 		if s != "" {
 			if _, err := sqliteDb.Exec(s); err != nil {
-				logrus.Errorf("sqlite数据库 sql执行失败 err: %v", err)
+				logrus.Errorf("sqlite database sql execution err: %v", err)
 				return err
 			}
 		}

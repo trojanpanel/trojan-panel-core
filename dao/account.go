@@ -54,7 +54,7 @@ func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upl
 	return nil
 }
 
-// SelectAccounts 查询全量有效的账户
+// SelectAccounts query all valid accounts
 func SelectAccounts() ([]bo.AccountBo, error) {
 	mySQLConfig := core.Config.MySQLConfig
 	var accounts []module.Account
