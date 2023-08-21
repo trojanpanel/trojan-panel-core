@@ -17,7 +17,7 @@ func InitGrpcServer() {
 		RegisterApiNodeServerServiceServer(rpcServer, new(NodeServerApiServer))
 		listener, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcConfig.Port))
 		if err != nil {
-			panic(fmt.Sprintf("gRPC服务监听端口失败%v", err))
+			panic(fmt.Sprintf("gRPC service listening port err: %v", err))
 		}
 		_ = rpcServer.Serve(listener)
 	}()

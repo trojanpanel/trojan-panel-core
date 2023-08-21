@@ -15,11 +15,10 @@ import (
 var validate *validator.Validate
 
 func InitValidator() {
-	// Validate为单例对象
 	validate = validator.New()
 }
 
-// token认证
+// Token Authentication
 func authRequest(ctx context.Context) error {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {

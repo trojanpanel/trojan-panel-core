@@ -20,7 +20,7 @@ func (s *NodeApiServer) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 
-	// 校验端口
+	// check port
 	var err error
 	if nodeAddDto.Port != 0 && (nodeAddDto.Port <= 100 || nodeAddDto.Port >= 30000) {
 		err = errors.New(constant.PortRangeError)

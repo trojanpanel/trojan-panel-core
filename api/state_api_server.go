@@ -19,7 +19,7 @@ func (s *StateApiServer) GetNodeState(ctx context.Context, nodeStateDto *NodeSta
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 	if nodeStateDto.GetNodeTypeId() <= 0 || nodeStateDto.GetPort() <= 0 {
-		return &Response{Success: false, Msg: "参数错误", Data: nil}, nil
+		return &Response{Success: false, Msg: "parameter validation error", Data: nil}, nil
 	}
 	nodeStateVo := NodeStateVo{}
 	success := process.GetState(uint(nodeStateDto.GetNodeTypeId()), uint(nodeStateDto.GetPort())+30000)
