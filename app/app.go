@@ -42,19 +42,19 @@ func InitApp() {
 
 func InitBinFile() {
 	if err := xray.InitXrayBinFile(); err != nil {
-		logrus.Errorf("Download xray file err: %v", err)
+		logrus.Errorf("download xray file err: %v", err)
 		panic(err)
 	}
 	if err := trojango.InitTrojanGoBinFile(); err != nil {
-		logrus.Errorf("Download trojango file err: %v", err)
+		logrus.Errorf("download trojango file err: %v", err)
 		panic(err)
 	}
 	if err := hysteria.InitHysteriaBinFile(); err != nil {
-		logrus.Errorf("Download hysteria file err: %v", err)
+		logrus.Errorf("download hysteria file err: %v", err)
 		panic(err)
 	}
 	if err := naiveproxy.InitNaiveProxyBinFile(); err != nil {
-		logrus.Errorf("Download naivepxoy file err: %v", err)
+		logrus.Errorf("download naivepxoy file err: %v", err)
 		panic(err)
 	}
 }
