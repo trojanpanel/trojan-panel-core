@@ -119,7 +119,7 @@ func GetConfigApiPorts(dirPth string) ([]uint, error) {
 		if len(finds) > 0 {
 			apiPort, err := strconv.Atoi(finds[1])
 			if err != nil {
-				logrus.Errorf("type conversion exception err: %v", err)
+				logrus.Errorf("type conversion err: %v", err)
 				continue
 			}
 			apiPorts = append(apiPorts, uint(apiPort))
