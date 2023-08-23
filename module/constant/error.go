@@ -10,7 +10,7 @@ const (
 	ForbiddenError    string = "permission denied"
 	TokenExpiredError string = "login expired"
 
-	GrpcError            string = "gRPC connection exception"
+	GrpcError            string = "gRPC connection error"
 	XrayStartError       string = "failed to start xray"
 	TrojanGoStartError   string = "failed to start trojango"
 	HysteriaStartError   string = "failed to start hysteria"
