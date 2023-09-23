@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/base64"
 	"github.com/gin-gonic/gin"
 	"trojan-panel-core/model/constant"
 	"trojan-panel-core/model/dto"
@@ -16,16 +15,16 @@ func Hysteria2Api(c *gin.Context) {
 		vo.Hysteria2ApiFail(constant.ValidateFailed, c)
 		return
 	}
-	base64DecodeStr, err := base64.StdEncoding.DecodeString(*hysteria2AuthDto.Payload)
-	if err != nil {
-		vo.Hysteria2ApiFail(constant.ValidateFailed, c)
-		return
-	}
-	pass := string(base64DecodeStr)
-	accountHysteria2Vo, err := service.SelectAccountByPass(pass)
+	//base64DecodeStr, err := base64.StdEncoding.DecodeString()
+	//if err != nil {
+	//	vo.Hysteria2ApiFail(constant.ValidateFailed, c)
+	//	return
+	//}
+	//pass := string(base64DecodeStr)
+	accountHysteria2Vo, err := service.SelectAccountByPass(*hysteria2AuthDto.Auth)
 	if err != nil || accountHysteria2Vo == nil {
-		vo.Hysteria2ApiFail(constant.UsernameOrPassError, c)
+		vo.Hysteria2ApiFail("", c)
 		return
 	}
-	vo.Hysteria2ApiSuccess("success", c)
+	vo.Hysteria2ApiSuccess(*hysteria2AuthDto.Auth, c)
 }

@@ -10,5 +10,5 @@ type Hysteria2ConfigDto struct {
 }
 
 type Hysteria2AuthDto struct {
-	Payload *string `json:"payload" validate:"required"`
+	Auth *string `json:"auth" validate:"required"`
 }

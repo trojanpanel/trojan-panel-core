@@ -11,6 +11,7 @@ const (
 	TokenExpiredError string = "login expired"
 
 	GrpcError            string = "gRPC connection error"
+	HttpError            string = "http connection error"
 	XrayStartError       string = "failed to start xray"
 	TrojanGoStartError   string = "failed to start trojango"
 	HysteriaStartError   string = "failed to start hysteria"

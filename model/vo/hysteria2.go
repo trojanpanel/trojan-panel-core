@@ -7,20 +7,20 @@ import (
 
 // response object
 type hysteria2Result struct {
-	Ok  bool   `json:"ok"`
-	Msg string `json:"msg"`
+	Ok bool   `json:"ok"`
+	Id string `json:"id"`
 }
 
-func Hysteria2ApiSuccess(msg string, c *gin.Context) {
+func Hysteria2ApiSuccess(id string, c *gin.Context) {
 	c.JSON(http.StatusOK, hysteria2Result{
-		Ok:  true,
-		Msg: msg,
+		Ok: true,
+		Id: id,
 	})
 }
 
-func Hysteria2ApiFail(msg string, c *gin.Context) {
+func Hysteria2ApiFail(id string, c *gin.Context) {
 	c.JSON(http.StatusOK, hysteria2Result{
-		Ok:  false,
-		Msg: msg,
+		Ok: false,
+		Id: id,
 	})
 }

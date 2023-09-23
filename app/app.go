@@ -555,6 +555,42 @@ func CronHandlerDownloadAndUpload() {
 			return true
 		})
 	}()
+
+	// hysteria2
+	go func() {
+		hysteria2Instance := process.NewHysteria2Instance()
+		hysteria2CmdMap := hysteria2Instance.GetCmdMap()
+		hysteria2CmdMap.Range(func(apiPort, cmd any) bool {
+			hysteria2Api := hysteria2.NewHysteria2Api(apiPort.(uint))
+			users, err := hysteria2Api.ListUsers(true)
+			if err == nil {
+				go func(users map[string]bo.Hysteria2UserTraffic) {
+					accountUpdateBos := make([]bo.AccountUpdateBo, 0)
+					for pass, traffic := range users {
+						accountUpdateBo := bo.AccountUpdateBo{
+							Pass:     pass,
+							Upload:   int(traffic.Tx),
+							Download: int(traffic.Rx),
+						}
+						accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
+					}
+					mutex, err := redis.RsLock(constant.LockHysteria2Update)
+					if err != nil {
+						return
+					}
+					for _, account := range accountUpdateBos {
+						if err = dao.UpdateAccountFlowByPassOrHash(&account.Pass, nil, account.Download,
+							account.Upload); err != nil {
+							logrus.Errorf("hysteria2 UpdateAccountFlow err apiPort: %d err: %v", apiPort, err)
+							continue
+						}
+					}
+					redis.RsUnLock(mutex)
+				}(users)
+			}
+			return true
+		})
+	}()
 }
 
 func RemoveAccount(password string) error {
