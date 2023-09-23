@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"sync"
 	"trojan-panel-core/app/hysteria"
+	"trojan-panel-core/app/hysteria2"
 	"trojan-panel-core/app/naiveproxy"
 	"trojan-panel-core/app/trojango"
 	"trojan-panel-core/app/xray"
@@ -38,6 +39,9 @@ func InitApp() {
 	if err := naiveproxy.InitNaiveProxyApp(); err != nil {
 		logrus.Errorf("naiverpoxy app init err: %s", err.Error())
 	}
+	if err := hysteria2.InitHysteria2App(); err != nil {
+		logrus.Errorf("hysteria2 app init err: %s", err.Error())
+	}
 }
 
 func InitBinFile() {
@@ -55,6 +59,10 @@ func InitBinFile() {
 	}
 	if err := naiveproxy.InitNaiveProxyBinFile(); err != nil {
 		logrus.Errorf("download naivepxoy file err: %v", err)
+		panic(err)
+	}
+	if err := hysteria2.InitHysteria2BinFile(); err != nil {
+		logrus.Errorf("download hysteria2 file err: %v", err)
 		panic(err)
 	}
 }
@@ -120,6 +128,18 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 			}); err != nil {
 				return err
 			}
+		case constant.Hysteria2:
+			if err := hysteria2.StartHysteria2(dto.Hysteria2ConfigDto{
+				ApiPort:     nodeAddDto.Port + 30000,
+				Port:        nodeAddDto.Port,
+				Obfs:        nodeAddDto.HysteriaObfs,
+				Domain:      nodeAddDto.Domain,
+				UpMbps:      nodeAddDto.HysteriaUpMbps,
+				DownMbps:    nodeAddDto.HysteriaDownMbps,
+				TrafficPort: nodeAddDto.Hysteria2TrafficPort,
+			}); err != nil {
+				return err
+			}
 		default:
 			return errors.New(constant.NodeTypeNotExist)
 		}
@@ -159,6 +179,10 @@ func StopApp(apiPort uint, nodeTypeId uint) error {
 			if err := naiveproxy.StopNaiveProxy(apiPort, true); err != nil {
 				return err
 			}
+		case constant.Hysteria2:
+			if err := hysteria2.StopHysteria2(apiPort, true); err != nil {
+				return err
+			}
 		default:
 			return errors.New(constant.NodeTypeNotExist)
 		}
@@ -186,6 +210,10 @@ func RestartApp(apiPort uint, nodeTypeId uint) error {
 		}
 	case constant.NaiveProxy:
 		if err := naiveproxy.RestartNaiveProxy(apiPort); err != nil {
+			return err
+		}
+	case constant.Hysteria2:
+		if err := hysteria2.RestartHysteria2(apiPort); err != nil {
 			return err
 		}
 	default:

@@ -11,9 +11,6 @@ import (
 type StateApiServer struct {
 }
 
-func (s *StateApiServer) mustEmbedUnimplementedApiStateServiceServer() {
-}
-
 func (s *StateApiServer) GetNodeState(ctx context.Context, nodeStateDto *NodeStateDto) (*Response, error) {
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil

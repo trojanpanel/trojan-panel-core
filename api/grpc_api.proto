@@ -50,6 +50,11 @@ message NodeAddDto {
   string hysteriaObfs = 22;
   int64 hysteriaUpMbps = 23;
   int64 hysteriaDownMbps = 24;
+
+  int64 hysteria2TrafficPort = 25;
+  string hysteria2Obfs = 26;
+  int64 hysteria2UpMbps = 27;
+  int64 hysteria2DownMbps = 28;
 }
 
 message NodeRemoveDto {

@@ -8,9 +8,6 @@ import (
 type AccountApiServer struct {
 }
 
-func (s *AccountApiServer) mustEmbedUnimplementedApiAccountServiceServer() {
-}
-
 func (s *AccountApiServer) RemoveAccount(ctx context.Context, accountRemoveDto *AccountRemoveDto) (*Response, error) {
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil

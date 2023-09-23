@@ -10,9 +10,6 @@ import (
 type NodeServerApiServer struct {
 }
 
-func (s *NodeServerApiServer) mustEmbedUnimplementedApiNodeServerServiceServer() {
-}
-
 func (s *NodeServerApiServer) GetNodeServerInfo(ctx context.Context, nodeServerInfoDto *NodeServerInfoDto) (*Response, error) {
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil

@@ -7,7 +7,7 @@ type Hysteria2ConfigDto struct {
 	Obfs        string
 	UpMbps      int
 	DownMbps    int
-	TrafficPort int
+	TrafficPort uint
 }
 
 type Hysteria2AuthDto struct {
