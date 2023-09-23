@@ -5,8 +5,8 @@ import (
 	"github.com/golang-jwt/jwt"
 	redisgo "github.com/gomodule/redigo/redis"
 	"trojan-panel-core/dao/redis"
-	"trojan-panel-core/module/constant"
-	"trojan-panel-core/module/vo"
+	"trojan-panel-core/model/constant"
+	"trojan-panel-core/model/vo"
 )
 
 type MyClaims struct {

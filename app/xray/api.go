@@ -18,9 +18,9 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"strings"
 	"time"
-	"trojan-panel-core/module/constant"
-	"trojan-panel-core/module/dto"
-	"trojan-panel-core/module/vo"
+	"trojan-panel-core/model/constant"
+	"trojan-panel-core/model/dto"
+	"trojan-panel-core/model/vo"
 	"trojan-panel-core/service"
 	"trojan-panel-core/util"
 )

@@ -11,7 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"trojan-panel-core/module/constant"
+	"trojan-panel-core/model/constant"
 )
 
 func DownloadFile(url string, fileName string) error {

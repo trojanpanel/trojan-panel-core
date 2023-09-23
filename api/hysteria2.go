@@ -3,9 +3,9 @@ package api
 import (
 	"encoding/base64"
 	"github.com/gin-gonic/gin"
-	"trojan-panel-core/module/constant"
-	"trojan-panel-core/module/dto"
-	"trojan-panel-core/module/vo"
+	"trojan-panel-core/model/constant"
+	"trojan-panel-core/model/dto"
+	"trojan-panel-core/model/vo"
 	"trojan-panel-core/service"
 )
 

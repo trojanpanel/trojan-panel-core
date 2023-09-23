@@ -10,17 +10,17 @@ import (
 	"time"
 	"trojan-panel-core/dao"
 	"trojan-panel-core/dao/redis"
-	"trojan-panel-core/module"
-	"trojan-panel-core/module/constant"
+	"trojan-panel-core/model"
+	"trojan-panel-core/model/constant"
 )
 
-func SelectNodeConfigByNodeTypeIdAndApiPort(apiPort uint, nodeTypeId uint) (*module.NodeConfig, error) {
+func SelectNodeConfigByNodeTypeIdAndApiPort(apiPort uint, nodeTypeId uint) (*model.NodeConfig, error) {
 	bytes, err := redis.Client.String.Get(fmt.Sprintf("trojan-panel-core:node-config:%d-%d", apiPort, nodeTypeId)).Bytes()
 	if err != nil && err != redisgo.ErrNil {
 		return nil, errors.New(constant.SysError)
 	}
 	if len(bytes) > 0 {
-		var nodeConfig module.NodeConfig
+		var nodeConfig model.NodeConfig
 		if err = json.Unmarshal(bytes, &nodeConfig); err != nil {
 			logrus.Errorln(fmt.Sprintf("SelectNodeConfigByNodeTypeIdAndApiPort NodeConfig deserialization err: %v", err))
 			return nil, errors.New(constant.SysError)
@@ -41,7 +41,7 @@ func SelectNodeConfigByNodeTypeIdAndApiPort(apiPort uint, nodeTypeId uint) (*mod
 	}
 }
 
-func InsertNodeConfig(nodeConfig module.NodeConfig) error {
+func InsertNodeConfig(nodeConfig model.NodeConfig) error {
 	return dao.InsertNodeConfig(nodeConfig)
 }
 

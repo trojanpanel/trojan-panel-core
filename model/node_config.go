@@ -1,4 +1,4 @@
-package module
+package model
 
 type NodeConfig struct {
 	Id           uint   `json:"id" ddb:"id"`

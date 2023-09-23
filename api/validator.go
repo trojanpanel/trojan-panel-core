@@ -7,7 +7,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"google.golang.org/grpc/metadata"
 	"trojan-panel-core/dao/redis"
-	"trojan-panel-core/module/constant"
+	"trojan-panel-core/model/constant"
 	"trojan-panel-core/service"
 	"trojan-panel-core/util"
 )

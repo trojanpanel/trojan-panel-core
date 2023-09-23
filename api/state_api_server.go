@@ -5,7 +5,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 	"trojan-panel-core/core/process"
-	"trojan-panel-core/module/constant"
+	"trojan-panel-core/model/constant"
 )
 
 type StateApiServer struct {

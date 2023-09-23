@@ -8,8 +8,8 @@ import (
 	"strings"
 	"trojan-panel-core/core"
 	"trojan-panel-core/core/process"
-	"trojan-panel-core/module/constant"
-	"trojan-panel-core/module/dto"
+	"trojan-panel-core/model/constant"
+	"trojan-panel-core/model/dto"
 	"trojan-panel-core/util"
 )
 

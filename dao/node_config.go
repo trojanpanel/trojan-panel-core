@@ -3,11 +3,11 @@ package dao
 import (
 	"errors"
 	"github.com/sirupsen/logrus"
-	"trojan-panel-core/module"
-	"trojan-panel-core/module/constant"
+	"trojan-panel-core/model"
+	"trojan-panel-core/model/constant"
 )
 
-func SelectNodeConfigByNodeTypeIdAndApiPort(apiPortParam uint, nodeTypeIdParam uint) (*module.NodeConfig, error) {
+func SelectNodeConfigByNodeTypeIdAndApiPort(apiPortParam uint, nodeTypeIdParam uint) (*model.NodeConfig, error) {
 	stmt, err := sqliteDb.Prepare("select id,node_type_id,api_port,protocol,xray_flow,xray_ss_method from node_config where api_port = ? and node_type_id = ?")
 	if err != nil {
 		return nil, errors.New(constant.SysError)
@@ -39,7 +39,7 @@ func SelectNodeConfigByNodeTypeIdAndApiPort(apiPortParam uint, nodeTypeIdParam u
 		}
 		break
 	}
-	nodeConfig := module.NodeConfig{
+	nodeConfig := model.NodeConfig{
 		Id:           id,
 		ApiPort:      apiPort,
 		NodeTypeId:   nodeTypeId,
@@ -50,7 +50,7 @@ func SelectNodeConfigByNodeTypeIdAndApiPort(apiPortParam uint, nodeTypeIdParam u
 	return &nodeConfig, nil
 }
 
-func InsertNodeConfig(nodeConfig module.NodeConfig) error {
+func InsertNodeConfig(nodeConfig model.NodeConfig) error {
 	stmt, err := sqliteDb.Prepare("insert into node_config(node_type_id,api_port,protocol,xray_flow,xray_ss_method) values(?,?,?,?,?)")
 	if err != nil {
 		return errors.New(constant.SysError)

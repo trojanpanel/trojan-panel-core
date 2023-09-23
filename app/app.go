@@ -13,11 +13,11 @@ import (
 	"trojan-panel-core/core/process"
 	"trojan-panel-core/dao"
 	"trojan-panel-core/dao/redis"
-	"trojan-panel-core/module"
-	"trojan-panel-core/module/bo"
-	"trojan-panel-core/module/constant"
-	"trojan-panel-core/module/dto"
-	"trojan-panel-core/module/vo"
+	"trojan-panel-core/model"
+	"trojan-panel-core/model/bo"
+	"trojan-panel-core/model/constant"
+	"trojan-panel-core/model/dto"
+	"trojan-panel-core/model/vo"
 	"trojan-panel-core/service"
 	"trojan-panel-core/util"
 )
@@ -124,7 +124,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 			return errors.New(constant.NodeTypeNotExist)
 		}
 
-		nodeConfig := module.NodeConfig{
+		nodeConfig := model.NodeConfig{
 			ApiPort:      nodeAddDto.Port + 30000,
 			NodeTypeId:   nodeAddDto.NodeTypeId,
 			Protocol:     protocol,

@@ -3,7 +3,7 @@ package naiveproxy
 import (
 	"fmt"
 	"testing"
-	"trojan-panel-core/module/dto"
+	"trojan-panel-core/model/dto"
 )
 
 func TestNaiveProxyListUsers(t *testing.T) {

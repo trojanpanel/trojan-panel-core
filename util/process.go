@@ -8,7 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"trojan-panel-core/module/constant"
+	"trojan-panel-core/model/constant"
 )
 
 var configFileNameReg = regexp.MustCompile("^config-([1-9]\\d*)[\\s\\S]*\\.json$")

@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"trojan-panel-core/app"
-	"trojan-panel-core/module/constant"
-	"trojan-panel-core/module/dto"
+	"trojan-panel-core/model/constant"
+	"trojan-panel-core/model/dto"
 	"trojan-panel-core/util"
 )
 

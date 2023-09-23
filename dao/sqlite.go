@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	_ "modernc.org/sqlite"
 	"strings"
-	"trojan-panel-core/module/constant"
+	"trojan-panel-core/model/constant"
 )
 
 var sqliteDb *sql.DB

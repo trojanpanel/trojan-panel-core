@@ -7,10 +7,10 @@ import (
 	"github.com/didi/gendry/scanner"
 	"github.com/sirupsen/logrus"
 	"trojan-panel-core/core"
-	"trojan-panel-core/module"
-	"trojan-panel-core/module/bo"
-	"trojan-panel-core/module/constant"
-	"trojan-panel-core/module/vo"
+	"trojan-panel-core/model"
+	"trojan-panel-core/model/bo"
+	"trojan-panel-core/model/constant"
+	"trojan-panel-core/model/vo"
 )
 
 func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upload int) error {
@@ -57,7 +57,7 @@ func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upl
 // SelectAccounts query all valid accounts
 func SelectAccounts() ([]bo.AccountBo, error) {
 	mySQLConfig := core.Config.MySQLConfig
-	var accounts []module.Account
+	var accounts []model.Account
 	var (
 		values []interface{}
 		err    error
@@ -91,7 +91,7 @@ func SelectAccounts() ([]bo.AccountBo, error) {
 
 func SelectAccountByPass(pass string) (*vo.AccountHysteriaVo, error) {
 	mySQLConfig := core.Config.MySQLConfig
-	var account module.Account
+	var account model.Account
 
 	buildSelect, values, err := builder.NamedQuery(fmt.Sprintf("select id from %s where (quota < 0 or quota > download + upload) and pass = {{pass}}", mySQLConfig.AccountTable),
 		map[string]interface{}{

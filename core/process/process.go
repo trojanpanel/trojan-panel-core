@@ -5,7 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"os/exec"
 	"sync"
-	"trojan-panel-core/module/constant"
+	"trojan-panel-core/model/constant"
 	"trojan-panel-core/util"
 )
 

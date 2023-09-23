@@ -10,7 +10,7 @@ import (
 	"net"
 	"strconv"
 	"time"
-	"trojan-panel-core/module/constant"
+	"trojan-panel-core/model/constant"
 )
 
 // IsPortAvailable determine whether the port is available
