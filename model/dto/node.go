@@ -29,8 +29,7 @@ type NodeAddDto struct {
 	HysteriaUpMbps   int    `json:"hysteriaUpMbps" form:"hysteriaUpMbps" validate:"omitempty"`
 	HysteriaDownMbps int    `json:"hysteriaDownMbps" form:"hysteriaDownMbps" validate:"omitempty"`
 
-	Hysteria2Obfs        string `json:"hysteria2Obfs" form:"hysteria2Obfs" validate:"omitempty"`
-	Hysteria2UpMbps      int    `json:"hysteria2UpMbps" form:"hysteria2UpMbps" validate:"omitempty"`
-	Hysteria2DownMbps    int    `json:"hysteria2DownMbps" form:"hysteria2DownMbps" validate:"omitempty"`
-	Hysteria2TrafficPort uint   `json:"hysteria2TrafficPort" form:"hysteria2TrafficPort" validate:"omitempty"`
+	Hysteria2Obfs     string `json:"hysteria2Obfs" form:"hysteria2Obfs" validate:"omitempty"`
+	Hysteria2UpMbps   int    `json:"hysteria2UpMbps" form:"hysteria2UpMbps" validate:"omitempty"`
+	Hysteria2DownMbps int    `json:"hysteria2DownMbps" form:"hysteria2DownMbps" validate:"omitempty"`
 }

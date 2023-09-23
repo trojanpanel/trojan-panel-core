@@ -101,7 +101,7 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
     }
   },
   "trafficStats": {
-    "listen": ":${traffic_port}"
+    "listen": ":${api_port}"
   }
 }`
 	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(hysteria2ConfigDto.Port), 10))
@@ -111,7 +111,7 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
 	configContent = strings.ReplaceAll(configContent, "${up_mbps}", strconv.FormatInt(int64(hysteria2ConfigDto.UpMbps), 10))
 	configContent = strings.ReplaceAll(configContent, "${down_mbps}", strconv.FormatInt(int64(hysteria2ConfigDto.DownMbps), 10))
 	configContent = strings.ReplaceAll(configContent, "${server_port}", strconv.FormatInt(int64(core.Config.ServerConfig.Port), 10))
-	configContent = strings.ReplaceAll(configContent, "${traffic_port}", strconv.FormatInt(int64(hysteria2ConfigDto.TrafficPort), 10))
+	configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(hysteria2ConfigDto.ApiPort), 10))
 	_, err = file.WriteString(configContent)
 	if err != nil {
 		logrus.Errorf("hysteria2 config.json file write err: %v", err)

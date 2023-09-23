@@ -130,13 +130,12 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 			}
 		case constant.Hysteria2:
 			if err := hysteria2.StartHysteria2(dto.Hysteria2ConfigDto{
-				ApiPort:     nodeAddDto.Port + 30000,
-				Port:        nodeAddDto.Port,
-				Obfs:        nodeAddDto.HysteriaObfs,
-				Domain:      nodeAddDto.Domain,
-				UpMbps:      nodeAddDto.HysteriaUpMbps,
-				DownMbps:    nodeAddDto.HysteriaDownMbps,
-				TrafficPort: nodeAddDto.Hysteria2TrafficPort,
+				ApiPort:  nodeAddDto.Port + 30000,
+				Port:     nodeAddDto.Port,
+				Obfs:     nodeAddDto.HysteriaObfs,
+				Domain:   nodeAddDto.Domain,
+				UpMbps:   nodeAddDto.HysteriaUpMbps,
+				DownMbps: nodeAddDto.HysteriaDownMbps,
 			}); err != nil {
 				return err
 			}
