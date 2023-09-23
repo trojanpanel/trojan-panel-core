@@ -14,6 +14,7 @@ const (
 	XrayStartError       string = "failed to start xray"
 	TrojanGoStartError   string = "failed to start trojango"
 	HysteriaStartError   string = "failed to start hysteria"
+	Hysteria2StartError  string = "failed to start hysteria2"
 	NaiveProxyStartError string = "failed to start naiveproxy"
 	ProcessStopError     string = "process suspend failed"
 

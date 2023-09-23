@@ -12,5 +12,7 @@ func Router(router *gin.Engine) {
 	{
 		// Hysteria api
 		auth.POST("/hysteria", api.HysteriaApi)
+		// Hysteria2 api
+		auth.POST("/hysteria2", api.Hysteria2Api)
 	}
 }
