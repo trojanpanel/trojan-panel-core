@@ -78,27 +78,40 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
 	certConfig := core.Config.CertConfig
 	configContent := `{
   "listen": ":${port}",
-  "protocol": "${protocol}",
-  "cert": "${crt_path}",
-  "key": "${key_path}",
-  "obfs": "${obfs}",
-  "up_mbps": ${up_mbps},
-  "down_mbps": ${down_mbps},
-  "auth": {
-    "mode": "external",
-    "config": {
-      "http": "http://127.0.0.1:${server_port}/api/auth/hysteria2"
+  "tls": {
+    "cert": "${crt_path}",
+    "key": "${key_path}"
+  },
+  "obfs": {
+    "type": "salamander",
+    "salamander": {
+      "password": "${obfs}"
     }
+  },
+  "bandwidth": {
+    "up": "${up_mbps} mbps",
+    "down": "${down_mbps} mbps"
+  },
+  "auth": {
+    "type": "password",
+    "password": "goofy_ahh_password",
+    "http": {
+      "url": "http://127.0.0.1:${server_port}/api/auth/hysteria2",
+      "insecure": true
+    }
+  },
+  "trafficStats": {
+    "listen": ":${traffic_port}"
   }
 }`
 	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(hysteria2ConfigDto.Port), 10))
-	configContent = strings.ReplaceAll(configContent, "${protocol}", hysteria2ConfigDto.Protocol)
-	configContent = strings.ReplaceAll(configContent, "${obfs}", hysteria2ConfigDto.Obfs)
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
+	configContent = strings.ReplaceAll(configContent, "${obfs}", hysteria2ConfigDto.Obfs)
 	configContent = strings.ReplaceAll(configContent, "${up_mbps}", strconv.FormatInt(int64(hysteria2ConfigDto.UpMbps), 10))
 	configContent = strings.ReplaceAll(configContent, "${down_mbps}", strconv.FormatInt(int64(hysteria2ConfigDto.DownMbps), 10))
 	configContent = strings.ReplaceAll(configContent, "${server_port}", strconv.FormatInt(int64(core.Config.ServerConfig.Port), 10))
+	configContent = strings.ReplaceAll(configContent, "${traffic_port}", strconv.FormatInt(int64(hysteria2ConfigDto.TrafficPort), 10))
 	_, err = file.WriteString(configContent)
 	if err != nil {
 		logrus.Errorf("hysteria2 config.json file write err: %v", err)

@@ -93,9 +93,9 @@ func initHysteria(hysteriaConfigDto dto.HysteriaConfigDto) error {
 }`
 	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(hysteriaConfigDto.Port), 10))
 	configContent = strings.ReplaceAll(configContent, "${protocol}", hysteriaConfigDto.Protocol)
-	configContent = strings.ReplaceAll(configContent, "${obfs}", hysteriaConfigDto.Obfs)
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
+	configContent = strings.ReplaceAll(configContent, "${obfs}", hysteriaConfigDto.Obfs)
 	configContent = strings.ReplaceAll(configContent, "${up_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.UpMbps), 10))
 	configContent = strings.ReplaceAll(configContent, "${down_mbps}", strconv.FormatInt(int64(hysteriaConfigDto.DownMbps), 10))
 	configContent = strings.ReplaceAll(configContent, "${server_port}", strconv.FormatInt(int64(core.Config.ServerConfig.Port), 10))
