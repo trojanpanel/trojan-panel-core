@@ -23,6 +23,7 @@ const (
 	TrojanGoBinPath   string = "bin/trojango"
 	HysteriaBinPath   string = "bin/hysteria"
 	NaiveProxyBinPath string = "bin/naiveproxy"
+	Hysteria2BinPath  string = "bin/hysteria2"
 
-	TrojanPanelCoreVersion = "v2.2.1"
+	TrojanPanelCoreVersion = "v2.2.2"
 )

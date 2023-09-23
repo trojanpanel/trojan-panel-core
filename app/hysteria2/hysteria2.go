@@ -87,7 +87,7 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
   "auth": {
     "mode": "external",
     "config": {
-      "http": "http://127.0.0.1:8082/api/auth/hysteria2"
+      "http": "http://127.0.0.1:${server_port}/api/auth/hysteria2"
     }
   }
 }`
@@ -98,6 +98,7 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
 	configContent = strings.ReplaceAll(configContent, "${up_mbps}", strconv.FormatInt(int64(hysteria2ConfigDto.UpMbps), 10))
 	configContent = strings.ReplaceAll(configContent, "${down_mbps}", strconv.FormatInt(int64(hysteria2ConfigDto.DownMbps), 10))
+	configContent = strings.ReplaceAll(configContent, "${server_port}", strconv.FormatInt(int64(core.Config.ServerConfig.Port), 10))
 	_, err = file.WriteString(configContent)
 	if err != nil {
 		logrus.Errorf("hysteria2 config.json file write err: %v", err)

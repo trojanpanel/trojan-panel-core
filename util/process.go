@@ -40,6 +40,9 @@ func GetBinaryFilePath(binaryType int) (string, error) {
 	case constant.NaiveProxy:
 		binaryName = "naiveproxy"
 		binaryPath = constant.NaiveProxyBinPath
+	case constant.Hysteria2:
+		binaryName = "hysteria2"
+		binaryPath = constant.Hysteria2BinPath
 	default:
 		return "", errors.New(constant.BinaryFileNotExist)
 	}
@@ -76,6 +79,9 @@ func GetConfigFilePath(binaryType int, apiPort uint) (string, error) {
 		configFileName = fmt.Sprintf("config-%d.json", apiPort)
 	case constant.NaiveProxy:
 		configPath = constant.NaiveProxyPath
+		configFileName = fmt.Sprintf("config-%d.json", apiPort)
+	case constant.Hysteria2:
+		configPath = constant.Hysteria2Path
 		configFileName = fmt.Sprintf("config-%d.json", apiPort)
 	default:
 		return "", errors.New(constant.ConfigFileNotExist)
