@@ -68,9 +68,9 @@ func (s *NodeApiServer) AddNode(ctx context.Context, nodeAddDto *NodeAddDto) (*R
 		HysteriaUpMbps:   int(nodeAddDto.HysteriaUpMbps),
 		HysteriaDownMbps: int(nodeAddDto.HysteriaDownMbps),
 		// Hysteria2
-		Hysteria2Obfs:     nodeAddDto.Hysteria2Obfs,
-		Hysteria2UpMbps:   int(nodeAddDto.Hysteria2UpMbps),
-		Hysteria2DownMbps: int(nodeAddDto.Hysteria2DownMbps),
+		Hysteria2ObfsPassword: nodeAddDto.Hysteria2ObfsPassword,
+		Hysteria2UpMbps:       int(nodeAddDto.Hysteria2UpMbps),
+		Hysteria2DownMbps:     int(nodeAddDto.Hysteria2DownMbps),
 	}); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
