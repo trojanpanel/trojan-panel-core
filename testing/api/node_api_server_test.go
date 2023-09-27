@@ -50,6 +50,8 @@ func TestAddNode(t *testing.T) {
 	defer clo()
 
 	nodeAddDto := api.NodeAddDto{
+		Port:                  8089,
+		Domain:                "www.baidu.com",
 		NodeTypeId:            constant.Hysteria2,
 		Hysteria2ObfsPassword: "123456",
 		Hysteria2UpMbps:       100,
