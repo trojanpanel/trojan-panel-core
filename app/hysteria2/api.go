@@ -35,17 +35,21 @@ func (n *hysteria2Api) ListUsers(clear bool) (map[string]bo.Hysteria2UserTraffic
 		url = fmt.Sprintf("%s?clear=1", url)
 	}
 	resp, err := client.Get(url)
+	defer func() {
+		if resp != nil {
+			resp.Body.Close()
+		}
+	}()
 	if err != nil || resp.StatusCode != http.StatusOK {
 		logrus.Errorf("Hysteria2 ListUsers err: %v", err)
 		return nil, errors.New(constant.HttpError)
 	}
-	defer resp.Body.Close()
-	var users map[string]bo.Hysteria2UserTraffic
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		logrus.Errorf("Hysteria2 io read err: %v", err)
 		return nil, errors.New(constant.HttpError)
 	}
+	var users map[string]bo.Hysteria2UserTraffic
 	if err = json.Unmarshal(body, &users); err != nil {
 		logrus.Errorf("Hysteria2 ListUsers Unmarshal err: %v", err)
 		return nil, errors.New(constant.SysError)

@@ -2,12 +2,14 @@ package naiveproxy
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io"
 	"net/http"
+	"time"
 	"trojan-panel-core/model/bo"
 	"trojan-panel-core/model/constant"
 	"trojan-panel-core/model/dto"
@@ -26,7 +28,9 @@ func NewNaiveProxyApi(apiPort uint) *naiveProxyApi {
 // ListUsers query all users on a node
 func (n *naiveProxyApi) ListUsers() (*[]bo.HandleAuth, error) {
 	url := fmt.Sprintf("http://127.0.0.1:%d/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/", n.apiPort)
-	req, err := http.NewRequest("GET", url, nil)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		logrus.Errorf("NaiveProxy ListUsers NewRequest err: %v", err)
 		return nil, errors.New(constant.SysError)
@@ -37,7 +41,7 @@ func (n *naiveProxyApi) ListUsers() (*[]bo.HandleAuth, error) {
 			resp.Body.Close()
 		}
 	}()
-	if err != nil || resp.StatusCode != 200 {
+	if err != nil || resp.StatusCode != http.StatusOK {
 		logrus.Errorf("NaiveProxy ListUsers http resp err: %v", err)
 		return nil, errors.New(constant.SysError)
 	}
@@ -97,8 +101,10 @@ func (n *naiveProxyApi) AddUser(dto dto.NaiveProxyAddUserDto) error {
 		return errors.New(constant.SysError)
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
 	url := fmt.Sprintf("http://127.0.0.1:%d/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/0", n.apiPort)
-	req, err := http.NewRequest("POST", url,
+	req, err := http.NewRequestWithContext(ctx, "POST", url,
 		bytes.NewBuffer(addUserDtoByte))
 	if err != nil {
 		logrus.Errorf("NaiveProxy AddUser NewRequest err: %v", err)
@@ -111,7 +117,7 @@ func (n *naiveProxyApi) AddUser(dto dto.NaiveProxyAddUserDto) error {
 			resp.Body.Close()
 		}
 	}()
-	if err != nil || resp.StatusCode != 200 {
+	if err != nil || resp.StatusCode != http.StatusOK {
 		logrus.Errorf("NaiveProxy AddUser resp err: %v", err)
 		return errors.New(constant.SysError)
 	}
@@ -125,8 +131,10 @@ func (n *naiveProxyApi) DeleteUser(pass string) error {
 		return err
 	}
 	if index != nil {
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
 		url := fmt.Sprintf("http://127.0.0.1:%d/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/%d", n.apiPort, *index)
-		req, err := http.NewRequest("DELETE", url, nil)
+		req, err := http.NewRequestWithContext(ctx, "DELETE", url, nil)
 		if err != nil {
 			logrus.Errorf("NaiveProxy DeleteUser NewRequest err: %v", err)
 			return errors.New(constant.SysError)
@@ -137,7 +145,7 @@ func (n *naiveProxyApi) DeleteUser(pass string) error {
 				resp.Body.Close()
 			}
 		}()
-		if err != nil || resp.StatusCode != 200 {
+		if err != nil || resp.StatusCode != http.StatusOK {
 			logrus.Errorf("NaiveProxy DeleteUser resp err: %v", err)
 			return errors.New(constant.SysError)
 		}
