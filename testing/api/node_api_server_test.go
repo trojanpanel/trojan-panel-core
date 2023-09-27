@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"testing"
 	"time"
 	"trojan-panel-core/api"
@@ -19,7 +20,7 @@ var (
 )
 
 func init() {
-	conn, ctx, clo, err = newGrpcInstance("127.0.0.1", 38089, 4*time.Second)
+	conn, ctx, clo, err = newGrpcInstance("127.0.0.1", 8100, 4*time.Second)
 	if err != nil {
 		fmt.Printf("err: %v", err)
 		return
@@ -27,7 +28,10 @@ func init() {
 }
 
 func newGrpcInstance(ip string, grpcPort uint, timeout time.Duration) (conn *grpc.ClientConn, ctx context.Context, clo func(), err error) {
-	conn, err = grpc.Dial(fmt.Sprintf("%s:%d", ip, grpcPort))
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
+	conn, err = grpc.Dial(fmt.Sprintf("%s:%d", ip, grpcPort), opts...)
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	clo = func() {
 		cancel()
