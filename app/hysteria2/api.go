@@ -24,13 +24,13 @@ func NewHysteria2Api(apiPort uint) *hysteria2Api {
 
 func apiClient() *http.Client {
 	return &http.Client{
-		Timeout: time.Second,
+		Timeout: 3 * time.Second,
 	}
 }
 
 func (n *hysteria2Api) ListUsers(clear bool) (map[string]bo.Hysteria2UserTraffic, error) {
 	client := apiClient()
-	url := fmt.Sprintf("127.0.0.1:%d/traffic", n.apiPort)
+	url := fmt.Sprintf("http://127.0.0.1:%d/traffic", n.apiPort)
 	if clear {
 		url = fmt.Sprintf("%s?clear=1", url)
 	}
