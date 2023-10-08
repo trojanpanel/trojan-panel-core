@@ -81,6 +81,8 @@ func GetState(nodeTypeId uint, apiPort uint) bool {
 		return GetHysteriaState(apiPort)
 	case constant.NaiveProxy:
 		return GetNaiveProxyState(apiPort)
+	case constant.Hysteria2:
+		return GetHysteria2State(apiPort)
 	default:
 		return false
 	}
