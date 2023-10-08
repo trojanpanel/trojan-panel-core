@@ -24,10 +24,12 @@ COPY build/xray-${TARGETOS}-${TARGETARCH}${TARGETVARIANT} bin/xray/xray
 COPY build/trojan-go-${TARGETOS}-${TARGETARCH}${TARGETVARIANT} bin/trojango/trojan-go
 COPY build/hysteria-${TARGETOS}-${TARGETARCH}${TARGETVARIANT} bin/hysteria/hysteria
 COPY build/naiveproxy-${TARGETOS}-${TARGETARCH}${TARGETVARIANT} bin/naiveproxy/naiveproxy
+COPY build/hysteria2-${TARGETOS}-${TARGETARCH}${TARGETVARIANT} bin/hysteria/hysteria2
 RUN chmod 777 bin/xray/xray
 RUN chmod 777 bin/trojango/trojan-go
 RUN chmod 777 bin/hysteria/hysteria
 RUN chmod 777 bin/naiveproxy/naiveproxy
+RUN chmod 777 bin/hysteria/hysteria2
 # Set apk China mirror
 # RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk add bash tzdata ca-certificates && \
