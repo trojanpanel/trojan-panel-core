@@ -93,7 +93,7 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
     "down": "${down_mbps} mbps"
   },
   "auth": {
-    "type": "password",
+    "type": "http",
     "http": {
       "url": "http://127.0.0.1:${server_port}/api/auth/hysteria2",
       "insecure": true
