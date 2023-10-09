@@ -96,7 +96,7 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
     "type": "password",
     "http": {
       "url": "http://127.0.0.1:${server_port}/api/auth/hysteria2",
-      "insecure": false
+      "insecure": true
     }
   },
   "trafficStats": {
