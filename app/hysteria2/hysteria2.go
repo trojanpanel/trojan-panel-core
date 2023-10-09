@@ -1,6 +1,7 @@
 package hysteria2
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -8,6 +9,7 @@ import (
 	"strings"
 	"trojan-panel-core/core"
 	"trojan-panel-core/core/process"
+	"trojan-panel-core/model/bo"
 	"trojan-panel-core/model/constant"
 	"trojan-panel-core/model/dto"
 	"trojan-panel-core/util"
@@ -82,12 +84,6 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
     "cert": "${crt_path}",
     "key": "${key_path}"
   },
-  "obfs": {
-    "type": "salamander",
-    "salamander": {
-      "password": "${obfs_password}"
-    }
-  },
   "bandwidth": {
     "up": "${up_mbps} mbps",
     "down": "${down_mbps} mbps"
@@ -106,11 +102,28 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
 	configContent = strings.ReplaceAll(configContent, "${port}", strconv.FormatInt(int64(hysteria2ConfigDto.Port), 10))
 	configContent = strings.ReplaceAll(configContent, "${crt_path}", certConfig.CrtPath)
 	configContent = strings.ReplaceAll(configContent, "${key_path}", certConfig.KeyPath)
-	configContent = strings.ReplaceAll(configContent, "${obfs_password}", hysteria2ConfigDto.ObfsPassword)
 	configContent = strings.ReplaceAll(configContent, "${up_mbps}", strconv.FormatInt(int64(hysteria2ConfigDto.UpMbps), 10))
 	configContent = strings.ReplaceAll(configContent, "${down_mbps}", strconv.FormatInt(int64(hysteria2ConfigDto.DownMbps), 10))
 	configContent = strings.ReplaceAll(configContent, "${server_port}", strconv.FormatInt(int64(core.Config.ServerConfig.Port), 10))
 	configContent = strings.ReplaceAll(configContent, "${api_port}", strconv.FormatInt(int64(hysteria2ConfigDto.ApiPort), 10))
+	if len(hysteria2ConfigDto.ObfsPassword) >= 4 {
+		// set obfs
+		var hysteria2Config bo.Hysteria2Config
+		if err = json.Unmarshal([]byte(configContent), &hysteria2Config); err != nil {
+			logrus.Errorf("hysteria2 json.Unmarshal err: %v", err)
+			return err
+		}
+		var hysteria2ConfigObfs bo.Hysteria2ConfigObfs
+		hysteria2ConfigObfs.Type = "salamander"
+		hysteria2ConfigObfs.Salamander.Password = hysteria2ConfigDto.ObfsPassword
+		hysteria2Config.Obfs = &hysteria2ConfigObfs
+		hysteria2ConfigStr, err := json.MarshalIndent(hysteria2Config, "", "    ")
+		if err != nil {
+			logrus.Errorf("hysteria2 json.MarshalIndent err: %v", err)
+			return err
+		}
+		configContent = string(hysteria2ConfigStr)
+	}
 	_, err = file.WriteString(configContent)
 	if err != nil {
 		logrus.Errorf("hysteria2 config.json file write err: %v", err)
