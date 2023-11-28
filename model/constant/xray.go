@@ -5,4 +5,5 @@ const (
 	ProtocolTrojan      string = "trojan"
 	ProtocolVless       string = "vless"
 	ProtocolVmess       string = "vmess"
+	ProtocolSocks       string = "socks"
 )
