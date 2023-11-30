@@ -11,7 +11,6 @@ import (
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/common/serial"
 	"github.com/xtls/xray-core/proxy/shadowsocks"
-	"github.com/xtls/xray-core/proxy/socks"
 	"github.com/xtls/xray-core/proxy/trojan"
 	"github.com/xtls/xray-core/proxy/vless"
 	"github.com/xtls/xray-core/proxy/vmess"
@@ -227,20 +226,6 @@ func (x *xrayApi) AddUser(dto dto.XrayAddUserDto) error {
 						Account: serial.ToTypedMessage(&vmess.Account{
 							Id:      util.GenerateUUID(dto.Password),
 							AlterId: 0,
-						}),
-					},
-				}),
-		})
-	case constant.ProtocolSocks:
-		_, err = handlerServiceClient.AlterInbound(ctx, &command.AlterInboundRequest{
-			Tag: "user",
-			Operation: serial.ToTypedMessage(
-				&command.AddUserOperation{
-					User: &protocol.User{
-						Email: dto.Password,
-						Level: 0,
-						Account: serial.ToTypedMessage(&socks.Account{
-							Password: dto.Password,
 						}),
 					},
 				}),
