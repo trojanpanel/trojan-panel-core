@@ -26,22 +26,22 @@ type InboundBo struct {
 }
 
 type StreamSettings struct {
-	Network         string      `json:"network"`
-	Security        string      `json:"security"`
-	TlsSettings     TlsSettings `json:"tlsSettings"`
-	RealitySettings TypeMessage `json:"realitySettings"`
-	WsSettings      TypeMessage `json:"wsSettings"`
+	Network         string      `json:"network,omitempty"`
+	Security        string      `json:"security,omitempty"`
+	TlsSettings     TlsSettings `json:"tlsSettings,omitempty"`
+	RealitySettings TypeMessage `json:"realitySettings,omitempty"`
+	WsSettings      TypeMessage `json:"wsSettings,omitempty"`
 }
 
 type TlsSettings struct {
-	Certificates  []Certificate `json:"certificates"`
-	ServerName    TypeMessage   `json:"serverName"`
-	Alpn          TypeMessage   `json:"alpn"`
-	AllowInsecure TypeMessage   `json:"allowInsecure"`
-	Fingerprint   TypeMessage   `json:"fingerprint"`
+	Certificates  []Certificate `json:"certificates,omitempty"`
+	ServerName    TypeMessage   `json:"serverName,omitempty"`
+	Alpn          TypeMessage   `json:"alpn,omitempty"`
+	AllowInsecure TypeMessage   `json:"allowInsecure,omitempty"`
+	Fingerprint   TypeMessage   `json:"fingerprint,omitempty"`
 }
 
 type Certificate struct {
-	CertificateFile string `json:"certificateFile"`
-	KeyFile         string `json:"keyFile"`
+	CertificateFile string `json:"certificateFile,omitempty"`
+	KeyFile         string `json:"keyFile,omitempty"`
 }
