@@ -25,5 +25,5 @@ const (
 	NaiveProxyBinPath string = "bin/naiveproxy"
 	Hysteria2BinPath  string = "bin/hysteria2"
 
-	TrojanPanelCoreVersion = "v2.3.0"
+	TrojanPanelCoreVersion = "v2.3.1"
 )
