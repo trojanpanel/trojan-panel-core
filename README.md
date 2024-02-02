@@ -54,7 +54,7 @@ router->api->middleware->app->service/dao->core
 
 ## Compile
 
-[compile.bat](./compile.bat)
+[compile.bat](compile.bat)
 
 ## Telegram
 

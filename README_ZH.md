@@ -53,7 +53,7 @@ router->api->middleware->app->service/dao->core
 
 ## 编译
 
-[compile.bat](./compile.bat)
+[compile.bat](compile.bat)
 
 ## 电报
 
