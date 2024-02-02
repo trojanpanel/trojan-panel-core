@@ -1,28 +1,27 @@
-# Trojan Panel Core
+# 木马面板内核
 
-Trojan Panel Core
+木马面板内核
 
-## Supported node types
+## 支持的节点类型
 
 1. Xray
 2. Trojan Go
 3. Hysteria
 4. NaiveProxy
 
-Default data processing：
+默认数据处理：
 
-1. Read/write username, pass, hash, quota, download, upload, ip_limit, download_speed_limit, upload_speed_limit in
-   account. pass, hash needs to be hashed, quota, upload, download, download_speed_limit, upload_speed_limit unit is
-   byte
+1. 读取/写入 account 表中的 username, pass, hash, quota, download, upload, ip_limit, download_speed_limit, upload_speed_limit。
+   pass, hash 需要哈希处理，quota, upload, download, download_speed_limit, upload_speed_limit 单位是 byte
 
-Main logic：
+主要逻辑：
 
-1. API real-time update (database to application) valid account: account.quota < 0 or account.download +
+1. API实时更新（数据库到应用）有效账户：account.quota < 0 or account.download +
    account.upload < account.quota
-2. Regularly update account.download, account.upload
-3. account.quota=0, the user is disabled
+2. 定期更新 account.download、account.upload
+3. account.quota=0, 该用户被禁用
 
-## Create database table statement example
+## 创建数据库表语句示例
 
 ```sql
 create table trojan_panel_db.account
@@ -41,26 +40,26 @@ create table trojan_panel_db.account
 );
 ```
 
-## Version relationship
+## 版本关系
 
 | Trojan Panel Core | Xray   | Trojan Go | Hysteria | Caddy（NaiveProxy） |
 |-------------------|--------|-----------|----------|-------------------|
 | v2.1.1            | v1.8.0 | v0.10.6   | v1.3.4   | v2.6.4            |
 | v2.1.2            | v1.8.0 | v0.10.6   | v1.3.4   | v2.6.4            |
 
-## Prevent circular dependencies
+## 防止循环依赖
 
 router->api->middleware->app->service/dao->core
 
-## Compile
+## 编译
 
 [compile.bat](./compile.bat)
 
-## Telegram
+## 电报
 
 Telegram Channel: https://t.me/TrojanPanel
 
-## Thanks
+## 致谢
 
 - [trojan-gfw](https://github.com/trojan-gfw/trojan)
 - [trojan-go](https://github.com/p4gefau1t/trojan-go)
