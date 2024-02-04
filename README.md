@@ -43,10 +43,7 @@ create table trojan_panel_db.account
 
 ## Version relationship
 
-| Trojan Panel Core | Xray   | Trojan Go | Hysteria | Caddy（NaiveProxy） |
-|-------------------|--------|-----------|----------|-------------------|
-| v2.1.1            | v1.8.0 | v0.10.6   | v1.3.4   | v2.6.4            |
-| v2.1.2            | v1.8.0 | v0.10.6   | v1.3.4   | v2.6.4            |
+[Release Notes](https://github.com/trojanpanel/install-script/blob/main/README_ARCHIVE_ZH.md#%E5%8F%91%E8%A1%8C%E8%AF%B4%E6%98%8E)
 
 ## Prevent circular dependencies
 
