@@ -6,7 +6,7 @@
 
 1. Xray
 2. Trojan Go
-3. Hysteria
+3. Hysteria1/Hysteria2
 4. NaiveProxy
 
 默认数据处理：
