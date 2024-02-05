@@ -230,25 +230,172 @@ func CronHandlerUser() {
 		return
 	}
 
-	// xray
-	go func(accountBos []bo.AccountBo) {
-		xrayInstance := process.NewXrayProcess()
-		xrayCmdMap := xrayInstance.GetCmdMap()
-		xrayCmdMap.Range(func(apiPort, cmd any) bool {
-			go func() {
-				xrayApi := xray.NewXrayApi(apiPort.(uint))
-				// account in memory
-				stats, err := xrayApi.QueryStats("", false)
-				if err != nil {
-					return
-				}
+	accountBoLists := util.SplitArr(accountBos, 50)
 
-				// deleted account
-				var banAccountBos []bo.AccountBo
-				for _, stat := range stats {
-					submatch := userLinkRegex.FindStringSubmatch(stat.Name)
-					if len(submatch) == 3 {
-						pass := submatch[1]
+	for _, accountBoList := range accountBoLists {
+		// xray
+		go func(accountBos []bo.AccountBo) {
+			xrayInstance := process.NewXrayProcess()
+			xrayCmdMap := xrayInstance.GetCmdMap()
+			xrayCmdMap.Range(func(apiPort, cmd any) bool {
+				go func() {
+					xrayApi := xray.NewXrayApi(apiPort.(uint))
+					// account in memory
+					stats, err := xrayApi.QueryStats("", false)
+					if err != nil {
+						return
+					}
+
+					// deleted account
+					var banAccountBos []bo.AccountBo
+					for _, stat := range stats {
+						submatch := userLinkRegex.FindStringSubmatch(stat.Name)
+						if len(submatch) == 3 {
+							pass := submatch[1]
+							var banFlag = true
+							for _, account := range accountBos {
+								if account.Pass == pass {
+									banFlag = false
+									break
+								}
+							}
+							if banFlag {
+								banAccountBos = append(banAccountBos, bo.AccountBo{
+									Pass: pass,
+								})
+							}
+						}
+					}
+					for _, item := range banAccountBos {
+						if err = xrayApi.DeleteUser(item.Pass); err != nil {
+							logrus.Errorf("xray DeleteUser err: %v", err)
+							continue
+						}
+					}
+
+					// account added
+					var addAccountBos []bo.AccountBo
+					for _, account := range accountBos {
+						var addFlag = true
+						for _, stat := range stats {
+							submatch := userLinkRegex.FindStringSubmatch(stat.Name)
+							if len(submatch) == 3 {
+								pass := submatch[1]
+								if account.Pass == pass {
+									addFlag = false
+									break
+								}
+							}
+						}
+						if addFlag {
+							addAccountBos = append(addAccountBos, bo.AccountBo{
+								Pass: account.Pass,
+							})
+						}
+					}
+					protocol, err := util.GetXrayProtocolByApiPort(apiPort.(uint))
+					if err != nil {
+						logrus.Errorf("xray get protocol err apiPort: %s err: %v", apiPort, err)
+					} else {
+						for _, item := range addAccountBos {
+							if err = xrayApi.AddUser(dto.XrayAddUserDto{
+								Protocol: protocol,
+								Password: item.Pass,
+							}); err != nil {
+								logrus.Errorf("xray AddUser err: %v", err)
+								continue
+							}
+						}
+					}
+				}()
+				return true
+			})
+		}(accountBoList)
+
+		// trojango
+		go func(accountBos []bo.AccountBo) {
+			trojanGoInstance := process.NewTrojanGoInstance()
+			trojanGoCmdMap := trojanGoInstance.GetCmdMap()
+			trojanGoCmdMap.Range(func(apiPort, cmd any) bool {
+				go func() {
+					trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
+					users, err := trojanGoApi.ListUsers()
+					if err != nil {
+						return
+					}
+
+					// deleted account
+					var banAccountBos []bo.AccountBo
+					for _, user := range users {
+						hash := user.GetUser().GetHash()
+						var banFlag = true
+						for _, account := range accountBos {
+							if account.Hash == hash {
+								banFlag = false
+								break
+							}
+						}
+						if banFlag {
+							banAccountBos = append(banAccountBos, bo.AccountBo{
+								Hash: hash,
+							})
+						}
+					}
+					for _, item := range banAccountBos {
+						// call api to delete user
+						if err = trojanGoApi.DeleteUser(item.Hash); err != nil {
+							logrus.Errorf("trojango DeleteUser err: %v", err)
+							continue
+						}
+					}
+
+					// account added
+					var addAccountBos []bo.AccountBo
+					for _, account := range accountBos {
+						var addFlag = true
+						for _, user := range users {
+							hash := user.GetUser().GetHash()
+							if account.Hash == hash {
+								addFlag = false
+								break
+							}
+						}
+						if addFlag {
+							addAccountBos = append(addAccountBos, bo.AccountBo{
+								Hash: account.Hash,
+							})
+						}
+					}
+					for _, item := range addAccountBos {
+						// call api to add user
+						if err = trojanGoApi.AddUser(dto.TrojanGoAddUserDto{
+							Hash: item.Hash,
+						}); err != nil {
+							logrus.Errorf("trojango AddUser err: %v", err)
+							continue
+						}
+					}
+				}()
+				return true
+			})
+		}(accountBoList)
+
+		// naiveproxy
+		go func(accountBos []bo.AccountBo) {
+			naiveProxyInstance := process.NewNaiveProxyInstance()
+			naiveProxyCmdMap := naiveProxyInstance.GetCmdMap()
+			naiveProxyCmdMap.Range(func(apiPort, cmd any) bool {
+				go func() {
+					naiveProxyApi := naiveproxy.NewNaiveProxyApi(apiPort.(uint))
+					users, err := naiveProxyApi.ListUsers()
+					if err != nil {
+						return
+					}
+
+					// deleted account
+					var banAccountBos []bo.AccountBo
+					for _, user := range *users {
+						pass := user.AuthPassDeprecated
 						var banFlag = true
 						for _, account := range accountBos {
 							if account.Pass == pass {
@@ -262,190 +409,47 @@ func CronHandlerUser() {
 							})
 						}
 					}
-				}
-				for _, item := range banAccountBos {
-					if err = xrayApi.DeleteUser(item.Pass); err != nil {
-						logrus.Errorf("xray DeleteUser err: %v", err)
-						continue
+					for _, item := range banAccountBos {
+						// call api to delete user
+						if err = naiveProxyApi.DeleteUser(item.Pass); err != nil {
+							logrus.Errorf("naiveproxy DeleteUser err: %v", err)
+							continue
+						}
 					}
-				}
 
-				// account added
-				var addAccountBos []bo.AccountBo
-				for _, account := range accountBos {
-					var addFlag = true
-					for _, stat := range stats {
-						submatch := userLinkRegex.FindStringSubmatch(stat.Name)
-						if len(submatch) == 3 {
-							pass := submatch[1]
+					// account added
+					var addAccountBos []bo.AccountBo
+					for _, account := range accountBos {
+						var addFlag = true
+						for _, user := range *users {
+							pass := user.AuthPassDeprecated
 							if account.Pass == pass {
 								addFlag = false
 								break
 							}
 						}
+						if addFlag {
+							addAccountBos = append(addAccountBos, bo.AccountBo{
+								Username: account.Username,
+								Pass:     account.Pass,
+							})
+						}
 					}
-					if addFlag {
-						addAccountBos = append(addAccountBos, bo.AccountBo{
-							Pass: account.Pass,
-						})
-					}
-				}
-				protocol, err := util.GetXrayProtocolByApiPort(apiPort.(uint))
-				if err != nil {
-					logrus.Errorf("xray get protocol err apiPort: %s err: %v", apiPort, err)
-				} else {
 					for _, item := range addAccountBos {
-						if err = xrayApi.AddUser(dto.XrayAddUserDto{
-							Protocol: protocol,
-							Password: item.Pass,
+						// call api to add user
+						if err = naiveProxyApi.AddUser(dto.NaiveProxyAddUserDto{
+							Username: item.Username,
+							Pass:     item.Pass,
 						}); err != nil {
-							logrus.Errorf("xray AddUser err: %v", err)
+							logrus.Errorf("naiveproxy AddUser err: %v", err)
 							continue
 						}
 					}
-				}
-			}()
-			return true
-		})
-	}(accountBos)
-
-	// trojango
-	go func(accountBos []bo.AccountBo) {
-		trojanGoInstance := process.NewTrojanGoInstance()
-		trojanGoCmdMap := trojanGoInstance.GetCmdMap()
-		trojanGoCmdMap.Range(func(apiPort, cmd any) bool {
-			go func() {
-				trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
-				users, err := trojanGoApi.ListUsers()
-				if err != nil {
-					return
-				}
-
-				// deleted account
-				var banAccountBos []bo.AccountBo
-				for _, user := range users {
-					hash := user.GetUser().GetHash()
-					var banFlag = true
-					for _, account := range accountBos {
-						if account.Hash == hash {
-							banFlag = false
-							break
-						}
-					}
-					if banFlag {
-						banAccountBos = append(banAccountBos, bo.AccountBo{
-							Hash: hash,
-						})
-					}
-				}
-				for _, item := range banAccountBos {
-					// call api to delete user
-					if err = trojanGoApi.DeleteUser(item.Hash); err != nil {
-						logrus.Errorf("trojango DeleteUser err: %v", err)
-						continue
-					}
-				}
-
-				// account added
-				var addAccountBos []bo.AccountBo
-				for _, account := range accountBos {
-					var addFlag = true
-					for _, user := range users {
-						hash := user.GetUser().GetHash()
-						if account.Hash == hash {
-							addFlag = false
-							break
-						}
-					}
-					if addFlag {
-						addAccountBos = append(addAccountBos, bo.AccountBo{
-							Hash: account.Hash,
-						})
-					}
-				}
-				for _, item := range addAccountBos {
-					// call api to add user
-					if err = trojanGoApi.AddUser(dto.TrojanGoAddUserDto{
-						Hash: item.Hash,
-					}); err != nil {
-						logrus.Errorf("trojango AddUser err: %v", err)
-						continue
-					}
-				}
-			}()
-			return true
-		})
-	}(accountBos)
-
-	// naiveproxy
-	go func(accountBos []bo.AccountBo) {
-		naiveProxyInstance := process.NewNaiveProxyInstance()
-		naiveProxyCmdMap := naiveProxyInstance.GetCmdMap()
-		naiveProxyCmdMap.Range(func(apiPort, cmd any) bool {
-			go func() {
-				naiveProxyApi := naiveproxy.NewNaiveProxyApi(apiPort.(uint))
-				users, err := naiveProxyApi.ListUsers()
-				if err != nil {
-					return
-				}
-
-				// deleted account
-				var banAccountBos []bo.AccountBo
-				for _, user := range *users {
-					pass := user.AuthPassDeprecated
-					var banFlag = true
-					for _, account := range accountBos {
-						if account.Pass == pass {
-							banFlag = false
-							break
-						}
-					}
-					if banFlag {
-						banAccountBos = append(banAccountBos, bo.AccountBo{
-							Pass: pass,
-						})
-					}
-				}
-				for _, item := range banAccountBos {
-					// call api to delete user
-					if err = naiveProxyApi.DeleteUser(item.Pass); err != nil {
-						logrus.Errorf("naiveproxy DeleteUser err: %v", err)
-						continue
-					}
-				}
-
-				// account added
-				var addAccountBos []bo.AccountBo
-				for _, account := range accountBos {
-					var addFlag = true
-					for _, user := range *users {
-						pass := user.AuthPassDeprecated
-						if account.Pass == pass {
-							addFlag = false
-							break
-						}
-					}
-					if addFlag {
-						addAccountBos = append(addAccountBos, bo.AccountBo{
-							Username: account.Username,
-							Pass:     account.Pass,
-						})
-					}
-				}
-				for _, item := range addAccountBos {
-					// call api to add user
-					if err = naiveProxyApi.AddUser(dto.NaiveProxyAddUserDto{
-						Username: item.Username,
-						Pass:     item.Pass,
-					}); err != nil {
-						logrus.Errorf("naiveproxy AddUser err: %v", err)
-						continue
-					}
-				}
-			}()
-			return true
-		})
-	}(accountBos)
+				}()
+				return true
+			})
+		}(accountBoList)
+	}
 }
 
 // CronHandlerDownloadAndUpload scheduled tasks: update the account's download and upload traffic in the database. Hysteria does not currently support traffic statistics
@@ -458,56 +462,59 @@ func CronHandlerDownloadAndUpload() {
 			xrayApi := xray.NewXrayApi(apiPort.(uint))
 			stats, err := xrayApi.QueryStats("", true)
 			if err == nil {
-				go func(stats []vo.XrayStatsVo) {
-					accountUpdateBos := make([]bo.AccountUpdateBo, 0)
-					for _, stat := range stats {
-						submatch := userLinkRegex.FindStringSubmatch(stat.Name)
-						if len(submatch) == 3 {
-							isDown := submatch[2] == "downlink"
-							var setFlag = false
-							if isDown {
-								for index := range accountUpdateBos {
-									if accountUpdateBos[index].Pass == submatch[1] {
-										accountUpdateBos[index].Download = stat.Value
-										setFlag = true
-										break
+				statLists := util.SplitArr(stats, 50)
+				for _, statList := range statLists {
+					go func(stats []vo.XrayStatsVo) {
+						accountUpdateBos := make([]bo.AccountUpdateBo, 0)
+						for _, stat := range stats {
+							submatch := userLinkRegex.FindStringSubmatch(stat.Name)
+							if len(submatch) == 3 {
+								isDown := submatch[2] == "downlink"
+								var setFlag = false
+								if isDown {
+									for index := range accountUpdateBos {
+										if accountUpdateBos[index].Pass == submatch[1] {
+											accountUpdateBos[index].Download = stat.Value
+											setFlag = true
+											break
+										}
 									}
-								}
-								if !setFlag {
-									accountUpdateBo := bo.AccountUpdateBo{}
-									accountUpdateBo.Pass = submatch[1]
-									accountUpdateBo.Download = stat.Value
-									accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
-								}
-							} else {
-								for index := range accountUpdateBos {
-									if accountUpdateBos[index].Pass == submatch[1] {
-										accountUpdateBos[index].Upload = stat.Value
-										setFlag = true
-										break
+									if !setFlag {
+										accountUpdateBo := bo.AccountUpdateBo{}
+										accountUpdateBo.Pass = submatch[1]
+										accountUpdateBo.Download = stat.Value
+										accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
 									}
-								}
-								if !setFlag {
-									accountUpdateBo := bo.AccountUpdateBo{}
-									accountUpdateBo.Pass = submatch[1]
-									accountUpdateBo.Upload = stat.Value
-									accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
+								} else {
+									for index := range accountUpdateBos {
+										if accountUpdateBos[index].Pass == submatch[1] {
+											accountUpdateBos[index].Upload = stat.Value
+											setFlag = true
+											break
+										}
+									}
+									if !setFlag {
+										accountUpdateBo := bo.AccountUpdateBo{}
+										accountUpdateBo.Pass = submatch[1]
+										accountUpdateBo.Upload = stat.Value
+										accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
+									}
 								}
 							}
 						}
-					}
-					mutex, err := redis.RsLock(constant.LockXrayUpdate)
-					if err != nil {
-						return
-					}
-					for _, account := range accountUpdateBos {
-						if err = dao.UpdateAccountFlowByPassOrHash(&account.Pass, nil, account.Download, account.Upload); err != nil {
-							logrus.Errorf("xray UpdateAccountFlow err apiPort: %d err: %v", apiPort, err)
-							continue
+						mutex, err := redis.RsLock(constant.LockXrayUpdate)
+						if err != nil {
+							return
 						}
-					}
-					redis.RsUnLock(mutex)
-				}(stats)
+						for _, account := range accountUpdateBos {
+							if err = dao.UpdateAccountFlowByPassOrHash(&account.Pass, nil, account.Download, account.Upload); err != nil {
+								logrus.Errorf("xray UpdateAccountFlow err apiPort: %d err: %v", apiPort, err)
+								continue
+							}
+						}
+						redis.RsUnLock(mutex)
+					}(statList)
+				}
 			}
 			return true
 		})
@@ -521,36 +528,39 @@ func CronHandlerDownloadAndUpload() {
 			trojanGoApi := trojango.NewTrojanGoApi(apiPort.(uint))
 			users, err := trojanGoApi.ListUsers()
 			if err == nil {
-				go func(users []*trojangoservice.UserStatus) {
-					accountUpdateBos := make([]bo.AccountUpdateBo, 0)
-					for _, user := range users {
-						hash := user.GetUser().GetHash()
-						downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
-						uploadTraffic := int(user.GetTrafficTotal().GetUploadTraffic())
-						if err = trojanGoApi.ReSetUserTrafficByHash(hash); err != nil {
-							logrus.Errorf("trojango ReSetUserTraffic err apiPort: %d err: %v", apiPort, err)
-							continue
+				userLists := util.SplitArr(users, 50)
+				for _, userList := range userLists {
+					go func(users []*trojangoservice.UserStatus) {
+						accountUpdateBos := make([]bo.AccountUpdateBo, 0)
+						for _, user := range users {
+							hash := user.GetUser().GetHash()
+							downloadTraffic := int(user.GetTrafficTotal().GetDownloadTraffic())
+							uploadTraffic := int(user.GetTrafficTotal().GetUploadTraffic())
+							if err = trojanGoApi.ReSetUserTrafficByHash(hash); err != nil {
+								logrus.Errorf("trojango ReSetUserTraffic err apiPort: %d err: %v", apiPort, err)
+								continue
+							}
+							accountUpdateBo := bo.AccountUpdateBo{}
+							accountUpdateBo.Hash = hash
+							accountUpdateBo.Download = downloadTraffic
+							accountUpdateBo.Upload = uploadTraffic
+							accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
 						}
-						accountUpdateBo := bo.AccountUpdateBo{}
-						accountUpdateBo.Hash = hash
-						accountUpdateBo.Download = downloadTraffic
-						accountUpdateBo.Upload = uploadTraffic
-						accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
-					}
 
-					mutex, err := redis.RsLock(constant.LockTrojanGoUpdate)
-					if err != nil {
-						return
-					}
-					for _, account := range accountUpdateBos {
-						if err = dao.UpdateAccountFlowByPassOrHash(nil, &account.Hash, account.Download,
-							account.Upload); err != nil {
-							logrus.Errorf("trojango UpdateAccountFlow err apiPort: %d err: %v", apiPort, err)
-							continue
+						mutex, err := redis.RsLock(constant.LockTrojanGoUpdate)
+						if err != nil {
+							return
 						}
-					}
-					redis.RsUnLock(mutex)
-				}(users)
+						for _, account := range accountUpdateBos {
+							if err = dao.UpdateAccountFlowByPassOrHash(nil, &account.Hash, account.Download,
+								account.Upload); err != nil {
+								logrus.Errorf("trojango UpdateAccountFlow err apiPort: %d err: %v", apiPort, err)
+								continue
+							}
+						}
+						redis.RsUnLock(mutex)
+					}(userList)
+				}
 			}
 			return true
 		})
@@ -564,29 +574,32 @@ func CronHandlerDownloadAndUpload() {
 			hysteria2Api := hysteria2.NewHysteria2Api(apiPort.(uint))
 			users, err := hysteria2Api.ListUsers(true)
 			if err == nil {
-				go func(users map[string]bo.Hysteria2UserTraffic) {
-					accountUpdateBos := make([]bo.AccountUpdateBo, 0)
-					for pass, traffic := range users {
-						accountUpdateBo := bo.AccountUpdateBo{
-							Pass:     pass,
-							Upload:   int(traffic.Tx),
-							Download: int(traffic.Rx),
+				userLists := util.SplitMap(users, 50)
+				for _, userList := range userLists {
+					go func(users map[string]bo.Hysteria2UserTraffic) {
+						accountUpdateBos := make([]bo.AccountUpdateBo, 0)
+						for pass, traffic := range users {
+							accountUpdateBo := bo.AccountUpdateBo{
+								Pass:     pass,
+								Upload:   int(traffic.Tx),
+								Download: int(traffic.Rx),
+							}
+							accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
 						}
-						accountUpdateBos = append(accountUpdateBos, accountUpdateBo)
-					}
-					mutex, err := redis.RsLock(constant.LockHysteria2Update)
-					if err != nil {
-						return
-					}
-					for _, account := range accountUpdateBos {
-						if err = dao.UpdateAccountFlowByPassOrHash(&account.Pass, nil, account.Download,
-							account.Upload); err != nil {
-							logrus.Errorf("hysteria2 UpdateAccountFlow err apiPort: %d err: %v", apiPort, err)
-							continue
+						mutex, err := redis.RsLock(constant.LockHysteria2Update)
+						if err != nil {
+							return
 						}
-					}
-					redis.RsUnLock(mutex)
-				}(users)
+						for _, account := range accountUpdateBos {
+							if err = dao.UpdateAccountFlowByPassOrHash(&account.Pass, nil, account.Download,
+								account.Upload); err != nil {
+								logrus.Errorf("hysteria2 UpdateAccountFlow err apiPort: %d err: %v", apiPort, err)
+								continue
+							}
+						}
+						redis.RsUnLock(mutex)
+					}(userList)
+				}
 			}
 			return true
 		})
