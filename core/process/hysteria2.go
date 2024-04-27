@@ -90,7 +90,7 @@ func (h *Hysteria2Process) StartHysteria2(apiPort uint) error {
 }
 
 func (h *Hysteria2Process) releaseProcess(apiPort uint, configFilePath string) {
-	load, ok := NewHysteria2Instance().GetCmdMap().Load(apiPort)
+	load, ok := h.GetCmdMap().Load(apiPort)
 	if ok {
 		cmd := load.(*exec.Cmd)
 		if !cmd.ProcessState.Success() {
