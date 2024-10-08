@@ -3,10 +3,10 @@ package api
 import (
 	"encoding/base64"
 	"github.com/gin-gonic/gin"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/model/dto"
-	"trojan-panel-core/model/vo"
-	"trojan-panel-core/service"
+	"trojan-core/model/constant"
+	"trojan-core/model/dto"
+	"trojan-core/model/vo"
+	"trojan-core/service"
 )
 
 func HysteriaApi(c *gin.Context) {

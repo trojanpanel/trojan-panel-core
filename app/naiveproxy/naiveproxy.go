@@ -6,11 +6,11 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"trojan-panel-core/core"
-	"trojan-panel-core/core/process"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/model/dto"
-	"trojan-panel-core/util"
+	"trojan-core/core"
+	"trojan-core/core/process"
+	"trojan-core/model/constant"
+	"trojan-core/model/dto"
+	"trojan-core/util"
 )
 
 func InitNaiveProxyApp() error {

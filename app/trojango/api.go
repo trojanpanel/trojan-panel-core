@@ -10,8 +10,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"io"
 	"time"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/model/dto"
+	"trojan-core/model/constant"
+	"trojan-core/model/dto"
 )
 
 type trojanGoApi struct {

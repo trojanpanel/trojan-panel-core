@@ -3,7 +3,7 @@ package hysteria2
 import (
 	"fmt"
 	"testing"
-	"trojan-panel-core/app/hysteria2"
+	"trojan-core/app/hysteria2"
 )
 
 var apiPort uint = 38089

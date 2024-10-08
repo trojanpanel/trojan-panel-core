@@ -3,7 +3,7 @@ package util
 import (
 	"fmt"
 	"testing"
-	"trojan-panel-core/util"
+	"trojan-core/util"
 )
 
 func Test(t *testing.T) {

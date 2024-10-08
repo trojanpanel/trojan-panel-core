@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/robfig/cron/v3"
 	"time"
-	"trojan-panel-core/app"
+	"trojan-core/app"
 )
 
 // InitCron initialize scheduled tasks

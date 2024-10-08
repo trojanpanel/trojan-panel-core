@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	"trojan-panel-core/app"
+	"trojan-core/app"
 )
 
 type AccountApiServer struct {

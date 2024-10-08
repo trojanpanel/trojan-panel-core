@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"testing"
-	"trojan-panel-core/model/dto"
+	"trojan-core/model/dto"
 )
 
 var userLinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>(downlink|uplink)")

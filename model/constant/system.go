@@ -12,7 +12,7 @@ const (
 	// SqlitePath sqlite folder path
 	SqlitePath string = "config/sqlite"
 	// SqliteFilePath sqlite file path
-	SqliteFilePath string = "config/sqlite/trojan_panel_core.db"
+	SqliteFilePath string = "config/sqlite/trojan_core.db"
 
 	XrayPath          string = "bin/xray/config"
 	TrojanGoPath      string = "bin/trojango/config"
@@ -25,5 +25,5 @@ const (
 	NaiveProxyBinPath string = "bin/naiveproxy"
 	Hysteria2BinPath  string = "bin/hysteria2"
 
-	TrojanPanelCoreVersion = "v3.0.0"
+	TrojanCoreVersion = "v3.0.0"
 )

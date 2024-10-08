@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"trojan-panel-core/model/constant"
+	"trojan-core/model/constant"
 )
 
 func DownloadFile(url string, fileName string) error {

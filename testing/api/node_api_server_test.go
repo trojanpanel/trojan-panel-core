@@ -8,8 +8,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"testing"
 	"time"
-	"trojan-panel-core/api"
-	"trojan-panel-core/model/constant"
+	"trojan-core/api"
+	"trojan-core/model/constant"
 )
 
 var (

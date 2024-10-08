@@ -3,8 +3,8 @@ package dao
 import (
 	"errors"
 	"github.com/sirupsen/logrus"
-	"trojan-panel-core/model"
-	"trojan-panel-core/model/constant"
+	"trojan-core/model"
+	"trojan-core/model/constant"
 )
 
 func SelectNodeConfigByNodeTypeIdAndApiPort(apiPortParam uint, nodeTypeIdParam uint) (*model.NodeConfig, error) {

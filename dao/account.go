@@ -6,11 +6,11 @@ import (
 	"github.com/didi/gendry/builder"
 	"github.com/didi/gendry/scanner"
 	"github.com/sirupsen/logrus"
-	"trojan-panel-core/core"
-	"trojan-panel-core/model"
-	"trojan-panel-core/model/bo"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/model/vo"
+	"trojan-core/core"
+	"trojan-core/model"
+	"trojan-core/model/bo"
+	"trojan-core/model/constant"
+	"trojan-core/model/vo"
 )
 
 func UpdateAccountFlowByPassOrHash(pass *string, hash *string, download int, upload int) error {

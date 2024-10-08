@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/xtls/xray-core/common/net"
 	"google.golang.org/grpc"
-	"trojan-panel-core/core"
+	"trojan-core/core"
 )
 
 func InitGrpcServer() {

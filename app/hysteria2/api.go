@@ -8,8 +8,8 @@ import (
 	"io"
 	"net/http"
 	"time"
-	"trojan-panel-core/model/bo"
-	"trojan-panel-core/model/constant"
+	"trojan-core/model/bo"
+	"trojan-core/model/constant"
 )
 
 type hysteria2Api struct {

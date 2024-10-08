@@ -11,8 +11,8 @@
   "redisHost": "127.0.0.1", // Redis IP
   "redisPort": 6378, // Redis 端口
   "redisPass": "123456", // Redis 密码
-  "crtPath": "/tpdata/trojan-panel-core/cert/trojan-panel-core.crt", // crt 证书路径
-  "keyPath": "/tpdata/trojan-panel-core/cert/trojan-panel-core.key", // key 证书路径
+  "crtPath": "/tpdata/trojan-core/cert/trojan-core.crt", // crt 证书路径
+  "keyPath": "/tpdata/trojan-core/cert/trojan-core.key", // key 证书路径
   "grpcPort": 8100, // gRPC 端口
   "serverPort": 8082 // Web 端口
 }

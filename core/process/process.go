@@ -5,8 +5,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"os/exec"
 	"sync"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/util"
+	"trojan-core/model/constant"
+	"trojan-core/util"
 )
 
 type process struct {

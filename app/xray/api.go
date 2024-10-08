@@ -18,11 +18,11 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"strings"
 	"time"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/model/dto"
-	"trojan-panel-core/model/vo"
-	"trojan-panel-core/service"
-	"trojan-panel-core/util"
+	"trojan-core/model/constant"
+	"trojan-core/model/dto"
+	"trojan-core/model/vo"
+	"trojan-core/service"
+	"trojan-core/util"
 )
 
 type xrayApi struct {

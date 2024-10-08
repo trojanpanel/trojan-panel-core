@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	"google.golang.org/grpc/metadata"
-	"trojan-panel-core/dao/redis"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/service"
-	"trojan-panel-core/util"
+	"trojan-core/dao/redis"
+	"trojan-core/model/constant"
+	"trojan-core/service"
+	"trojan-core/util"
 )
 
 var validate *validator.Validate

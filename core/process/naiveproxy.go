@@ -7,8 +7,8 @@ import (
 	"os/exec"
 	"sync"
 	"time"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/util"
+	"trojan-core/model/constant"
+	"trojan-core/util"
 )
 
 var mutexNaiveProxy sync.Mutex

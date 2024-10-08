@@ -4,8 +4,8 @@ import (
 	"context"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
-	"trojan-panel-core/core/process"
-	"trojan-panel-core/model/constant"
+	"trojan-core/core/process"
+	"trojan-core/model/constant"
 )
 
 type StateApiServer struct {
@@ -37,7 +37,7 @@ func (s *StateApiServer) GetNodeServerState(ctx context.Context, nodeServerState
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 	nodeServerStateVo := &NodeServerStateVo{
-		Version: constant.TrojanPanelCoreVersion,
+		Version: constant.TrojanCoreVersion,
 	}
 	data, err := anypb.New(proto.Message(nodeServerStateVo))
 	if err != nil {

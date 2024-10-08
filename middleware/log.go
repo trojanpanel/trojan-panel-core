@@ -5,7 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"time"
-	"trojan-panel-core/core"
+	"trojan-core/core"
 )
 
 func InitLog() {

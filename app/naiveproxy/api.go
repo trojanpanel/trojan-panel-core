@@ -10,9 +10,9 @@ import (
 	"io"
 	"net/http"
 	"time"
-	"trojan-panel-core/model/bo"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/model/dto"
+	"trojan-core/model/bo"
+	"trojan-core/model/constant"
+	"trojan-core/model/dto"
 )
 
 type naiveProxyApi struct {

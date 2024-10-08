@@ -7,7 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/url"
 	"time"
-	"trojan-panel-core/core"
+	"trojan-core/core"
 )
 
 var db *sql.DB

@@ -4,7 +4,7 @@ import (
 	"context"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
-	"trojan-panel-core/util"
+	"trojan-core/util"
 )
 
 type NodeServerApiServer struct {

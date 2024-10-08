@@ -8,8 +8,8 @@ import (
 	"os"
 	"runtime"
 	"strconv"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/util"
+	"trojan-core/model/constant"
+	"trojan-core/util"
 )
 
 var (
@@ -55,7 +55,7 @@ func init() {
 	flag.Usage = usage
 	flag.Parse()
 	if version {
-		_, _ = fmt.Fprint(os.Stdout, constant.TrojanPanelCoreVersion)
+		_, _ = fmt.Fprint(os.Stdout, constant.TrojanCoreVersion)
 		os.Exit(0)
 	}
 
@@ -106,7 +106,7 @@ wait=%s
 crt_path=%s
 key_path=%s
 [log]
-filename=logs/trojan-panel-core.log
+filename=logs/trojan-core.log
 max_size=1
 max_backups=5
 max_age=30
@@ -134,7 +134,7 @@ port=%s
 	if !util.Exists(sqliteFilePath) {
 		file, err := os.Create(sqliteFilePath)
 		if err != nil {
-			logrus.Errorf("create trojan_panel_core.db err: %v", err)
+			logrus.Errorf("create trojan_core.db err: %v", err)
 			panic(err)
 		}
 		defer file.Close()
@@ -142,8 +142,8 @@ port=%s
 }
 
 func usage() {
-	_, _ = fmt.Fprintln(os.Stdout, `trojan panel core manage help
-Usage: trojan-panel-core [-host] [-user] [-password] [-port] [-database] [-accountTable] [-redisHost] [-redisPort] [-redisPassword] [-redisDb] [-redisMaxIdle] [-redisMaxActive] [-redisWait] [-crtPath] [-keyPath] [-grpcPort] [-serverPort] [-h] [-version]`)
+	_, _ = fmt.Fprintln(os.Stdout, `trojan core manage help
+Usage: trojan-core [-host] [-user] [-password] [-port] [-database] [-accountTable] [-redisHost] [-redisPort] [-redisPassword] [-redisDb] [-redisMaxIdle] [-redisMaxActive] [-redisWait] [-crtPath] [-keyPath] [-grpcPort] [-serverPort] [-h] [-version]`)
 	flag.PrintDefaults()
 }
 

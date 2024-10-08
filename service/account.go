@@ -1,9 +1,9 @@
 package service
 
 import (
-	"trojan-panel-core/dao"
-	"trojan-panel-core/model/bo"
-	"trojan-panel-core/model/vo"
+	"trojan-core/dao"
+	"trojan-core/model/bo"
+	"trojan-core/model/vo"
 )
 
 // SelectAccountByPass hysteria account authentication

@@ -1,4 +1,4 @@
-module trojan-panel-core
+module trojan-core
 
 go 1.20
 

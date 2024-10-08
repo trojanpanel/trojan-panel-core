@@ -2,7 +2,7 @@ package util
 
 import (
 	"testing"
-	"trojan-panel-core/util"
+	"trojan-core/util"
 )
 
 func TestGenerateUUID(t *testing.T) {

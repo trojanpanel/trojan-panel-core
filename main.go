@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"trojan-panel-core/api"
-	"trojan-panel-core/app"
-	"trojan-panel-core/core"
-	"trojan-panel-core/dao"
-	"trojan-panel-core/dao/redis"
-	"trojan-panel-core/middleware"
-	"trojan-panel-core/router"
+	"trojan-core/api"
+	"trojan-core/app"
+	"trojan-core/core"
+	"trojan-core/dao"
+	"trojan-core/dao/redis"
+	"trojan-core/middleware"
+	"trojan-core/router"
 )
 
 func main() {

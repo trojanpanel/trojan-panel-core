@@ -7,7 +7,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/sirupsen/logrus"
 	"time"
-	"trojan-panel-core/core"
+	"trojan-core/core"
 )
 
 // 连接池

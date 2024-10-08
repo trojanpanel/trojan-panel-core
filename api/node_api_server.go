@@ -3,10 +3,10 @@ package api
 import (
 	"context"
 	"errors"
-	"trojan-panel-core/app"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/model/dto"
-	"trojan-panel-core/util"
+	"trojan-core/app"
+	"trojan-core/model/constant"
+	"trojan-core/model/dto"
+	"trojan-core/util"
 )
 
 type NodeApiServer struct {
