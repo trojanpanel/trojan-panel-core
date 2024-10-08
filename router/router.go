@@ -3,11 +3,9 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"trojan-core/api"
-	"trojan-core/middleware"
 )
 
 func Router(router *gin.Engine) {
-	router.Use(middleware.RateLimiterHandler(), middleware.LogHandler())
 	auth := router.Group("/api/auth")
 	{
 		// Hysteria api

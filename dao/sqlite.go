@@ -1,59 +1,94 @@
 package dao
 
 import (
-	"database/sql"
-	"fmt"
+	"errors"
+	"github.com/glebarez/sqlite"
 	"github.com/sirupsen/logrus"
-	_ "modernc.org/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
+	"log"
+	"os"
 	"strings"
+	"time"
 	"trojan-core/model/constant"
 )
 
-var sqliteDb *sql.DB
+var sqlInitStr = "CREATE TABLE IF NOT EXISTS proxy\n(\n    id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n    proxy_type  INTEGER NOT NULL DEFAULT 0,\n    config      TEXT    NOT NULL DEFAULT '',\n    create_time TIMESTAMP        DEFAULT CURRENT_TIMESTAMP,\n    update_time TIMESTAMP        DEFAULT CURRENT_TIMESTAMP\n)"
 
-// InitSqlLite initialize the sqlite data file
-func InitSqlLite() {
+var sqliteDB *gorm.DB
+
+func InitSqliteDB() error {
 	var err error
-	sqliteDb, err = sql.Open("sqlite", fmt.Sprintf("file:%s", constant.SqliteFilePath))
+	sqliteDB, err = gorm.Open(sqlite.Open(constant.SqliteDBPath), &gorm.Config{
+		TranslateError: true,
+		Logger: logger.New(
+			log.New(os.Stdout, "\r\n", log.LstdFlags),
+			logger.Config{
+				SlowThreshold:             time.Second,
+				LogLevel:                  logger.Silent,
+				IgnoreRecordNotFoundError: true,
+				ParameterizedQueries:      true,
+				Colorful:                  false,
+			},
+		),
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		},
+	})
 	if err != nil {
-		logrus.Errorf("sqlite connection err: %v", err)
-		panic(err)
+		logrus.Errorf("sqlite open err: %v", err)
+		return errors.New("sqlite open err")
 	}
 
-	var count uint
-	row := sqliteDb.QueryRow("SELECT count(1) FROM sqlite_master WHERE type='table' AND name = 'node_config'")
-	if err = row.Scan(&count); err != nil {
-		logrus.Errorf("query sqlite database err: %v", err)
-		panic(err)
+	if err = sqliteInit(sqlInitStr); err != nil {
+		return err
 	}
-	if count == 0 {
-		if err = SqlInit(sqlInitStr); err != nil {
-			logrus.Errorf("sqlite database import err: %v", err)
-			panic(err)
-		}
-	}
+	return nil
 }
 
-func CloseSqliteDb() {
-	if sqliteDb != nil {
-		if err := sqliteDb.Close(); err != nil {
-			logrus.Errorf("sqlite close err: %v", err)
-		}
-	}
-}
-
-func SqlInit(sqlStr string) error {
-	sqls := strings.Split(strings.Replace(sqlStr, "\r\n", "\n", -1), ";\n")
-	for _, s := range sqls {
-		s = strings.TrimSpace(s)
-		if s != "" {
-			if _, err := sqliteDb.Exec(s); err != nil {
-				logrus.Errorf("sqlite database sql execution err: %v", err)
-				return err
+func sqliteInit(sqlStr string) error {
+	if sqliteDB != nil {
+		sqls := strings.Split(strings.Replace(sqlStr, "\r\n", "\n", -1), ";\n")
+		for _, s := range sqls {
+			s = strings.TrimSpace(s)
+			if s != "" {
+				tx := sqliteDB.Exec(s)
+				if tx.Error != nil && !strings.HasPrefix(tx.Error.Error(), "SQL logic error: duplicate column name") {
+					logrus.Errorf("sqlite exec err: %v", tx.Error)
+					return errors.New("sqlite exec err")
+				}
 			}
 		}
 	}
 	return nil
 }
 
-var sqlInitStr = "PRAGMA foreign_keys=OFF;\nBEGIN TRANSACTION;\nCREATE TABLE IF NOT EXISTS \"node_config\"\n(\n    id             INTEGER not null\n        primary key autoincrement,\n    api_port       INTEGER default 0 not null,\n    node_type_id   INTEGER default 0 not null,\n    protocol       TEXT    default '' not null,\n    xray_flow      TEXT    default '' not null,\n    xray_ss_method TEXT    default '' not null\n);\nDELETE FROM sqlite_sequence;\nINSERT INTO sqlite_sequence VALUES('node_config',0);\nCREATE INDEX node_config_api_port_node_type_id_index\n    on node_config (api_port, node_type_id);\nCOMMIT;"
+func CloseSqliteDB() error {
+	if sqliteDB != nil {
+		db, err := sqliteDB.DB()
+		if err != nil {
+			logrus.Errorf("sqlite err: %v", err)
+			return errors.New("sqlite err")
+		}
+		if err = db.Close(); err != nil {
+			logrus.Errorf("sqlite close err: %v", err)
+			return errors.New("sqlite close err")
+		}
+	}
+	return nil
+}
+
+func Paginate(pageNum *int64, pageSize *int64) func(db *gorm.DB) *gorm.DB {
+	var num int64 = 1
+	var size int64 = 10
+	if pageNum != nil && *pageNum > 0 {
+		num = *pageNum
+	}
+	if pageSize != nil && *pageSize > 0 {
+		size = *pageSize
+	}
+	return func(db *gorm.DB) *gorm.DB {
+		return db.Offset(int((num - 1) * size)).Limit(int(size))
+	}
+}

@@ -55,7 +55,7 @@ func init() {
 	flag.Usage = usage
 	flag.Parse()
 	if version {
-		_, _ = fmt.Fprint(os.Stdout, constant.TrojanCoreVersion)
+		_, _ = fmt.Fprint(os.Stdout, constant.Version)
 		os.Exit(0)
 	}
 

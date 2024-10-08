@@ -37,7 +37,7 @@ func (s *StateApiServer) GetNodeServerState(ctx context.Context, nodeServerState
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 	nodeServerStateVo := &NodeServerStateVo{
-		Version: constant.TrojanCoreVersion,
+		Version: constant.Version,
 	}
 	data, err := anypb.New(proto.Message(nodeServerStateVo))
 	if err != nil {

@@ -13,7 +13,6 @@ import (
 	"trojan-core/app/xray"
 	"trojan-core/core/process"
 	"trojan-core/dao"
-	"trojan-core/dao/redis"
 	"trojan-core/model"
 	"trojan-core/model/bo"
 	"trojan-core/model/constant"

@@ -1,10 +1,11 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"github.com/golang-jwt/jwt"
 	redisgo "github.com/gomodule/redigo/redis"
-	"trojan-core/dao/redis"
+	"trojan-core/dao"
 	"trojan-core/model/constant"
 	"trojan-core/model/vo"
 )
@@ -32,9 +33,7 @@ func ParseToken(tokenString string) (*MyClaims, error) {
 }
 
 func GetJWTKey() ([]byte, error) {
-	get := redis.Client.String.
-		Get("trojan-panel:jwt-key")
-	reply, err := get.Bytes()
+	reply, err := dao.RedisClient.Get(context.Background(), constant.JwtKey).Bytes()
 	if err != nil && err != redisgo.ErrNil {
 		return nil, errors.New(constant.SysError)
 	}
