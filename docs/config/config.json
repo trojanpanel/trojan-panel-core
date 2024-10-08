@@ -1,0 +1,15 @@
+{
+  "mariadbIp": "127.0.0.1",
+  "mariadbPort": 9507,
+  "mariadbUser": "root",
+  "mariadbPass": "123456",
+  "database": "trojan_panel_db",
+  "accountTable": "account",
+  "redisHost": "127.0.0.1",
+  "redisPort": 6378,
+  "redisPass": "123456",
+  "crtPath": "/tpdata/trojan-panel-core/cert/trojan-panel-core.crt",
+  "keyPath": "/tpdata/trojan-panel-core/cert/trojan-panel-core.key",
+  "grpcPort": 8100,
+  "serverPort": 8082
+}
