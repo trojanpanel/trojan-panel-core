@@ -15,7 +15,7 @@ Trojan Core
 
 ## Other
 
-Telegram Channel: https://t.me/TrojanPanel
+Telegram Channel: https://t.me/jonssonyan_channel
 
 You can subscribe to my channel on YouTube: https://www.youtube.com/@jonssonyan
 

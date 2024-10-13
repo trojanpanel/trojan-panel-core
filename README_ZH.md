@@ -15,7 +15,7 @@ Windows: [build.bat](build.bat)
 
 ## 其他
 
-Telegram Channel: https://t.me/TrojanPanel
+Telegram Channel: https://t.me/jonssonyan_channel
 
 你可以在 YouTube 上订阅我的频道: https://www.youtube.com/@jonssonyan
 
