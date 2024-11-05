@@ -1,47 +1,52 @@
-::Windows amd64
-::SET CGO_ENABLED=0
-::SET GOOS=windows
-::SET GOARCH=amd64
-::go build -o build/trojan-core-windows-amd64.exe -trimpath -ldflags "-s -w -buildid="
-::Mac amd64
-::SET CGO_ENABLED=0
-::SET GOOS=darwin
-::SET GOARCH=amd64
-::go build -o build/trojan-core-darwin-amd64 -trimpath -ldflags "-s -w -buildid="
-::Linux 386
-SET CGO_ENABLED=0
-SET GOOS=linux
-SET GOARCH=386
-go build -o build/trojan-core-linux-386 -trimpath -ldflags "-s -w -buildid="
-::Linux amd64
-SET CGO_ENABLED=0
-SET GOOS=linux
-SET GOARCH=amd64
-go build -o build/trojan-core-linux-amd64 -trimpath -ldflags "-s -w -buildid="
-::Linux armv6
-SET CGO_ENABLED=0
-SET GOOS=linux
-SET GOARCH=arm
-SET GOARM=6
-go build -o build/trojan-core-linux-armv6 -trimpath -ldflags "-s -w -buildid="
-::Linux armv7
-SET CGO_ENABLED=0
-SET GOOS=linux
-SET GOARCH=arm
-SET GOARM=7
-go build -o build/trojan-core-linux-armv7 -trimpath -ldflags "-s -w -buildid="
-::Linux arm64
-SET CGO_ENABLED=0
-SET GOOS=linux
-SET GOARCH=arm64
-go build -o build/trojan-core-linux-arm64 -trimpath -ldflags "-s -w -buildid="
-::Linux ppc64le
-SET CGO_ENABLED=0
-SET GOOS=linux
-SET GOARCH=ppc64le
-go build -o build/trojan-core-linux-ppc64le -trimpath -ldflags "-s -w -buildid="
-::Linux s390x
-SET CGO_ENABLED=0
-SET GOOS=linux
-SET GOARCH=s390x
-go build -o build/trojan-core-linux-s390x -trimpath -ldflags "-s -w -buildid="
+@echo off
+setlocal enabledelayedexpansion
+
+REM target platform array
+set platforms=windows/amd64 darwin/amd64 linux/386 linux/amd64 linux/arm/6 linux/arm/7 linux/arm64 linux/ppc64le linux/s390x
+
+REM output directory
+set output_dir=build
+
+REM make sure the output directory exists
+if not exist %output_dir% mkdir %output_dir%
+
+REM compile for each target platform
+for %%p in (%platforms%) do (
+    set "platform=%%p"
+
+    for /F "tokens=1,2,3 delims=/" %%a in ("!platform!") do (
+        set "GOOS=%%a"
+        set "GOARCH=%%b"
+        set "GOARM=%%c"
+
+        set "output_name=trojan-core-!GOOS!-!GOARCH!"
+        if "!GOARCH!" == "arm" (
+            set "output_name=!output_name!v!GOARM!"
+        )
+
+        if "!GOOS!" == "windows" (
+            set "output_name=!output_name!.exe"
+        )
+
+        echo Building for !GOOS!/!GOARCH! !GOARM!...
+        set CGO_ENABLED=0
+        set GOOS=!GOOS!
+        set GOARCH=!GOARCH!
+        if defined GOARM (
+            set GOARM=!GOARM!
+        )
+
+        go build -o %output_dir%/!output_name! -trimpath -ldflags "-s -w"
+
+        if !errorlevel! == 0 (
+            echo Build succeeded for !GOOS!/!GOARCH! !GOARM!
+        ) else (
+            echo Error occurred during building for !GOOS!/!GOARCH! !GOARM!
+            echo CGO_ENABLED=!CGO_ENABLED! GOOS=!GOOS! GOARCH=!GOARCH! GOARM=!GOARM!
+            exit /b 1
+        )
+    )
+)
+
+echo All builds completed successfully!
+endlocal

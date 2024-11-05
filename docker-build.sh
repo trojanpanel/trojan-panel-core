@@ -5,7 +5,7 @@ export PATH
 init_var() {
   ECHO_TYPE="echo -e"
 
-  trojan_core_version=3.0.0
+  version=0.0.12
 
   arch_arr="linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64,linux/ppc64le,linux/s390x"
 }
@@ -39,18 +39,18 @@ echo_content() {
 main() {
   echo_content skyBlue "start build trojan-core CPU：${arch_arr}"
 
+  if [[ ${version} != "latest" ]]; then
+    docker buildx build -t jonssonyan/trojan-core:${version} --platform ${arch_arr} --push .
+    if [[ "$?" == "0" ]]; then
+      echo_content green "trojan-core-linux Version：${version} CPU：${arch_arr} build success"
+    else
+      echo_content red "trojan-core-linux Version：${version} CPU：${arch_arr} build failed"
+    fi
+  fi
+
   docker buildx build -t jonssonyan/trojan-core:latest --platform ${arch_arr} --push .
   if [[ "$?" == "0" ]]; then
     echo_content green "trojan-core Version：latest CPU：${arch_arr} build success"
-
-    if [[ ${trojan_core_version} != "latest" ]]; then
-      docker buildx build -t jonssonyan/trojan-core:${trojan_core_version} --platform ${arch_arr} --push .
-      if [[ "$?" == "0" ]]; then
-        echo_content green "trojan-core-linux Version：${trojan_core_version} CPU：${arch_arr} build success"
-      else
-        echo_content red "trojan-core-linux Version：${trojan_core_version} CPU：${arch_arr} build failed"
-      fi
-    fi
   else
     echo_content red "trojan-core-linux Version：latest CPU：${arch_arr} build failed"
   fi
