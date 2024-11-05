@@ -1,21 +1,19 @@
 package constant
 
 const (
-	SysError            string = "system error, please contact the system administrator"
-	ValidateFailed      string = "invalid argument"
-	UsernameOrPassError string = "wrong username or password"
-
-	UnauthorizedError string = "not authentication"
-	IllegalTokenError string = "authentication failed"
+	SysError          string = "system error"
+	UnauthorizedError string = "unauthorized"
 	ForbiddenError    string = "permission denied"
-	TokenExpiredError string = "login expired"
+	IllegalTokenError string = "authentication failed"
+	TokenExpiredError string = "token expired"
+	InvalidError      string = "invalid"
 
 	GrpcError            string = "gRPC connection error"
 	HttpError            string = "http connection error"
 	XrayStartError       string = "failed to start xray"
 	TrojanGoStartError   string = "failed to start trojango"
 	HysteriaStartError   string = "failed to start hysteria"
-	Hysteria2StartError  string = "failed to start hysteria2"
+	Hysteria2StartError  string = "failed to start hysteria"
 	NaiveProxyStartError string = "failed to start naiveproxy"
 	ProcessStopError     string = "process suspend failed"
 

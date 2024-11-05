@@ -5,22 +5,27 @@ import (
 	"net/http"
 )
 
-// response object
-type hysteriaResult struct {
-	Ok  bool   `json:"ok"`
-	Msg string `json:"msg"`
+type AccountHysteriaVo struct {
+	Id       uint   `json:"id"`
+	Username string `json:"username"`
 }
 
-func HysteriaApiSuccess(msg string, c *gin.Context) {
+// response object
+type hysteriaResult struct {
+	Ok bool   `json:"ok"`
+	Id string `json:"id"`
+}
+
+func HysteriaApiSuccess(id string, c *gin.Context) {
 	c.JSON(http.StatusOK, hysteriaResult{
-		Ok:  true,
-		Msg: msg,
+		Ok: true,
+		Id: id,
 	})
 }
 
-func HysteriaApiFail(msg string, c *gin.Context) {
+func HysteriaApiFail(id string, c *gin.Context) {
 	c.JSON(http.StatusOK, hysteriaResult{
-		Ok:  false,
-		Msg: msg,
+		Ok: false,
+		Id: id,
 	})
 }

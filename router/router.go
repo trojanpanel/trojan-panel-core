@@ -2,15 +2,12 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"trojan-core/api"
+	"trojan-core/controller"
 )
 
 func Router(router *gin.Engine) {
 	auth := router.Group("/api/auth")
 	{
-		// Hysteria api
-		auth.POST("/hysteria", api.HysteriaApi)
-		// Hysteria2 api
-		auth.POST("/hysteria2", api.Hysteria2Api)
+		auth.POST("/hysteria", controller.HysteriaApi)
 	}
 }

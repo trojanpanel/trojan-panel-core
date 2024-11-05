@@ -1,111 +1,50 @@
 package process
 
 import (
-	"context"
 	"errors"
+	"fmt"
 	"github.com/sirupsen/logrus"
-	"os/exec"
 	"sync"
-	"time"
 	"trojan-core/model/constant"
 	"trojan-core/util"
 )
 
-var mutexNaiveProxy sync.Mutex
-var cmdMapNaiveProxy sync.Map
-
-type NaiveProxyProcess struct {
+type NaiveProcess struct {
 	process
+	proxy   string
+	binPath string
 }
 
-func NewNaiveProxyInstance() *NaiveProxyProcess {
-	return &NaiveProxyProcess{process{mutex: &mutexNaiveProxy, binaryType: constant.NaiveProxy, cmdMap: &cmdMapNaiveProxy}}
+var mutexNaive sync.Mutex
+var cmdMapNaive sync.Map
+var naiveProcess *NaiveProcess
+
+func init() {
+	naiveProcess = &NaiveProcess{
+		process{mutex: &mutexNaive, cmdMap: &cmdMapNaive},
+		constant.Naive,
+		fmt.Sprintf("%s%s", constant.NaiveBinPath, constant.NaivePath)}
 }
 
-func (n *NaiveProxyProcess) StopNaiveProxyInstance() error {
-	apiPorts, err := util.GetConfigApiPorts(constant.NaiveProxyPath)
-	if err != nil {
-		return err
-	}
-	for _, apiPort := range apiPorts {
-		if err = n.Stop(apiPort, true); err != nil {
-			return err
-		}
+func NewNaiveProxyInstance() *NaiveProcess {
+	return naiveProcess
+}
+
+func (h *NaiveProcess) StartNaive(apiPort uint) error {
+	configPath := fmt.Sprintf("%s%d.json", constant.NaivePath, apiPort)
+	if err := h.start(apiPort, h.binPath, "run", "--config", configPath); err != nil {
+		_ = util.RemoveFile(configPath)
+		logrus.Errorf("start naive err: %v", err)
+		return errors.New(constant.SysError)
 	}
 	return nil
 }
 
-func (n *NaiveProxyProcess) StartNaiveProxy(apiPort uint) error {
-	defer n.mutex.Unlock()
-	if n.mutex.TryLock() {
-		if n.IsRunning(apiPort) {
-			return nil
-		}
-		binaryFilePath, err := util.GetBinaryFile(constant.NaiveProxy)
-		if err != nil {
-			return err
-		}
-		configFilePath, err := util.GetConfigFile(constant.NaiveProxy, apiPort)
-		if err != nil {
-			return err
-		}
-		cmd := exec.Command(binaryFilePath, "run", "--config", configFilePath)
-		if cmd.Err != nil {
-			if err = util.RemoveFile(configFilePath); err != nil {
-				return err
-			}
-			logrus.Errorf("naiveproxy command error err: %v", err)
-			return errors.New(constant.NaiveProxyStartError)
-		}
-		if err := cmd.Start(); err != nil {
-			if err = util.RemoveFile(configFilePath); err != nil {
-				return err
-			}
-			logrus.Errorf("start naiveproxy error err: %v", err)
-			return errors.New(constant.NaiveProxyStartError)
-		}
-		n.cmdMap.Store(apiPort, cmd)
-
-		// timeout
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-		done := make(chan error)
-		go func() {
-			done <- cmd.Wait()
-			select {
-			case err := <-done:
-				if err != nil {
-					logrus.Errorf("naiveproxy process wait error err: %v", err)
-					n.releaseProcess(apiPort, configFilePath)
-				}
-			case <-ctx.Done():
-				logrus.Errorf("naiveproxy process wait timeout err: %v", err)
-				n.releaseProcess(apiPort, configFilePath)
-			}
-		}()
-		return nil
+func (h *NaiveProcess) StopNaive(apiPort uint) error {
+	if err := h.stop(apiPort); err != nil {
+		logrus.Errorf("stop niave err: %v", err)
+		return errors.New(constant.SysError)
 	}
-	logrus.Errorf("start naiveproxy error err: lock not acquired")
-	return errors.New(constant.NaiveProxyStartError)
-}
-
-func (n *NaiveProxyProcess) releaseProcess(apiPort uint, configFilePath string) {
-	load, ok := NewNaiveProxyInstance().GetCmdMap().Load(apiPort)
-	if ok {
-		cmd := load.(*exec.Cmd)
-		if !cmd.ProcessState.Success() {
-			n.cmdMap.Delete(apiPort)
-			if err := cmd.Process.Release(); err != nil {
-				logrus.Errorf("naiveproxy process release error err: %v", err)
-			}
-			if err := util.RemoveFile(configFilePath); err != nil {
-				logrus.Errorf("naiveproxy process remove file error err: %v", err)
-			}
-		}
-	}
-}
-
-func GetNaiveProxyState(apiPort uint) bool {
-	_, ok := NewNaiveProxyInstance().GetCmdMap().Load(apiPort)
-	return ok
+	_ = util.RemoveFile(fmt.Sprintf("%s%d.json", constant.NaivePath, apiPort))
+	return nil
 }

@@ -1,14 +1,8 @@
 package vo
 
-type AccountHysteriaVo struct {
-	Id       uint   `json:"id"`
-	Username string `json:"username"`
-}
-
 type AccountVo struct {
-	Id       uint     `json:"id"`
+	Id       int64    `json:"id"`
 	Username string   `json:"username"`
-	RoleId   uint     `json:"roleId"`
-	Deleted  uint     `json:"deleted"`
 	Roles    []string `json:"roles"`
+	Deleted  int64    `json:"deleted"`
 }

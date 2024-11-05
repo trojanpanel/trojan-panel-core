@@ -1,4 +1,4 @@
-package hysteria2
+package hysteria
 
 import (
 	"encoding/json"
@@ -45,7 +45,7 @@ func StartHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
 
 func StopHysteria2(apiPort uint, removeFile bool) error {
 	if err := process.NewHysteria2Instance().Stop(apiPort, removeFile); err != nil {
-		logrus.Errorf("hysteria2 stop err: %v", err)
+		logrus.Errorf("hysteria stop err: %v", err)
 		return err
 	}
 	return nil
@@ -68,7 +68,7 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
 	}
 	file, err := os.OpenFile(hysteria2ConfigFilePath, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0644)
 	if err != nil {
-		logrus.Errorf("create hysteria2 file %s err: %v", hysteria2ConfigFilePath, err)
+		logrus.Errorf("create hysteria file %s err: %v", hysteria2ConfigFilePath, err)
 		return err
 	}
 	defer func() {
@@ -91,7 +91,7 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
   "auth": {
     "type": "http",
     "http": {
-      "url": "http://127.0.0.1:${server_port}/api/auth/hysteria2",
+      "url": "http://127.0.0.1:${server_port}/api/auth/hysteria",
       "insecure": true
     }
   },
@@ -110,7 +110,7 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
 		// set obfs
 		var hysteria2Config bo.Hysteria2Config
 		if err = json.Unmarshal([]byte(configContent), &hysteria2Config); err != nil {
-			logrus.Errorf("hysteria2 json.Unmarshal err: %v", err)
+			logrus.Errorf("hysteria json.Unmarshal err: %v", err)
 			return err
 		}
 		var hysteria2ConfigObfs bo.Hysteria2ConfigObfs
@@ -119,14 +119,14 @@ func initHysteria2(hysteria2ConfigDto dto.Hysteria2ConfigDto) error {
 		hysteria2Config.Obfs = &hysteria2ConfigObfs
 		hysteria2ConfigStr, err := json.MarshalIndent(hysteria2Config, "", "    ")
 		if err != nil {
-			logrus.Errorf("hysteria2 json.MarshalIndent err: %v", err)
+			logrus.Errorf("hysteria json.MarshalIndent err: %v", err)
 			return err
 		}
 		configContent = string(hysteria2ConfigStr)
 	}
 	_, err = file.WriteString(configContent)
 	if err != nil {
-		logrus.Errorf("hysteria2 config.json file write err: %v", err)
+		logrus.Errorf("hysteria config.json file write err: %v", err)
 		return err
 	}
 	return nil
@@ -136,7 +136,7 @@ func InitHysteria2BinFile() error {
 	hysteria2Path := constant.Hysteria2Path
 	if !util.Exists(hysteria2Path) {
 		if err := os.MkdirAll(hysteria2Path, os.ModePerm); err != nil {
-			logrus.Errorf("create hysteria2 folder err: %v", err)
+			logrus.Errorf("create hysteria folder err: %v", err)
 			return err
 		}
 	}
@@ -146,7 +146,7 @@ func InitHysteria2BinFile() error {
 		return err
 	}
 	if !util.Exists(binaryFilePath) {
-		logrus.Errorf("hysteria2 binary does not exist")
+		logrus.Errorf("hysteria binary does not exist")
 		return errors.New(constant.BinaryFileNotExist)
 	}
 	return nil

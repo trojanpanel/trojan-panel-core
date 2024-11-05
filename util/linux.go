@@ -89,3 +89,16 @@ func GetDiskPercent() (float64, error) {
 	value, err := strconv.ParseFloat(fmt.Sprintf("%.1f", diskInfo.UsedPercent), 64)
 	return value, err
 }
+
+func VerifyPort(port string) error {
+	if port != "" {
+		value, err := strconv.ParseInt(port, 10, 64)
+		if err != nil {
+			return errors.New("invalid port value")
+		}
+		if value <= 0 || value > 65535 {
+			return errors.New("the port range is between 0-65535")
+		}
+	}
+	return nil
+}

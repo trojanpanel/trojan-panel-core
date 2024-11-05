@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"sync"
 	"trojan-core/app/hysteria"
-	"trojan-core/app/hysteria2"
 	"trojan-core/app/naiveproxy"
 	"trojan-core/app/trojango"
 	"trojan-core/app/xray"
@@ -38,8 +37,8 @@ func InitApp() {
 	if err := naiveproxy.InitNaiveProxyApp(); err != nil {
 		logrus.Errorf("naiverpoxy app init err: %s", err.Error())
 	}
-	if err := hysteria2.InitHysteria2App(); err != nil {
-		logrus.Errorf("hysteria2 app init err: %s", err.Error())
+	if err := hysteria.InitHysteria2App(); err != nil {
+		logrus.Errorf("hysteria app init err: %s", err.Error())
 	}
 }
 
@@ -60,8 +59,8 @@ func InitBinFile() {
 		logrus.Errorf("download naivepxoy file err: %v", err)
 		panic(err)
 	}
-	if err := hysteria2.InitHysteria2BinFile(); err != nil {
-		logrus.Errorf("download hysteria2 file err: %v", err)
+	if err := hysteria.InitHysteria2BinFile(); err != nil {
+		logrus.Errorf("download hysteria file err: %v", err)
 		panic(err)
 	}
 }
@@ -128,7 +127,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 				return err
 			}
 		case constant.Hysteria2:
-			if err := hysteria2.StartHysteria2(dto.Hysteria2ConfigDto{
+			if err := hysteria.StartHysteria2(dto.Hysteria2ConfigDto{
 				ApiPort:      nodeAddDto.Port + 30000,
 				Port:         nodeAddDto.Port,
 				Domain:       nodeAddDto.Domain,
@@ -178,7 +177,7 @@ func StopApp(apiPort uint, nodeTypeId uint) error {
 				return err
 			}
 		case constant.Hysteria2:
-			if err := hysteria2.StopHysteria2(apiPort, true); err != nil {
+			if err := hysteria.StopHysteria2(apiPort, true); err != nil {
 				return err
 			}
 		default:
@@ -211,7 +210,7 @@ func RestartApp(apiPort uint, nodeTypeId uint) error {
 			return err
 		}
 	case constant.Hysteria2:
-		if err := hysteria2.RestartHysteria2(apiPort); err != nil {
+		if err := hysteria.RestartHysteria2(apiPort); err != nil {
 			return err
 		}
 	default:
@@ -565,12 +564,12 @@ func CronHandlerDownloadAndUpload() {
 		})
 	}()
 
-	// hysteria2
+	// hysteria
 	go func() {
 		hysteria2Instance := process.NewHysteria2Instance()
 		hysteria2CmdMap := hysteria2Instance.GetCmdMap()
 		hysteria2CmdMap.Range(func(apiPort, cmd any) bool {
-			hysteria2Api := hysteria2.NewHysteria2Api(apiPort.(uint))
+			hysteria2Api := hysteria.NewHysteria2Api(apiPort.(uint))
 			users, err := hysteria2Api.ListUsers(true)
 			if err == nil {
 				userLists := util.SplitMap(users, 50)
@@ -592,7 +591,7 @@ func CronHandlerDownloadAndUpload() {
 						for _, account := range accountUpdateBos {
 							if err = dao.UpdateAccountFlowByPassOrHash(&account.Pass, nil, account.Download,
 								account.Upload); err != nil {
-								logrus.Errorf("hysteria2 UpdateAccountFlow err apiPort: %d err: %v", apiPort, err)
+								logrus.Errorf("hysteria UpdateAccountFlow err apiPort: %d err: %v", apiPort, err)
 								continue
 							}
 						}

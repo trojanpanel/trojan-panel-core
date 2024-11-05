@@ -4,18 +4,14 @@ import (
 	"fmt"
 	"github.com/xtls/xray-core/common/net"
 	"google.golang.org/grpc"
-	"trojan-core/core"
 )
 
-func InitGrpcServer() {
+func InitGrpcServer(port string) {
 	go func() {
-		grpcConfig := core.Config.GrpcConfig
 		rpcServer := grpc.NewServer()
-		RegisterApiNodeServiceServer(rpcServer, new(NodeApiServer))
-		RegisterApiAccountServiceServer(rpcServer, new(AccountApiServer))
-		RegisterApiStateServiceServer(rpcServer, new(StateApiServer))
-		RegisterApiNodeServerServiceServer(rpcServer, new(NodeServerApiServer))
-		listener, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcConfig.Port))
+		RegisterApiNodeServiceServer(rpcServer, new(NodeApi))
+		RegisterApiServerServiceServer(rpcServer, new(ServerApi))
+		listener, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 		if err != nil {
 			panic(fmt.Sprintf("gRPC service listening port err: %v", err))
 		}

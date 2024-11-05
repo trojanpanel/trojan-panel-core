@@ -4,13 +4,14 @@ import (
 	"context"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+	"trojan-core/model/constant"
 	"trojan-core/util"
 )
 
-type NodeServerApiServer struct {
+type ServerApi struct {
 }
 
-func (s *NodeServerApiServer) GetNodeServerInfo(ctx context.Context, nodeServerInfoDto *NodeServerInfoDto) (*Response, error) {
+func (s *ServerApi) GetServer(ctx context.Context, serverDto *ServerDto) (*Response, error) {
 	if err := authRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
@@ -20,12 +21,13 @@ func (s *NodeServerApiServer) GetNodeServerInfo(ctx context.Context, nodeServerI
 	if err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-	nodeServerInfoVo := &NodeServerInfoVo{
+	serverVo := &ServerVo{
 		CpuUsed:  float32(cpuUsed),
 		MemUsed:  float32(memUsed),
 		DiskUsed: float32(diskUsed),
+		Version:  constant.Version,
 	}
-	data, err := anypb.New(proto.Message(nodeServerInfoVo))
+	data, err := anypb.New(proto.Message(serverVo))
 	if err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}

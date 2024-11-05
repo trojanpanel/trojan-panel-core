@@ -5,87 +5,32 @@ option go_package = ".;api";
 import "google/protobuf/any.proto";
 
 service ApiNodeService {
-  rpc AddNode(NodeAddDto) returns (Response) {}
-  rpc RemoveNode(NodeRemoveDto) returns (Response) {}
+  rpc CreateNode(NodeCreateDto) returns (Response) {}
+  rpc DeleteNode(NodeDeleteDto) returns (Response) {}
+  rpc GetNode(NodeDto) returns (Response) {}
 }
 
-service ApiNodeServerService {
-  rpc GetNodeServerInfo(NodeServerInfoDto) returns (Response) {}
+service ApiServerService {
+  rpc GetServer(ServerDto) returns (Response) {}
 }
 
-service ApiAccountService {
-  rpc RemoveAccount(AccountRemoveDto) returns (Response) {}
+message NodeCreateDto {
+  int64 id = 1;
 }
 
-service ApiStateService {
-  rpc GetNodeState(NodeStateDto) returns (Response) {}
-  rpc GetNodeServerState(NodeServerStateDto) returns (Response) {}
+message NodeDeleteDto {
+  int64 id = 1;
 }
 
-message NodeAddDto {
-  uint64 nodeTypeId = 1;
-  uint64 port = 2;
-  string domain = 3;
+message NodeDto {}
 
-  string xrayTemplate = 4;
-  string xrayFlow = 5;
-  string xraySSMethod = 6;
-  string xrayProtocol = 7;
-  string xraySettings = 8;
-  string xrayStreamSettings = 9;
-  string xrayTag = 10;
-  string xraySniffing = 11;
-  string xrayAllocate = 12;
+message ServerDto {}
 
-  string trojanGoSni = 13;
-  uint64 trojanGoMuxEnable = 14;
-  uint64 trojanGoWebsocketEnable = 15;
-  string trojanGoWebsocketPath = 16;
-  string trojanGoWebsocketHost = 17;
-  uint64 trojanGoSSEnable = 18;
-  string trojanGoSSMethod = 19;
-  string trojanGoSSPassword = 20;
-
-  string hysteriaProtocol = 21;
-  string hysteriaObfs = 22;
-  int64 hysteriaUpMbps = 23;
-  int64 hysteriaDownMbps = 24;
-
-  string hysteria2ObfsPassword = 25;
-  int64 hysteria2UpMbps = 26;
-  int64 hysteria2DownMbps = 27;
-}
-
-message NodeRemoveDto {
-  uint64 nodeTypeId = 1;
-  uint64 port = 2;
-}
-
-message NodeServerInfoDto {}
-
-message NodeServerInfoVo {
+message ServerVo {
   float cpuUsed = 1;
   float memUsed = 2;
   float diskUsed = 3;
-}
-
-message AccountRemoveDto {
-  string password = 1;
-}
-
-message NodeStateDto {
-  uint64 nodeTypeId = 1;
-  uint64 port = 2;
-}
-
-message NodeStateVo {
-  uint64 status = 1;
-}
-
-message NodeServerStateDto {}
-
-message NodeServerStateVo {
-  string version = 2;
+  string version = 4;
 }
 
 message Response {

@@ -4,36 +4,32 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"trojan-core/model/constant"
+	"trojan-core/util"
 )
 
-var (
-	config  string
-	version bool
-)
+var port string
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&config, "config", "c", "", "config file path")
-	rootCmd.PersistentFlags().BoolVarP(&version, "version", "v", false, "show version")
+	rootCmd.Flags().StringVarP(&port, "port", "p", "", "The port of the web server")
 }
 
 var rootCmd = &cobra.Command{
 	Use:   "trojan-core",
-	Short: "the core of trojan panel",
-	Long:  "the core of trojan panel",
-	Run: func(cmd *cobra.Command, args []string) {
-		if version {
-			fmt.Println("trojan-core version", constant.Version)
-			os.Exit(0)
+	Short: "A command line tool for trojan-core",
+	Run:   run,
+}
+
+func run(cmd *cobra.Command, args []string) {
+	if err := util.VerifyPort(port); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	for {
+		if err := runServer(port); err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
 		}
-		if config != "" {
-			if err := runServer(); err != nil {
-				fmt.Println(err.Error())
-				os.Exit(1)
-			}
-		}
-		fmt.Println("Usage: trojan-core [-c] [-v] [-h]")
-	},
+	}
 }
 
 func Execute() {

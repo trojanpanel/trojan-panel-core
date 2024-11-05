@@ -2,7 +2,7 @@ package dto
 
 type Hysteria2ConfigDto struct {
 	ApiPort      uint
-	Port         uint // hysteria2 port
+	Port         uint // hysteria port
 	Domain       string
 	ObfsPassword string
 	UpMbps       int

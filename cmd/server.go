@@ -13,7 +13,7 @@ import (
 	"trojan-core/util"
 )
 
-func runServer() error {
+func runServer(port string) error {
 	defer releaseResource()
 
 	middleware.InitLog()

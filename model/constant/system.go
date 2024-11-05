@@ -1,23 +1,14 @@
 package constant
 
 const (
-	// LogPath log folder path
 	LogPath string = "logs/"
 
-	SqliteDBPath = "data/trojan_core.db"
-
-	XrayPath          string = "bin/xray/config"
-	TrojanGoPath      string = "bin/trojango/config"
-	HysteriaPath      string = "bin/hysteria/config"
-	Hysteria2Path     string = "bin/hysteria2/config"
-	NaiveProxyPath    string = "bin/naiveproxy/config"
-	XrayBinPath       string = "bin/xray"
-	TrojanGoBinPath   string = "bin/trojango"
-	HysteriaBinPath   string = "bin/hysteria"
-	Hysteria2BinPath  string = "bin/hysteria2"
-	NaiveProxyBinPath string = "bin/naiveproxy"
-
-	JwtKey = "trojan-panel:jwt-key"
+	XrayPath        string = "bin/xray/config/"
+	HysteriaPath    string = "bin/hysteria/config/"
+	NaivePath       string = "bin/naive/config/"
+	XrayBinPath     string = "bin/xray/"
+	HysteriaBinPath string = "bin/hysteria/"
+	NaiveBinPath    string = "bin/naive/"
 
 	Version = "v3.0.0"
 )
