@@ -1,4 +1,4 @@
-package naiveproxy
+package naive
 
 import (
 	"fmt"

@@ -13,7 +13,7 @@ import (
 	"trojan-core/util"
 )
 
-func runServer(port string) error {
+func runServer(serverPort string) error {
 	defer releaseResource()
 
 	middleware.InitLog()
@@ -29,7 +29,7 @@ func runServer(port string) error {
 
 	r := gin.Default()
 	router.Router(r)
-	return r.Run(":8081")
+	return r.Run(fmt.Sprintf(":%s", serverPort))
 }
 
 func releaseResource() {
@@ -40,8 +40,8 @@ func releaseResource() {
 
 func initFile() error {
 	var dirs = []string{constant.LogPath,
-		constant.XrayBinPath, constant.TrojanGoBinPath, constant.HysteriaBinPath, constant.Hysteria2BinPath, constant.NaiveProxyBinPath,
-		constant.XrayPath, constant.TrojanGoPath, constant.HysteriaPath, constant.Hysteria2Path, constant.NaiveProxyPath,
+		constant.XrayPath, constant.HysteriaPath, constant.NaivePath,
+		constant.XrayBinPath, constant.HysteriaBinPath, constant.NaiveBinPath,
 	}
 	for _, item := range dirs {
 		if !util.Exists(item) {

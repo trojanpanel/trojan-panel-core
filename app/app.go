@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"sync"
 	"trojan-core/app/hysteria"
-	"trojan-core/app/naiveproxy"
+	"trojan-core/app/naive"
 	"trojan-core/app/trojango"
 	"trojan-core/app/xray"
 	"trojan-core/core/process"
@@ -34,7 +34,7 @@ func InitApp() {
 	if err := hysteria.InitHysteriaApp(); err != nil {
 		logrus.Errorf("hysteria app init err: %s", err.Error())
 	}
-	if err := naiveproxy.InitNaiveProxyApp(); err != nil {
+	if err := naive.InitNaiveProxyApp(); err != nil {
 		logrus.Errorf("naiverpoxy app init err: %s", err.Error())
 	}
 	if err := hysteria.InitHysteria2App(); err != nil {
@@ -55,7 +55,7 @@ func InitBinFile() {
 		logrus.Errorf("download hysteria file err: %v", err)
 		panic(err)
 	}
-	if err := naiveproxy.InitNaiveProxyBinFile(); err != nil {
+	if err := naive.InitNaiveProxyBinFile(); err != nil {
 		logrus.Errorf("download naivepxoy file err: %v", err)
 		panic(err)
 	}
@@ -119,7 +119,7 @@ func StartApp(nodeAddDto dto.NodeAddDto) error {
 				return err
 			}
 		case constant.NaiveProxy:
-			if err := naiveproxy.StartNaiveProxy(dto.NaiveProxyConfigDto{
+			if err := naive.StartNaiveProxy(dto.NaiveProxyConfigDto{
 				ApiPort: nodeAddDto.Port + 30000,
 				Port:    nodeAddDto.Port,
 				Domain:  nodeAddDto.Domain,
@@ -173,7 +173,7 @@ func StopApp(apiPort uint, nodeTypeId uint) error {
 				return err
 			}
 		case constant.NaiveProxy:
-			if err := naiveproxy.StopNaiveProxy(apiPort, true); err != nil {
+			if err := naive.StopNaiveProxy(apiPort, true); err != nil {
 				return err
 			}
 		case constant.Hysteria2:
@@ -206,7 +206,7 @@ func RestartApp(apiPort uint, nodeTypeId uint) error {
 			return err
 		}
 	case constant.NaiveProxy:
-		if err := naiveproxy.RestartNaiveProxy(apiPort); err != nil {
+		if err := naive.RestartNaiveProxy(apiPort); err != nil {
 			return err
 		}
 	case constant.Hysteria2:
@@ -384,7 +384,7 @@ func CronHandlerUser() {
 			naiveProxyCmdMap := naiveProxyInstance.GetCmdMap()
 			naiveProxyCmdMap.Range(func(apiPort, cmd any) bool {
 				go func() {
-					naiveProxyApi := naiveproxy.NewNaiveProxyApi(apiPort.(uint))
+					naiveProxyApi := naive.NewNaiveProxyApi(apiPort.(uint))
 					users, err := naiveProxyApi.ListUsers()
 					if err != nil {
 						return
@@ -642,7 +642,7 @@ func RemoveAccount(password string) error {
 		naiveProxyCmdMap := naiveProxyInstance.GetCmdMap()
 		naiveProxyCmdMap.Range(func(apiPort, cmd any) bool {
 			go func(password string) {
-				naiveProxyApi := naiveproxy.NewNaiveProxyApi(apiPort.(uint))
+				naiveProxyApi := naive.NewNaiveProxyApi(apiPort.(uint))
 				// call api to delete user
 				if err := naiveProxyApi.DeleteUser(password); err != nil {
 					logrus.Errorf("naiveproxy DeleteUser err: %v", err)
