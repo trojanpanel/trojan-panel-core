@@ -28,7 +28,7 @@ for platform in "${platforms[@]}"; do
   GOARCH=${platform_split[1]}
   GOARM=${platform_split[2]}
 
-  output_name="trojan-core-${GOOS}-${GOARCH}"
+  output_name="trojan-panel-core-${GOOS}-${GOARCH}"
   if [ "$GOARCH" == "arm" ]; then
     output_name+="v${GOARM}"
   fi

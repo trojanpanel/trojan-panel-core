@@ -19,7 +19,7 @@ for %%p in (%platforms%) do (
         set "GOARCH=%%b"
         set "GOARM=%%c"
 
-        set "output_name=trojan-core-!GOOS!-!GOARCH!"
+        set "output_name=trojan-panel-core-!GOOS!-!GOARCH!"
         if "!GOARCH!" == "arm" (
             set "output_name=!output_name!v!GOARM!"
         )
