@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/golang-jwt/jwt"
-	redisgo "github.com/gomodule/redigo/redis"
 	"trojan-panel-core/dao"
 	"trojan-panel-core/model/constant"
 	"trojan-panel-core/model/vo"
@@ -34,7 +33,7 @@ func ParseToken(tokenString string) (*MyClaims, error) {
 
 func GetJWTKey() ([]byte, error) {
 	reply, err := dao.RedisClient.Get(context.Background(), constant.TokenSecret).Bytes()
-	if err != nil && err != redisgo.ErrNil {
+	if err != nil {
 		return nil, errors.New(constant.SysError)
 	}
 	if len(reply) > 0 {
