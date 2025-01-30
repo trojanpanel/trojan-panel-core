@@ -15,13 +15,16 @@
 
 ## 支持的代理
 
-1. Xray
-2. Hysteria
-3. NaiveProxy
+1. [xray](https://github.com/XTLS/Xray-core)
+2. [hysteria](https://github.com/apernet/hysteria)
+3. [naiveproxy](https://github.com/klzgrad/naiveproxy)
+4. [sing-box](https://github.com/SagerNet/sing-box)
 
 ## 构建
 
 Windows: [build.bat](build.bat)
+
+Linux: [build.sh](build.sh)
 
 ## 其他
 
