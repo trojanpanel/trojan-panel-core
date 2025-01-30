@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option go_package = ".;server";
+
+import "google/protobuf/any.proto";
+
+package server;
+
+service ApiServerService {
+  rpc GetServerStats(ApiServerDto) returns (Response) {}
+}
+
+message ApiServerDto {
+
+}
+
+message ApiServerVo {
+  float cpuUsed = 6;
+  float memUsed = 7;
+  float diskUsed = 8;
+}
+
+message Response {
+  bool success = 1;
+  string msg = 2;
+  google.protobuf.Any data = 3;
+}

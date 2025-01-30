@@ -1,13 +1,17 @@
 package dao
 
-import "github.com/redis/go-redis/v9"
+import (
+	"github.com/redis/go-redis/v9"
+	"os"
+	"trojan-panel-core/model/constant"
+)
 
 var RedisClient *redis.Client
 
-func InitRedis(addr string, password string) {
+func init() {
 	RedisClient = redis.NewClient(&redis.Options{
-		Addr:     addr,
-		Password: password,
+		Addr:     os.Getenv(constant.RedisAddr),
+		Password: os.Getenv(constant.RedisPass),
 	})
 }
 

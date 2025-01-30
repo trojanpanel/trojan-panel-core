@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option go_package = ".;version";
+
+import "google/protobuf/any.proto";
+
+package version;
+
+service ApiVersionService {
+  rpc GetVersion(ApiVersionDto) returns (Response) {}
+}
+
+message ApiVersionDto {
+
+}
+
+message ApiVersionVo {
+  string systemVersion = 1;
+  string xrayVersion = 2;
+  string hysteriaVersion = 3;
+  string naiveProxyVersion = 4;
+  string singBoxVersion = 5;
+}
+
+message Response {
+  bool success = 1;
+  string msg = 2;
+  google.protobuf.Any data = 3;
+}

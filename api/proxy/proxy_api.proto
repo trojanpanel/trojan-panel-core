@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option go_package = ".;proxy";
+
+import "google/protobuf/any.proto";
+
+service ApiProxyService {
+  rpc StartProxy(StartProxyDto) returns (Response) {}
+  rpc StopProxy(StopProxyDto) returns (Response) {}
+}
+
+message StartProxyDto {
+  string proxy = 1;
+  string key = 2;
+  bytes value = 3;
+}
+
+message StopProxyDto {
+  string proxy = 1;
+  string key = 2;
+}
+
+message Response {
+  bool success = 1;
+  string msg = 2;
+  google.protobuf.Any data = 3;
+}

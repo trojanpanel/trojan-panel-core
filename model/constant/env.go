@@ -1,0 +1,11 @@
+package constant
+
+const (
+	WebPort  = "TROJAN_PANEL_CORE_WEB_PORT"
+	GrpcPort = "TROJAN_PANEL_CORE_GRPC_PORT"
+
+	RedisAddr = "TROJAN_PANEL_CORE_REDIS_ADDR"
+	RedisPass = "TROJAN_PANEL_CORE_REDIS_PASS"
+
+	TokenSecret = "TROJAN_PANEL_CORE_TOKEN_SECRET"
+)

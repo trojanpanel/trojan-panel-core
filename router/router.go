@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"trojan-core/controller"
+	"trojan-panel-core/controller"
 )
 
 func Router(router *gin.Engine) {

@@ -5,13 +5,13 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt"
 	redisgo "github.com/gomodule/redigo/redis"
-	"trojan-core/dao"
-	"trojan-core/model/constant"
-	"trojan-core/model/vo"
+	"trojan-panel-core/dao"
+	"trojan-panel-core/model/constant"
+	"trojan-panel-core/model/vo"
 )
 
 type MyClaims struct {
-	AccountVo vo.AccountVo `json:"accountVo"`
+	AccountVo vo.AccountVo
 	jwt.StandardClaims
 }
 
@@ -33,7 +33,7 @@ func ParseToken(tokenString string) (*MyClaims, error) {
 }
 
 func GetJWTKey() ([]byte, error) {
-	reply, err := dao.RedisClient.Get(context.Background(), constant.JwtKey).Bytes()
+	reply, err := dao.RedisClient.Get(context.Background(), constant.TokenSecret).Bytes()
 	if err != nil && err != redisgo.ErrNil {
 		return nil, errors.New(constant.SysError)
 	}

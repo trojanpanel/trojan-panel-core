@@ -3,12 +3,12 @@ package middleware
 import (
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"trojan-core/model/constant"
+	"trojan-panel-core/model/constant"
 )
 
 func InitLog() {
 	logrus.SetOutput(&lumberjack.Logger{
-		Filename:   constant.LogPath,
+		Filename:   constant.SystemLogPath,
 		MaxSize:    1,
 		MaxBackups: 2,
 		MaxAge:     30,

@@ -1,14 +1,22 @@
 package constant
 
 const (
-	LogPath string = "logs/"
+	LogDir = "logs/"
+	BinDir = "bin/"
 
-	XrayPath        string = "bin/xray/config/"
-	HysteriaPath    string = "bin/hysteria/config/"
-	NaivePath       string = "bin/naive/config/"
-	XrayBinPath     string = "bin/xray/"
-	HysteriaBinPath string = "bin/hysteria/"
-	NaiveBinPath    string = "bin/naive/"
+	SystemLogPath = LogDir + "trojan-panel-core.log"
 
-	Version = "v3.0.0" // Trojan Code Version
+	XrayConfigDir = BinDir + "xray/"
+	XrayLogPath   = LogDir + "xray.log"
+
+	SingBoxConfigDir = BinDir + "sing-box/"
+	SingBoxLogPath   = LogDir + "sing-box.log"
+
+	HysteriaConfigDir = BinDir + "hysteria/"
+	HysteriaLogPath   = LogDir + "hysteria.log"
+
+	NaiveProxyConfigDir = BinDir + "naiveproxy/"
+	NaiveProxyLogPath   = LogDir + "naiveproxy.log"
+
+	SystemVersion = "v3.0.0"
 )

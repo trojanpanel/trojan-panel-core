@@ -2,10 +2,9 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"trojan-core/model/constant"
-	"trojan-core/model/dto"
-	"trojan-core/model/vo"
-	"trojan-core/service"
+	"trojan-panel-core/model/constant"
+	"trojan-panel-core/model/dto"
+	"trojan-panel-core/model/vo"
 )
 
 func HysteriaApi(c *gin.Context) {
@@ -15,10 +14,6 @@ func HysteriaApi(c *gin.Context) {
 		vo.HysteriaApiFail(constant.InvalidError, c)
 		return
 	}
-	accountHysteria2Vo, err := service.SelectAccountByPass(*hysteria2AuthDto.Auth)
-	if err != nil || accountHysteria2Vo == nil {
-		vo.HysteriaApiFail("", c)
-		return
-	}
+	// hysteria 认证
 	vo.HysteriaApiSuccess(*hysteria2AuthDto.Auth, c)
 }

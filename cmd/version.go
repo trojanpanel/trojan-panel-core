@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"trojan-core/model/constant"
+	"trojan-panel-core/model/constant"
 )
 
 var versionCmd = &cobra.Command{
@@ -18,5 +18,5 @@ func init() {
 }
 
 func runVersion(cmd *cobra.Command, args []string) {
-	fmt.Println("trojan-core version", constant.Version)
+	fmt.Println("trojan-panel-core version", constant.SystemVersion)
 }
