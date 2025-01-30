@@ -4,6 +4,7 @@ import (
 	"context"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+	"trojan-panel-core/service"
 	"trojan-panel-core/util"
 )
 
@@ -14,9 +15,8 @@ func (a *ApiServerService) GetServerStats(ctx context.Context, apiServerDto *Api
 	if err := util.AuthRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-	cpuUsed, err := util.GetCpuPercent()
-	memUsed, err := util.GetMemPercent()
-	diskUsed, err := util.GetDiskPercent()
+
+	cpuUsed, memUsed, diskUsed, err := service.GetServerStats()
 	if err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
