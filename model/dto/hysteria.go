@@ -1,5 +1,5 @@
 package dto
 
-type Hysteria2AuthDto struct {
+type HysteriaAuthDto struct {
 	Auth *string `json:"auth" validate:"required"`
 }

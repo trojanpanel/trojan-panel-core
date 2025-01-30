@@ -8,12 +8,12 @@ import (
 )
 
 func HysteriaApi(c *gin.Context) {
-	var hysteria2AuthDto dto.Hysteria2AuthDto
-	_ = c.ShouldBindJSON(&hysteria2AuthDto)
-	if err := validate.Struct(&hysteria2AuthDto); err != nil {
+	var hysteriaAuthDto dto.HysteriaAuthDto
+	_ = c.ShouldBindJSON(&hysteriaAuthDto)
+	if err := validate.Struct(&hysteriaAuthDto); err != nil {
 		vo.HysteriaApiFail(constant.InvalidError, c)
 		return
 	}
 	// hysteria 认证
-	vo.HysteriaApiSuccess(*hysteria2AuthDto.Auth, c)
+	vo.HysteriaApiSuccess(*hysteriaAuthDto.Auth, c)
 }
