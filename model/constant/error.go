@@ -2,28 +2,11 @@ package constant
 
 const (
 	SysError          string = "system error"
+	InvalidError      string = "invalid"
 	UnauthorizedError string = "unauthorized"
 	ForbiddenError    string = "permission denied"
+
 	IllegalTokenError string = "authentication failed"
-	TokenExpiredError string = "token expired"
-	InvalidError      string = "invalid"
 
-	GrpcError            string = "gRPC connection error"
-	HttpError            string = "http connection error"
-	XrayStartError       string = "failed to start xray"
-	TrojanGoStartError   string = "failed to start trojango"
-	HysteriaStartError   string = "failed to start hysteria"
-	Hysteria2StartError  string = "failed to start hysteria"
-	NaiveProxyStartError string = "failed to start naiveproxy"
-	ProcessStopError     string = "process suspend failed"
-
-	NodeTypeNotExist   string = "node type does not exist"
-	RemoveFileError    string = "failed to delete file"
-	BinaryFileNotExist string = "binary file does not exist"
-	ConfigFileNotExist string = "config file does not exist"
-
-	GetLocalIPError string = "failed to obtain local IP"
-
-	PortIsOccupied string = "the port is occupied, please check the port or choose another port"
-	PortRangeError string = "the port range is between 100-30000"
+	GrpcError = "failed to connect to remote service"
 )

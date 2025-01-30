@@ -28,7 +28,7 @@ func ParseToken(tokenString string) (*MyClaims, error) {
 	if claims, ok := token.Claims.(*MyClaims); ok && token.Valid {
 		return claims, nil
 	}
-	return nil, errors.New(constant.TokenExpiredError)
+	return nil, errors.New(constant.InvalidError)
 }
 
 func GetJWTKey() ([]byte, error) {
