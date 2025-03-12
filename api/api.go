@@ -10,22 +10,10 @@ import (
 	"trojan-core/api/proxy"
 	"trojan-core/api/server"
 	"trojan-core/api/version"
-	"trojan-core/dao"
-	"trojan-core/middleware"
 	"trojan-core/model/constant"
-	"trojan-core/util"
 )
 
-func StarServer() error {
-	defer releaseResource()
-
-	if err := initFile(); err != nil {
-		return err
-	}
-	if err := middleware.InitCron(); err != nil {
-		return err
-	}
-
+func StarGrpcServer() error {
 	rpcServer := grpc.NewServer()
 	proxy.RegisterApiProxyServiceServer(rpcServer, new(proxy.ApiProxyService))
 	server.RegisterApiServerServiceServer(rpcServer, new(server.ApiServerService))
@@ -36,26 +24,4 @@ func StarServer() error {
 		return errors.New("gRPC server listening port err")
 	}
 	return rpcServer.Serve(listener)
-}
-
-func releaseResource() {
-	if err := dao.CloseRedis(); err != nil {
-		logrus.Errorf(err.Error())
-	}
-}
-
-func initFile() error {
-	var dirs = []string{constant.LogDir, constant.BinDir,
-		constant.XrayConfigDir, constant.SingBoxConfigDir,
-		constant.HysteriaConfigDir, constant.NaiveProxyConfigDir,
-	}
-	for _, item := range dirs {
-		if !util.Exists(item) {
-			if err := os.Mkdir(item, os.ModePerm); err != nil {
-				logrus.Errorf("%s create err: %v", item, err)
-				return errors.New(fmt.Sprintf("%s create err", item))
-			}
-		}
-	}
-	return nil
 }

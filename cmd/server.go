@@ -1,10 +1,16 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
 	"trojan-core/api"
+	"trojan-core/dao"
+	"trojan-core/middleware"
+	"trojan-core/model/constant"
+	"trojan-core/util"
 )
 
 var serverCmd = &cobra.Command{
@@ -19,8 +25,43 @@ func init() {
 }
 
 func runServer(cmd *cobra.Command, args []string) {
-	if err := api.StarServer(); err != nil {
+	defer releaseResource()
+
+	middleware.InitLog()
+
+	if err := initFile(); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
+	if err := middleware.InitCron(); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	if err := api.StarGrpcServer(); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+}
+
+func releaseResource() {
+	if err := dao.CloseRedis(); err != nil {
+		logrus.Errorf(err.Error())
+	}
+}
+
+func initFile() error {
+	var dirs = []string{constant.LogDir, constant.BinDir,
+		constant.XrayConfigDir, constant.SingBoxConfigDir,
+		constant.HysteriaConfigDir, constant.NaiveProxyConfigDir,
+	}
+	for _, item := range dirs {
+		if !util.Exists(item) {
+			if err := os.Mkdir(item, os.ModePerm); err != nil {
+				logrus.Errorf("%s create err: %v", item, err)
+				return errors.New(fmt.Sprintf("%s create err", item))
+			}
+		}
+	}
+	return nil
 }
