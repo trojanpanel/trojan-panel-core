@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	naiveproxyLogger logrus.Logger
+	naiveProxyLogger logrus.Logger
 	NaiveProxyCmdMap sync.Map
 )
 
@@ -20,7 +20,7 @@ type NaiveProxyInstance struct {
 }
 
 func init() {
-	naiveproxyLogger.SetOutput(&lumberjack.Logger{
+	naiveProxyLogger.SetOutput(&lumberjack.Logger{
 		Filename:   constant.NaiveProxyLogPath,
 		MaxSize:    1,
 		MaxBackups: 2,
@@ -28,12 +28,12 @@ func init() {
 		Compress:   true,
 		LocalTime:  true,
 	})
-	naiveproxyLogger.SetFormatter(&logrus.JSONFormatter{TimestampFormat: "2006-01-02 15:04:05"})
-	naiveproxyLogger.SetLevel(logrus.InfoLevel)
+	naiveProxyLogger.SetFormatter(&logrus.JSONFormatter{TimestampFormat: "2006-01-02 15:04:05"})
+	naiveProxyLogger.SetLevel(logrus.InfoLevel)
 }
 
 func NewNaiveProxyInstance(key string) *NaiveProxyInstance {
-	configPath := constant.NaiveProxyConfigDir + key + constant.NaiveProxyConfigExt
+	configPath := GetNaiveProxyConfigPath(key)
 	return &NaiveProxyInstance{
 		Instance{
 			BinPath:    GetNaiveProxyBinPath(),
@@ -41,7 +41,7 @@ func NewNaiveProxyInstance(key string) *NaiveProxyInstance {
 			ConfigPath: configPath,
 			Command:    []string{"run", "--config", configPath},
 			process: process{
-				logger: &naiveproxyLogger,
+				logger: &naiveProxyLogger,
 				cmdMap: &NaiveProxyCmdMap,
 			},
 		},
@@ -58,6 +58,10 @@ func GetNaiveProxyBinName() string {
 		naiveProxyFileName += ".exe"
 	}
 	return naiveProxyFileName
+}
+
+func GetNaiveProxyConfigPath(key string) string {
+	return constant.NaiveProxyConfigDir + key + constant.NaiveProxyConfigExt
 }
 
 func DownloadNaiveProxy(version string) error {

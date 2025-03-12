@@ -33,7 +33,7 @@ func init() {
 }
 
 func NewHysteriaInstance(key string) *HysteriaInstance {
-	configPath := constant.HysteriaConfigDir + key + constant.HysteriaConfigExt
+	configPath := GetHysteriaConfigPath(key)
 	return &HysteriaInstance{
 		Instance{
 			BinPath:    GetHysteriaBinPath(),
@@ -58,6 +58,10 @@ func GetHysteriaBinName() string {
 		hysteriaFileName += ".exe"
 	}
 	return hysteriaFileName
+}
+
+func GetHysteriaConfigPath(key string) string {
+	return constant.HysteriaConfigDir + key + constant.HysteriaConfigExt
 }
 
 func DownloadHysteria(version string) error {

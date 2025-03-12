@@ -54,6 +54,17 @@ func InitProxy() error {
 	return nil
 }
 
+func PrepareConfigFile(proxy, key string, data []byte) error {
+	if proxy == constant.ProtocolXray {
+		return util.SaveBytesToFile(data, GetXrayConfigPath(key))
+	} else if proxy == constant.ProtocolHysteria {
+		return util.SaveBytesToFile(data, GetHysteriaConfigPath(key))
+	} else if proxy == constant.ProtocolNaiveProxy {
+		return util.SaveBytesToFile(data, GetNaiveProxyConfigPath(key))
+	}
+	return fmt.Errorf("proxy not supported")
+}
+
 func StartProxy(proxy, key string) error {
 	if proxy == constant.ProtocolXray {
 		return NewXrayInstance(key).Start()

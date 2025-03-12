@@ -33,7 +33,7 @@ func init() {
 }
 
 func NewXrayInstance(key string) *XrayInstance {
-	configPath := constant.XrayConfigDir + key + constant.XrayConfigExt
+	configPath := GetXrayConfigPath(key)
 	return &XrayInstance{
 		Instance{
 			BinPath:    GetXrayBinPath(),
@@ -58,6 +58,10 @@ func GetXrayBinName() string {
 		xrayFileName += ".exe"
 	}
 	return xrayFileName
+}
+
+func GetXrayConfigPath(key string) string {
+	return constant.XrayConfigDir + key + constant.XrayConfigExt
 }
 
 func DownloadXray(version string) error {
