@@ -1,10 +1,13 @@
 package proxy
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"runtime"
 	"sync"
 	"trojan-core/model/constant"
+	"trojan-core/util"
 )
 
 var (
@@ -42,4 +45,20 @@ func NewHysteriaInstance(key string, configPath string) *HysteriaInstance {
 			},
 		},
 	}
+}
+
+func GetHysteriaBinPath() string {
+	return constant.BinDir + GetHysteriaBinName()
+}
+
+func GetHysteriaBinName() string {
+	hysteriaFileName := fmt.Sprintf("hysteria-%s-%s", runtime.GOOS, runtime.GOARCH)
+	if runtime.GOOS == "windows" {
+		hysteriaFileName += ".exe"
+	}
+	return hysteriaFileName
+}
+
+func DownloadHysteria(version string) error {
+	return util.DownloadFromGithub(GetHysteriaBinName(), GetHysteriaBinPath(), "apernet", "hysteria", version)
 }

@@ -1,10 +1,13 @@
 package proxy
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"runtime"
 	"sync"
 	"trojan-core/model/constant"
+	"trojan-core/util"
 )
 
 var (
@@ -42,4 +45,20 @@ func NewNaiveProxyInstance(key string, configPath string) *NaiveProxyInstance {
 			},
 		},
 	}
+}
+
+func GetNaiveProxyBinPath() string {
+	return constant.BinDir + GetNaiveProxyBinName()
+}
+
+func GetNaiveProxyBinName() string {
+	naiveProxyFileName := fmt.Sprintf("naiveproxy-%s-%s", runtime.GOOS, runtime.GOARCH)
+	if runtime.GOOS == "windows" {
+		naiveProxyFileName += ".exe"
+	}
+	return naiveProxyFileName
+}
+
+func DownloadNaiveProxy(version string) error {
+	return util.DownloadFromGithub(GetNaiveProxyBinName(), GetNaiveProxyBinPath(), "jonssonyan", "naive", version)
 }
