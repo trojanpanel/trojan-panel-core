@@ -4,8 +4,8 @@ import (
 	"context"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/util"
+	"trojan-core/model/constant"
+	"trojan-core/util"
 )
 
 type ApiVersionService struct {

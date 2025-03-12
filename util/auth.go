@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"google.golang.org/grpc/metadata"
-	"trojan-panel-core/model/constant"
+	"trojan-core/model/constant"
 )
 
 func AuthRequest(ctx context.Context) error {

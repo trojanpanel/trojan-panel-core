@@ -4,7 +4,7 @@ const (
 	LogDir = "logs/"
 	BinDir = "bin/"
 
-	SystemLogPath = LogDir + "trojan-panel-core.log"
+	SystemLogPath = LogDir + "trojan-core.log"
 
 	XrayConfigDir = BinDir + "xray/"
 	XrayLogPath   = LogDir + "xray.log"

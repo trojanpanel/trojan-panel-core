@@ -4,7 +4,7 @@ import (
 	"github.com/avast/retry-go"
 	"github.com/sirupsen/logrus"
 	"time"
-	"trojan-panel-core/util"
+	"trojan-core/util"
 )
 
 type Instance struct {

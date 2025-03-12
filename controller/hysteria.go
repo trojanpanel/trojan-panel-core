@@ -2,9 +2,9 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/model/dto"
-	"trojan-panel-core/model/vo"
+	"trojan-core/model/constant"
+	"trojan-core/model/dto"
+	"trojan-core/model/vo"
 )
 
 func HysteriaApi(c *gin.Context) {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
-	"trojan-panel-core/service"
-	"trojan-panel-core/util"
+	"trojan-core/service"
+	"trojan-core/util"
 )
 
 type ApiServerService struct {

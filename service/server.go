@@ -1,6 +1,6 @@
 package service
 
-import "trojan-panel-core/util"
+import "trojan-core/util"
 
 func GetServerStats() (cpuUsed float64, memUsed float64, diskUsed float64, err error) {
 	cpuUsed, err = util.GetCpuPercent()

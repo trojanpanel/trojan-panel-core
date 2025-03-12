@@ -2,7 +2,7 @@ package proxy
 
 import (
 	"context"
-	"trojan-panel-core/util"
+	"trojan-core/util"
 )
 
 type ApiProxyService struct {

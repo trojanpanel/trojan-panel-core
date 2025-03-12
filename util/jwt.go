@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"github.com/golang-jwt/jwt"
-	"trojan-panel-core/dao"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/model/vo"
+	"trojan-core/dao"
+	"trojan-core/model/constant"
+	"trojan-core/model/vo"
 )
 
 type MyClaims struct {

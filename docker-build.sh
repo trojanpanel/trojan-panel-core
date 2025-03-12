@@ -37,25 +37,25 @@ echo_content() {
 }
 
 main() {
-  echo_content skyBlue "start build trojan-panel-core CPU：${arch_arr}"
+  echo_content skyBlue "start build trojan-core CPU：${arch_arr}"
 
   if [[ ${version} != "latest" ]]; then
-    docker buildx build -t jonssonyan/trojan-panel-core:${version} --platform ${arch_arr} --push .
+    docker buildx build -t jonssonyan/trojan-core:${version} --platform ${arch_arr} --push .
     if [[ "$?" == "0" ]]; then
-      echo_content green "trojan-panel-core-linux Version：${version} CPU：${arch_arr} build success"
+      echo_content green "trojan-core-linux Version：${version} CPU：${arch_arr} build success"
     else
-      echo_content red "trojan-panel-core-linux Version：${version} CPU：${arch_arr} build failed"
+      echo_content red "trojan-core-linux Version：${version} CPU：${arch_arr} build failed"
     fi
   fi
 
-  docker buildx build -t jonssonyan/trojan-panel-core:latest --platform ${arch_arr} --push .
+  docker buildx build -t jonssonyan/trojan-core:latest --platform ${arch_arr} --push .
   if [[ "$?" == "0" ]]; then
-    echo_content green "trojan-panel-core Version：latest CPU：${arch_arr} build success"
+    echo_content green "trojan-core Version：latest CPU：${arch_arr} build success"
   else
-    echo_content red "trojan-panel-core-linux Version：latest CPU：${arch_arr} build failed"
+    echo_content red "trojan-core-linux Version：latest CPU：${arch_arr} build failed"
   fi
 
-  echo_content skyBlue "trojan-panel-core CPU：${arch_arr} build finished"
+  echo_content skyBlue "trojan-core CPU：${arch_arr} build finished"
 }
 
 init_var

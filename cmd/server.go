@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"trojan-panel-core/api"
+	"trojan-core/api"
 )
 
 var serverCmd = &cobra.Command{

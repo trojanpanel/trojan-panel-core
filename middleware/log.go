@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
-	"trojan-panel-core/model/constant"
+	"trojan-core/model/constant"
 )
 
 func InitLog() {

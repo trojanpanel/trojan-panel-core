@@ -6,8 +6,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "trojan-panel-core",
-	Short: "A command line tool for trojan-panel-core",
+	Use:   "trojan-core",
+	Short: "A command line tool for trojan-core",
 }
 
 func Execute() {

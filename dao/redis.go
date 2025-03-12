@@ -3,7 +3,7 @@ package dao
 import (
 	"github.com/redis/go-redis/v9"
 	"os"
-	"trojan-panel-core/model/constant"
+	"trojan-core/model/constant"
 )
 
 var RedisClient *redis.Client

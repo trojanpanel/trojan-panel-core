@@ -1,6 +1,6 @@
 package main
 
-import "trojan-panel-core/cmd"
+import "trojan-core/cmd"
 
 func main() {
 	cmd.Execute()

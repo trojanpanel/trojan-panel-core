@@ -7,12 +7,12 @@ import (
 	"github.com/xtls/xray-core/common/net"
 	"google.golang.org/grpc"
 	"os"
-	"trojan-panel-core/api/proxy"
-	"trojan-panel-core/api/server"
-	"trojan-panel-core/api/version"
-	"trojan-panel-core/middleware"
-	"trojan-panel-core/model/constant"
-	"trojan-panel-core/util"
+	"trojan-core/api/proxy"
+	"trojan-core/api/server"
+	"trojan-core/api/version"
+	"trojan-core/middleware"
+	"trojan-core/model/constant"
+	"trojan-core/util"
 )
 
 func StarServer() error {
