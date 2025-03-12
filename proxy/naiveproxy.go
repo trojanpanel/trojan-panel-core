@@ -53,7 +53,7 @@ func GetNaiveProxyBinPath() string {
 }
 
 func GetNaiveProxyBinName() string {
-	naiveProxyFileName := fmt.Sprintf("naiveproxy-%s-%s", runtime.GOOS, runtime.GOARCH)
+	naiveProxyFileName := fmt.Sprintf("naive-%s-%s", runtime.GOOS, runtime.GOARCH)
 	if runtime.GOOS == "windows" {
 		naiveProxyFileName += ".exe"
 	}
