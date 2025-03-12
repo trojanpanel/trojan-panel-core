@@ -6,5 +6,8 @@ import (
 )
 
 func TestGetFileNameWithoutExt(t *testing.T) {
-	print(util.GetFileNameWithoutExt("test\\1.go"))
+	names, _ := util.ListFileNames("../api", ".go")
+	for _, item := range names {
+		println(item)
+	}
 }

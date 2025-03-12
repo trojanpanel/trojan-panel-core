@@ -32,10 +32,11 @@ func init() {
 	xrayLogger.SetLevel(logrus.InfoLevel)
 }
 
-func NewXrayInstance(key string, configPath string) *XrayInstance {
+func NewXrayInstance(key string) *XrayInstance {
+	configPath := constant.XrayConfigDir + key + constant.XrayConfigExt
 	return &XrayInstance{
 		Instance{
-			BinPath:    constant.BinDir,
+			BinPath:    GetXrayBinPath(),
 			Key:        key,
 			ConfigPath: configPath,
 			Command:    []string{"run", "-c", configPath},

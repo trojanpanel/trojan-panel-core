@@ -32,10 +32,11 @@ func init() {
 	naiveproxyLogger.SetLevel(logrus.InfoLevel)
 }
 
-func NewNaiveProxyInstance(key string, configPath string) *NaiveProxyInstance {
+func NewNaiveProxyInstance(key string) *NaiveProxyInstance {
+	configPath := constant.NaiveProxyConfigDir + key + constant.NaiveProxyConfigExt
 	return &NaiveProxyInstance{
 		Instance{
-			BinPath:    constant.BinDir,
+			BinPath:    GetNaiveProxyBinPath(),
 			Key:        key,
 			ConfigPath: configPath,
 			Command:    []string{"run", "--config", configPath},

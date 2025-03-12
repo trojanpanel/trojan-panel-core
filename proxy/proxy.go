@@ -24,54 +24,54 @@ func InitProxy() error {
 		}
 	}
 
-	xrayConfigFiles, err := util.ListFiles(constant.XrayConfigDir, constant.XrayConfigExt)
+	xrayConfigFiles, err := util.ListFileNames(constant.XrayConfigDir, constant.XrayConfigExt)
 	if err != nil {
 		return err
 	}
 	for _, item := range xrayConfigFiles {
-		if err = StartProxy(constant.ProtocolXray, util.GetFileNameWithoutExt(item), item); err != nil {
+		if err = StartProxy(constant.ProtocolXray, item); err != nil {
 			logrus.Error(err.Error())
 		}
 	}
-	hysteriaConfigFiles, err := util.ListFiles(constant.HysteriaConfigDir, constant.HysteriaConfigExt)
+	hysteriaConfigFiles, err := util.ListFileNames(constant.HysteriaConfigDir, constant.HysteriaConfigExt)
 	if err != nil {
 		return err
 	}
 	for _, item := range hysteriaConfigFiles {
-		if err = StartProxy(constant.ProtocolHysteria, util.GetFileNameWithoutExt(item), item); err != nil {
+		if err = StartProxy(constant.ProtocolHysteria, item); err != nil {
 			logrus.Error(err.Error())
 		}
 	}
-	naiveProxyConfigFiles, err := util.ListFiles(constant.NaiveProxyConfigDir, constant.NaiveProxyConfigExt)
+	naiveProxyConfigFiles, err := util.ListFileNames(constant.NaiveProxyConfigDir, constant.NaiveProxyConfigExt)
 	if err != nil {
 		return err
 	}
 	for _, item := range naiveProxyConfigFiles {
-		if err = StartProxy(constant.ProtocolNaiveProxy, util.GetFileNameWithoutExt(item), item); err != nil {
+		if err = StartProxy(constant.ProtocolNaiveProxy, item); err != nil {
 			logrus.Error(err.Error())
 		}
 	}
 	return nil
 }
 
-func StartProxy(proxy, key, configPath string) error {
+func StartProxy(proxy, key string) error {
 	if proxy == constant.ProtocolXray {
-		return NewXrayInstance(key, configPath).Start()
+		return NewXrayInstance(key).Start()
 	} else if proxy == constant.ProtocolHysteria {
-		return NewHysteriaInstance(key, configPath).Start()
+		return NewHysteriaInstance(key).Start()
 	} else if proxy == constant.ProtocolNaiveProxy {
-		return NewNaiveProxyInstance(key, configPath).Start()
+		return NewNaiveProxyInstance(key).Start()
 	}
 	return fmt.Errorf("proxy not supported")
 }
 
-func StopProxy(proxy, key, configPath string) error {
+func StopProxy(proxy, key string) error {
 	if proxy == constant.ProtocolXray {
-		return NewXrayInstance(key, configPath).Stop()
+		return NewXrayInstance(key).Stop()
 	} else if proxy == constant.ProtocolHysteria {
-		return NewHysteriaInstance(key, configPath).Stop()
+		return NewHysteriaInstance(key).Stop()
 	} else if proxy == constant.ProtocolNaiveProxy {
-		return NewNaiveProxyInstance(key, configPath).Stop()
+		return NewNaiveProxyInstance(key).Stop()
 	}
 	return fmt.Errorf("proxy not supported")
 }

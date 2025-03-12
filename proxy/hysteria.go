@@ -32,10 +32,11 @@ func init() {
 	hysteriaLogger.SetLevel(logrus.InfoLevel)
 }
 
-func NewHysteriaInstance(key string, configPath string) *HysteriaInstance {
+func NewHysteriaInstance(key string) *HysteriaInstance {
+	configPath := constant.HysteriaConfigDir + key + constant.HysteriaConfigExt
 	return &HysteriaInstance{
 		Instance{
-			BinPath:    constant.BinDir,
+			BinPath:    GetHysteriaBinPath(),
 			Key:        key,
 			ConfigPath: configPath,
 			Command:    []string{"server", "-c", configPath},

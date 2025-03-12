@@ -80,25 +80,21 @@ func DownloadFromGithub(binName, binPath, owner, repo, version string) error {
 	return nil
 }
 
-func ListFiles(dir, ext string) ([]string, error) {
-	var configFiles []string
+func ListFileNames(dir, ext string) ([]string, error) {
+	var fileNames []string
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 		if !info.IsDir() && filepath.Ext(info.Name()) == ext {
-			configFiles = append(configFiles, path)
+			baseName := filepath.Base(path)
+			nameWithoutExt := baseName[:len(baseName)-len(filepath.Ext(baseName))]
+			fileNames = append(fileNames, nameWithoutExt)
 		}
 		return nil
 	})
 	if err != nil {
 		return nil, err
 	}
-	return configFiles, nil
-}
-
-func GetFileNameWithoutExt(path string) string {
-	base := filepath.Base(path)
-	ext := filepath.Ext(base)
-	return base[:len(base)-len(ext)]
+	return fileNames, nil
 }
