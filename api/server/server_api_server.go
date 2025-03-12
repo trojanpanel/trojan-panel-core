@@ -15,7 +15,6 @@ func (a *ApiServerService) GetServerStats(ctx context.Context, apiServerDto *Api
 	if err := util.AuthRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-
 	cpuUsed, memUsed, diskUsed, err := service.GetServerStats()
 	if err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
