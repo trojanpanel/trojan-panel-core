@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -59,7 +58,7 @@ func initFile() error {
 		if !util.Exists(item) {
 			if err := os.Mkdir(item, os.ModePerm); err != nil {
 				logrus.Errorf("%s create err: %v", item, err)
-				return errors.New(fmt.Sprintf("%s create err", item))
+				return fmt.Errorf("%s create err", item)
 			}
 		}
 	}

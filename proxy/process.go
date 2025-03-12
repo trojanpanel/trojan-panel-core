@@ -2,7 +2,7 @@ package proxy
 
 import (
 	"bufio"
-	"errors"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"io"
 	"os/exec"
@@ -68,12 +68,12 @@ func (p *process) stop(key string) error {
 
 	cmd, ok := p.cmdMap.Load(key)
 	if !ok {
-		return errors.New("process not found")
+		return fmt.Errorf("process not found")
 	}
 
 	execCmd, ok := cmd.(*exec.Cmd)
 	if !ok {
-		return errors.New("process stop err")
+		return fmt.Errorf("process stop err")
 	}
 
 	if err := execCmd.Process.Kill(); err != nil {

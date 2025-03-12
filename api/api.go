@@ -1,7 +1,6 @@
 package api
 
 import (
-	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/xtls/xray-core/common/net"
@@ -21,7 +20,7 @@ func StarGrpcServer() error {
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", os.Getenv(constant.GrpcPort)))
 	if err != nil {
 		logrus.Errorf(fmt.Sprintf("gRPC server listening port err: %v", err))
-		return errors.New("gRPC server listening port err")
+		return fmt.Errorf("gRPC server listening port err")
 	}
 	return rpcServer.Serve(listener)
 }

@@ -1,14 +1,15 @@
 package util
 
 import (
-	"errors"
+	"fmt"
+	"io"
 	"os"
 )
 
 func RemoveFile(filePath string) error {
 	if Exists(filePath) {
 		if err := os.Remove(filePath); err != nil {
-			return errors.New("failed to delete file")
+			return fmt.Errorf("failed to delete file")
 		}
 	}
 	return nil
@@ -23,4 +24,17 @@ func Exists(path string) bool {
 		return false
 	}
 	return true
+}
+
+func SaveBytesToFile(data []byte, filePath string) error {
+	file, err := os.Create(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %w", err)
+	}
+	defer file.Close()
+
+	if _, err = io.WriteString(file, string(data)); err != nil {
+		return fmt.Errorf("failed to write to file: %w", err)
+	}
+	return nil
 }
