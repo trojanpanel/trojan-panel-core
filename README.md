@@ -20,6 +20,10 @@ English / [简体中文](README_ZH.md)
 3. [naiveproxy](https://github.com/klzgrad/naiveproxy)
 4. [sing-box](https://github.com/SagerNet/sing-box)
 
+## API Examples
+
+[tests/api](tests/api)
+
 ## Build
 
 Windows: [build.bat](build.bat)

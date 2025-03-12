@@ -20,6 +20,10 @@
 3. [naiveproxy](https://github.com/klzgrad/naiveproxy)
 4. [sing-box](https://github.com/SagerNet/sing-box)
 
+## API 示例
+
+[tests/api](tests/api)
+
 ## 构建
 
 Windows: [build.bat](build.bat)
