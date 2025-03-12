@@ -9,6 +9,7 @@ import (
 	"trojan-core/dao"
 	"trojan-core/middleware"
 	"trojan-core/model/constant"
+	"trojan-core/proxy"
 	"trojan-core/util"
 )
 
@@ -29,6 +30,10 @@ func runServer(cmd *cobra.Command, args []string) {
 	middleware.InitLog()
 
 	if err := initFile(); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+	if err := proxy.InitProxy(); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
