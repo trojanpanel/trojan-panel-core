@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"trojan-core/model/constant"
 	"trojan-core/util"
 )
@@ -22,39 +23,55 @@ func InitProxy() error {
 			return err
 		}
 	}
+
+	xrayConfigFiles, err := util.ListFiles(constant.XrayConfigDir, constant.XrayConfigExt)
+	if err != nil {
+		return err
+	}
+	for _, item := range xrayConfigFiles {
+		if err = StartProxy(constant.ProtocolXray, util.GetFileNameWithoutExt(item), item); err != nil {
+			logrus.Error(err.Error())
+		}
+	}
+	hysteriaConfigFiles, err := util.ListFiles(constant.HysteriaConfigDir, constant.HysteriaConfigExt)
+	if err != nil {
+		return err
+	}
+	for _, item := range hysteriaConfigFiles {
+		if err = StartProxy(constant.ProtocolHysteria, util.GetFileNameWithoutExt(item), item); err != nil {
+			logrus.Error(err.Error())
+		}
+	}
+	naiveProxyConfigFiles, err := util.ListFiles(constant.NaiveProxyConfigDir, constant.NaiveProxyConfigExt)
+	if err != nil {
+		return err
+	}
+	for _, item := range naiveProxyConfigFiles {
+		if err = StartProxy(constant.ProtocolNaiveProxy, util.GetFileNameWithoutExt(item), item); err != nil {
+			logrus.Error(err.Error())
+		}
+	}
 	return nil
 }
 
-func StartProxy(proxy string, key string, value []byte) error {
+func StartProxy(proxy, key, configPath string) error {
 	if proxy == constant.ProtocolXray {
-		configPath := fmt.Sprintf("%s%s.json", constant.XrayConfigDir, key)
-		if err := util.SaveBytesToFile(value, configPath); err != nil {
-			return err
-		}
 		return NewXrayInstance(key, configPath).Start()
 	} else if proxy == constant.ProtocolHysteria {
-		configPath := fmt.Sprintf("%s%s.yaml", constant.HysteriaConfigDir, key)
-		if err := util.SaveBytesToFile(value, configPath); err != nil {
-			return err
-		}
 		return NewHysteriaInstance(key, configPath).Start()
 	} else if proxy == constant.ProtocolNaiveProxy {
-		configPath := fmt.Sprintf("%s%s.json", constant.NaiveProxyConfigDir, key)
-		if err := util.SaveBytesToFile(value, configPath); err != nil {
-			return err
-		}
 		return NewNaiveProxyInstance(key, configPath).Start()
 	}
 	return fmt.Errorf("proxy not supported")
 }
 
-func StopProxy(proxy string, key string) error {
+func StopProxy(proxy, key, configPath string) error {
 	if proxy == constant.ProtocolXray {
-		return NewXrayInstance(key, fmt.Sprintf("%s%s.json", constant.XrayConfigDir, key)).Stop()
+		return NewXrayInstance(key, configPath).Stop()
 	} else if proxy == constant.ProtocolHysteria {
-		return NewHysteriaInstance(key, fmt.Sprintf("%s%s.yaml", constant.HysteriaConfigDir, key)).Stop()
+		return NewHysteriaInstance(key, configPath).Stop()
 	} else if proxy == constant.ProtocolNaiveProxy {
-		return NewNaiveProxyInstance(key, fmt.Sprintf("%s%s.json", constant.NaiveProxyConfigDir, key)).Stop()
+		return NewNaiveProxyInstance(key, configPath).Stop()
 	}
 	return fmt.Errorf("proxy not supported")
 }

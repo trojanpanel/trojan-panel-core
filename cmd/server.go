@@ -30,7 +30,6 @@ func runServer(cmd *cobra.Command, args []string) {
 	defer releaseResource()
 
 	middleware.InitLog()
-
 	if err := initFile(); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
@@ -44,19 +43,23 @@ func runServer(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	r := gin.Default()
-	router.Router(r)
-	if err := r.Run(fmt.Sprintf(":%s", os.Getenv(constant.WebPort))); err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-
 	go func() {
 		if err := api.StarGrpcServer(); err != nil {
 			fmt.Println(err.Error())
 			os.Exit(1)
 		}
 	}()
+
+	if err := startWebServer(); err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+}
+
+func startWebServer() error {
+	r := gin.Default()
+	router.Router(r)
+	return r.Run(fmt.Sprintf(":%s", os.Getenv(constant.WebPort)))
 }
 
 func releaseResource() {
