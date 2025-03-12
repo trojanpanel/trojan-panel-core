@@ -10,6 +10,7 @@ import (
 	"trojan-core/api/proxy"
 	"trojan-core/api/server"
 	"trojan-core/api/version"
+	"trojan-core/dao"
 	"trojan-core/middleware"
 	"trojan-core/model/constant"
 	"trojan-core/util"
@@ -38,7 +39,9 @@ func StarServer() error {
 }
 
 func releaseResource() {
-
+	if err := dao.CloseRedis(); err != nil {
+		logrus.Errorf(err.Error())
+	}
 }
 
 func initFile() error {
