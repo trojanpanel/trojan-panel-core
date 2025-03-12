@@ -33,7 +33,7 @@ func GetReleaseAssetURL(owner, repo, version, fileName string) (string, error) {
 		release = releases[0]
 	}
 
-	assets, _, err := githubClient.Repositories.ListReleaseAssets(ctx, owner, repo, release.GetID(), nil)
+	assets, _, err := githubClient.Repositories.ListReleaseAssets(ctx, owner, repo, release.GetID(), &github.ListOptions{PerPage: 100})
 	if err != nil {
 		return "", fmt.Errorf("failed to list release assets: %w", err)
 	}

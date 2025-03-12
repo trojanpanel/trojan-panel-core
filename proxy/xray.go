@@ -80,10 +80,15 @@ func DownloadXray(version string) error {
 	if err := util.Unzip(xrayBinPath, constant.BinDir); err != nil {
 		return err
 	}
-	if !util.Exists(constant.BinDir + "xray") {
+	xrayOriginBinName := "xray"
+	if runtime.GOOS == "windows" {
+		xrayOriginBinName += ".exe"
+	}
+	xrayOriginBinPath := constant.BinDir + xrayOriginBinName
+	if !util.Exists(xrayOriginBinPath) {
 		return fmt.Errorf("xray bin file not exists")
 	}
-	if err := os.Rename(constant.BinDir+"xray", GetXrayBinPath()); err != nil {
+	if err := os.Rename(xrayOriginBinPath, GetXrayBinPath()); err != nil {
 		return err
 	}
 	if err := os.Chmod(GetXrayBinPath(), 0755); err != nil {
