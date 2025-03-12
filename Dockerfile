@@ -6,7 +6,6 @@ WORKDIR /app
 
 ENV TZ=Asia/Shanghai
 ENV GIN_MODE=release
-ENV TROJAN_CORE_WEB_PORT=8082
 ENV TROJAN_CORE_GRPC_PORT=8083
 
 ARG TARGETOS
@@ -21,4 +20,4 @@ RUN apk update && apk add --no-cache bash tzdata ca-certificates nftables \
     && echo $TZ > /etc/timezone \
     && chmod +x /app/trojan-core
 
-CMD ["./trojan-core"]
+CMD ["./trojan-core server"]
