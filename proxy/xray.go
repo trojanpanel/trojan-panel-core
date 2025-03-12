@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"os"
+	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 	"trojan-core/model/constant"
 	"trojan-core/util"
@@ -65,5 +68,42 @@ func GetXrayConfigPath(key string) string {
 }
 
 func DownloadXray(version string) error {
-	return util.DownloadFromGithub(GetXrayBinName(), GetXrayBinPath(), "XTLS", "Xray-core", version)
+	goarch := runtime.GOARCH
+	if strings.Contains(goarch, "amd") {
+		goarch = strings.TrimPrefix(goarch, "amd")
+	}
+	xrayFileName := fmt.Sprintf("Xray-%s-%s.zip", runtime.GOOS, goarch)
+	xrayFilePath := constant.BinDir + xrayFileName
+	if err := util.DownloadFromGithub(xrayFileName, xrayFilePath, "XTLS", "Xray-core", version); err != nil {
+		return err
+	}
+	if err := util.Unzip(xrayFilePath, constant.BinDir); err != nil {
+		return err
+	}
+	xrayBinPath := constant.BinDir + "xray"
+	if !util.Exists(xrayBinPath) {
+		return fmt.Errorf("xray bin file not exists")
+	}
+	if err := os.Rename(xrayBinPath, GetXrayBinPath()); err != nil {
+		return err
+	}
+	if err := os.Chmod(GetXrayBinPath(), 0755); err != nil {
+		return fmt.Errorf("failed to change file permissions: %w", err)
+	}
+	_ = filepath.Walk(constant.BinDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			ext := filepath.Ext(info.Name())
+			if ext == ".zip" || ext == ".md" || info.Name() == "LICENSE" {
+				err := os.Remove(path)
+				if err != nil {
+					return fmt.Errorf("failed to delete file %s: %w", path, err)
+				}
+			}
+		}
+		return nil
+	})
+	return nil
 }

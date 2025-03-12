@@ -19,7 +19,7 @@ func StarGrpcServer() error {
 	version.RegisterApiVersionServiceServer(rpcServer, new(version.ApiVersionService))
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", os.Getenv(constant.GrpcPort)))
 	if err != nil {
-		logrus.Errorf(fmt.Sprintf("gRPC server listening port err: %v", err))
+		logrus.Errorf(fmt.Sprintf("gRPC server listening port err: %w", err))
 		return fmt.Errorf("gRPC server listening port err")
 	}
 	return rpcServer.Serve(listener)

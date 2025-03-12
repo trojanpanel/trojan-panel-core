@@ -20,12 +20,12 @@ func GetReleaseAssetURL(owner, repo, version, fileName string) (string, error) {
 	if version != "" {
 		release, _, err = githubClient.Repositories.GetReleaseByTag(ctx, owner, repo, version)
 		if err != nil {
-			return "", fmt.Errorf("failed to get release for version %s: %v", version, err)
+			return "", fmt.Errorf("failed to get release for version %s: %w", version, err)
 		}
 	} else {
 		releases, _, err := githubClient.Repositories.ListReleases(ctx, owner, repo, nil)
 		if err != nil {
-			return "", fmt.Errorf("failed to list releases: %v", err)
+			return "", fmt.Errorf("failed to list releases: %w", err)
 		}
 		if len(releases) == 0 {
 			return "", fmt.Errorf("no releases found")
@@ -35,7 +35,7 @@ func GetReleaseAssetURL(owner, repo, version, fileName string) (string, error) {
 
 	assets, _, err := githubClient.Repositories.ListReleaseAssets(ctx, owner, repo, release.GetID(), nil)
 	if err != nil {
-		return "", fmt.Errorf("failed to list release assets: %v", err)
+		return "", fmt.Errorf("failed to list release assets: %w", err)
 	}
 
 	for _, asset := range assets {
@@ -51,7 +51,7 @@ func ListRelease(owner, repo string) ([]*github.RepositoryRelease, error) {
 	ctx := context.Background()
 	releases, _, err := githubClient.Repositories.ListReleases(ctx, owner, repo, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to list releases: %v", err)
+		return nil, fmt.Errorf("failed to list releases: %w", err)
 	}
 	return releases, nil
 }

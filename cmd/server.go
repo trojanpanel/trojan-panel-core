@@ -76,7 +76,7 @@ func initFile() error {
 	for _, item := range dirs {
 		if !util.Exists(item) {
 			if err := os.Mkdir(item, os.ModePerm); err != nil {
-				logrus.Errorf("%s create err: %v", item, err)
+				logrus.Errorf("%s create err: %w", item, err)
 				return fmt.Errorf("%s create err", item)
 			}
 		}

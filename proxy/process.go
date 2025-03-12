@@ -99,7 +99,7 @@ func (p *process) handleLogs(stdout, stderr io.ReadCloser) {
 			ch <- scanner.Text()
 		}
 		if err := scanner.Err(); err != nil {
-			logrus.Errorf("Error reading log: %v", err)
+			logrus.Errorf("Error reading log: %w", err)
 		}
 		close(ch)
 	}

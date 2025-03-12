@@ -22,7 +22,7 @@ func (i *Instance) IsRunning() bool {
 func (i *Instance) Start() error {
 	if err := i.start(i.Key, i.BinPath, i.Command...); err != nil {
 		tryRemoveFile(i.ConfigPath)
-		logrus.Errorf("start bingPath: %s err: %v", i.BinPath, err)
+		logrus.Errorf("start bingPath: %s err: %w", i.BinPath, err)
 		return err
 	}
 	return nil
@@ -30,7 +30,7 @@ func (i *Instance) Start() error {
 
 func (i *Instance) Stop() error {
 	if err := i.stop(i.Key); err != nil {
-		logrus.Errorf("stop bingPath: %s err: %v", i.BinPath, err)
+		logrus.Errorf("stop bingPath: %s err: %w", i.BinPath, err)
 		return err
 	}
 	tryRemoveFile(i.ConfigPath)
