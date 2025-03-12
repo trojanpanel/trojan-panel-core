@@ -7,14 +7,20 @@ import (
 )
 
 func InitProxy() error {
-	if err := DownloadXray(""); err != nil {
-		return err
+	if !util.Exists(GetXrayBinPath()) {
+		if err := DownloadXray(""); err != nil {
+			return err
+		}
 	}
-	if err := DownloadHysteria(""); err != nil {
-		return err
+	if !util.Exists(GetHysteriaBinPath()) {
+		if err := DownloadHysteria(""); err != nil {
+			return err
+		}
 	}
-	if err := DownloadNaiveProxy(""); err != nil {
-		return err
+	if !util.Exists(GetNaiveProxyBinPath()) {
+		if err := DownloadNaiveProxy(""); err != nil {
+			return err
+		}
 	}
 	return nil
 }
