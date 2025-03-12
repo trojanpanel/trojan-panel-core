@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"trojan-core/middleware"
 	"trojan-core/model/constant"
 	"trojan-core/proxy"
+	"trojan-core/router"
 	"trojan-core/util"
 )
 
@@ -42,10 +44,19 @@ func runServer(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	if err := api.StarGrpcServer(); err != nil {
+	r := gin.Default()
+	router.Router(r)
+	if err := r.Run(fmt.Sprintf(":%s", os.Getenv(constant.WebPort))); err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
+
+	go func() {
+		if err := api.StarGrpcServer(); err != nil {
+			fmt.Println(err.Error())
+			os.Exit(1)
+		}
+	}()
 }
 
 func releaseResource() {
