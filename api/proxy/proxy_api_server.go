@@ -26,7 +26,7 @@ func (a *ApiProxyService) StopProxy(ctx context.Context, stopProxyDto *StopProxy
 	if err := util.AuthRequest(ctx); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
-	if err := proxy.StartProxy(stopProxyDto.Proxy, stopProxyDto.Key); err != nil {
+	if err := proxy.StopProxy(stopProxyDto.Proxy, stopProxyDto.Key); err != nil {
 		return &Response{Success: false, Msg: err.Error()}, nil
 	}
 	return &Response{Success: true, Msg: ""}, nil
