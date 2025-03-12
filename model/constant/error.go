@@ -8,5 +8,6 @@ const (
 
 	IllegalTokenError string = "authentication failed"
 
-	GrpcError = "failed to connect to remote service"
+	GrpcError string = "failed to connect to remote service"
+	HttpError string = "http connection error"
 )
