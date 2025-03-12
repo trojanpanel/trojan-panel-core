@@ -73,18 +73,17 @@ func DownloadXray(version string) error {
 		goarch = strings.TrimPrefix(goarch, "amd")
 	}
 	xrayFileName := fmt.Sprintf("Xray-%s-%s.zip", runtime.GOOS, goarch)
-	xrayFilePath := constant.BinDir + xrayFileName
-	if err := util.DownloadFromGithub(xrayFileName, xrayFilePath, "XTLS", "Xray-core", version); err != nil {
+	xrayBinPath := constant.BinDir + xrayFileName
+	if err := util.DownloadFromGithub(xrayFileName, xrayBinPath, "XTLS", "Xray-core", version); err != nil {
 		return err
 	}
-	if err := util.Unzip(xrayFilePath, constant.BinDir); err != nil {
+	if err := util.Unzip(xrayBinPath, constant.BinDir); err != nil {
 		return err
 	}
-	xrayBinPath := constant.BinDir + "xray"
-	if !util.Exists(xrayBinPath) {
+	if !util.Exists(constant.BinDir + "xray") {
 		return fmt.Errorf("xray bin file not exists")
 	}
-	if err := os.Rename(xrayBinPath, GetXrayBinPath()); err != nil {
+	if err := os.Rename(constant.BinDir+"xray", GetXrayBinPath()); err != nil {
 		return err
 	}
 	if err := os.Chmod(GetXrayBinPath(), 0755); err != nil {

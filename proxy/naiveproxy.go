@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"os"
 	"runtime"
 	"sync"
 	"trojan-core/model/constant"
@@ -53,7 +54,7 @@ func GetNaiveProxyBinPath() string {
 }
 
 func GetNaiveProxyBinName() string {
-	naiveProxyFileName := fmt.Sprintf("naive-%s-%s", runtime.GOOS, runtime.GOARCH)
+	naiveProxyFileName := fmt.Sprintf("naiveproxy-%s-%s", runtime.GOOS, runtime.GOARCH)
 	if runtime.GOOS == "windows" {
 		naiveProxyFileName += ".exe"
 	}
@@ -65,5 +66,16 @@ func GetNaiveProxyConfigPath(key string) string {
 }
 
 func DownloadNaiveProxy(version string) error {
-	return util.DownloadFromGithub(GetNaiveProxyBinName(), GetNaiveProxyBinPath(), "jonssonyan", "naive", version)
+	naiveProxyFileName := fmt.Sprintf("naive-%s-%s", runtime.GOOS, runtime.GOARCH)
+	naiveProxyBinPath := constant.BinDir + naiveProxyFileName
+	if err := util.DownloadFromGithub(naiveProxyFileName, naiveProxyBinPath, "jonssonyan", "naive", version); err != nil {
+		return err
+	}
+	if !util.Exists(naiveProxyBinPath) {
+		return fmt.Errorf("naive bin file not exists")
+	}
+	if err := os.Rename(naiveProxyBinPath, GetNaiveProxyBinPath()); err != nil {
+		return err
+	}
+	return nil
 }
