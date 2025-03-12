@@ -7,6 +7,15 @@ import (
 )
 
 func InitProxy() error {
+	if err := DownloadXray(""); err != nil {
+		return err
+	}
+	if err := DownloadHysteria(""); err != nil {
+		return err
+	}
+	if err := DownloadNaiveProxy(""); err != nil {
+		return err
+	}
 	return nil
 }
 
