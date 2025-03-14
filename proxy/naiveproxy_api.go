@@ -59,18 +59,26 @@ func (n *NaiveProxyApi) ListUsers() ([]string, error) {
 	return authCredentials, nil
 }
 
-// AddUser add user on node
-func (n *NaiveProxyApi) AddUser(user, pass string) error {
+// HandleUser add or delete user on node
+func (n *NaiveProxyApi) HandleUser(authCredentials []string, add bool) error {
 	if !NewHysteriaInstance(n.apiPort).IsRunning() {
 		return nil
 	}
-	authCredential := handleNaiveProxyAuthCredential(user, pass)
+	authCredentialsByte, err := json.Marshal(authCredentials)
+	if err != nil {
+		logrus.Errorf("NaiveProxy HandleUser Marshal err: %v", err)
+		return fmt.Errorf(constant.SysError)
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	url := fmt.Sprintf("http://127.0.0.1:%s/config/apps/http/servers/srv0/routes/0/handle/0/routes/0/handle/0/auth_credentials/", n.apiPort)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer([]byte(authCredential)))
+	method := http.MethodPost
+	if !add {
+		method = http.MethodDelete
+	}
+	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewBuffer(authCredentialsByte))
 	if err != nil {
-		logrus.Errorf("NaiveProxy AddUser NewRequest err: %v", err)
+		logrus.Errorf("NaiveProxy HandleUser NewRequest err: %v", err)
 		return fmt.Errorf(constant.SysError)
 	}
 	req.Header.Set("Content-Type", "application/json")
