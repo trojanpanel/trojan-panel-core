@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io"
@@ -39,7 +38,7 @@ func (h *HysteriaApi) ListUsers(clear bool, secret string) (map[string]bo.Hyster
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		logrus.Errorf("Hysteria ListUsers NewRequest err: %v", err)
-		return nil, errors.New(constant.SysError)
+		return nil, fmt.Errorf(constant.SysError)
 	}
 	req.Header.Set("Authorization", secret)
 	resp, err := http.DefaultClient.Do(req)
@@ -50,16 +49,16 @@ func (h *HysteriaApi) ListUsers(clear bool, secret string) (map[string]bo.Hyster
 	}()
 	if err != nil || resp.StatusCode != http.StatusOK {
 		logrus.Errorf("Hysteria ListUsers err: %v", err)
-		return nil, errors.New("http connection error")
+		return nil, fmt.Errorf(constant.HttpError)
 	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		logrus.Errorf("Hysteria io read err: %v", err)
-		return nil, errors.New("http connection error")
+		return nil, fmt.Errorf(constant.HttpError)
 	}
 	if err = json.Unmarshal(body, &users); err != nil {
 		logrus.Errorf("Hysteria ListUsers Unmarshal err: %v", err)
-		return nil, errors.New(constant.SysError)
+		return nil, fmt.Errorf(constant.SysError)
 	}
 	return users, nil
 }
@@ -72,7 +71,7 @@ func (h *HysteriaApi) KickUsers(keys []string, secret string) error {
 	usernamesByte, err := json.Marshal(keys)
 	if err != nil {
 		logrus.Errorf("Hysteria KickUsers Marshal err: %v", err)
-		return errors.New(constant.SysError)
+		return fmt.Errorf(constant.SysError)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -81,7 +80,7 @@ func (h *HysteriaApi) KickUsers(keys []string, secret string) error {
 		bytes.NewBuffer(usernamesByte))
 	if err != nil {
 		logrus.Errorf("Hysteria KickUsers NewRequest err: %v", err)
-		return errors.New(constant.SysError)
+		return fmt.Errorf(constant.SysError)
 	}
 	req.Header.Set("Authorization", secret)
 	req.Header.Set("Content-Type", "application/json")
@@ -93,7 +92,7 @@ func (h *HysteriaApi) KickUsers(keys []string, secret string) error {
 	}()
 	if err != nil || resp.StatusCode != http.StatusOK {
 		logrus.Errorf("Hysteria KickUsers err: %v", err)
-		return errors.New("http connection error")
+		return fmt.Errorf(constant.HttpError)
 	}
 	return nil
 }
@@ -110,7 +109,7 @@ func (h *HysteriaApi) OnlineUsers(secret string) (map[string]int64, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		logrus.Errorf("Hysteria OnlineUsers NewRequest err: %v", err)
-		return nil, errors.New(constant.SysError)
+		return nil, fmt.Errorf(constant.SysError)
 	}
 	req.Header.Set("Authorization", secret)
 	resp, err := http.DefaultClient.Do(req)
@@ -121,16 +120,16 @@ func (h *HysteriaApi) OnlineUsers(secret string) (map[string]int64, error) {
 	}()
 	if err != nil || resp.StatusCode != http.StatusOK {
 		logrus.Errorf("Hysteria OnlineUsers err: %v", err)
-		return nil, errors.New("http connection error")
+		return nil, fmt.Errorf(constant.HttpError)
 	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		logrus.Errorf("Hysteria io read err: %v", err)
-		return nil, errors.New("http connection error")
+		return nil, fmt.Errorf(constant.HttpError)
 	}
 	if err = json.Unmarshal(body, &onlineUsers); err != nil {
 		logrus.Errorf("Hysteria OnlineUsers Unmarshal err: %v", err)
-		return nil, errors.New(constant.SysError)
+		return nil, fmt.Errorf(constant.SysError)
 	}
 	return onlineUsers, nil
 }

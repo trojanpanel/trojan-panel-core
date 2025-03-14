@@ -37,6 +37,8 @@ func handleHysteriaAccountTraffic(apiPort string) {
 		return
 	}
 	if len(users) > 0 {
-
+		for username, traffic := range users {
+			go XAddAccountTraffic(username, traffic.Tx, traffic.Rx)
+		}
 	}
 }
