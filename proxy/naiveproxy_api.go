@@ -89,7 +89,7 @@ func (n *NaiveProxyApi) HandleUser(authCredentials []string, add bool) error {
 		}
 	}()
 	if err != nil || resp.StatusCode != http.StatusOK {
-		logrus.Errorf("NaiveProxy AddUser http resp err: %v", err)
+		logrus.Errorf("NaiveProxy HandleUser http resp err: %v", err)
 		return fmt.Errorf(constant.HttpError)
 	}
 	return nil
