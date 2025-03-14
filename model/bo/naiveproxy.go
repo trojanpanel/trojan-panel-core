@@ -3,6 +3,7 @@ package bo
 type NaiveProxyConfig struct {
 	Admin   TypeMessage `json:"admin"`
 	Logging TypeMessage `json:"logging"`
+	Storage TypeMessage `json:"storage"`
 	Apps    Apps        `json:"apps"`
 }
 
@@ -52,10 +53,9 @@ type RouteHandle struct {
 }
 
 type HandleAuth struct {
-	AuthPassDeprecated string      `json:"auth_pass_deprecated"`
-	AuthUserDeprecated string      `json:"auth_user_deprecated"`
-	Handler            TypeMessage `json:"handler"`
-	HideIp             TypeMessage `json:"hide_ip"`
-	HideVia            TypeMessage `json:"hide_via"`
-	ProbeResistance    TypeMessage `json:"probe_resistance"`
+	AuthCredentials []string    `json:"auth_credentials"`
+	Handler         TypeMessage `json:"handler"`
+	HideIp          TypeMessage `json:"hide_ip"`
+	HideVia         TypeMessage `json:"hide_via"`
+	ProbeResistance TypeMessage `json:"probe_resistance"`
 }
