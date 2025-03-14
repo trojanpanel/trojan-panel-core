@@ -64,7 +64,7 @@ func startWebServer() error {
 
 func releaseResource() {
 	if err := dao.CloseRedis(); err != nil {
-		logrus.Errorf(err.Error())
+		logrus.Errorf("release resource err: %v", err)
 	}
 }
 
@@ -76,7 +76,7 @@ func initFile() error {
 	for _, item := range dirs {
 		if !util.Exists(item) {
 			if err := os.Mkdir(item, os.ModePerm); err != nil {
-				logrus.Errorf("%s create err: %w", item, err)
+				logrus.Errorf("%s create err: %v", item, err)
 				return fmt.Errorf("%s create err", item)
 			}
 		}
