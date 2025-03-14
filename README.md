@@ -13,16 +13,24 @@ English / [简体中文](README_ZH.md)
 
 </div>
 
+## Recommended OS
+
+OS: CentOS 8+/Ubuntu 20+/Debian 11+
+
+CPU: x86_64/amd64 arm64/aarch64
+
+Memory: ≥ 256MB
+
+## API Examples
+
+[tests/api](tests/api)
+
 ## Supported Proxy
 
 1. [xray](https://github.com/XTLS/Xray-core)
 2. [hysteria](https://github.com/apernet/hysteria)
 3. [naiveproxy](https://github.com/klzgrad/naiveproxy)
 4. [sing-box](https://github.com/SagerNet/sing-box)
-
-## API Examples
-
-[tests/api](tests/api)
 
 ## Build
 
