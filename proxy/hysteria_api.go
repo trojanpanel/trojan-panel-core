@@ -48,13 +48,13 @@ func (h *HysteriaApi) ListUsers(clear bool, secret string) (map[string]bo.Hyster
 		}
 	}()
 	if err != nil || resp.StatusCode != http.StatusOK {
-		logrus.Errorf("Hysteria ListUsers err: %v", err)
+		logrus.Errorf("Hysteria ListUsers http resp err: %v", err)
 		return nil, fmt.Errorf(constant.HttpError)
 	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		logrus.Errorf("Hysteria io read err: %v", err)
-		return nil, fmt.Errorf(constant.HttpError)
+		logrus.Errorf("Hysteria ListUsers io read err: %v", err)
+		return nil, fmt.Errorf(constant.SysError)
 	}
 	if err = json.Unmarshal(body, &users); err != nil {
 		logrus.Errorf("Hysteria ListUsers Unmarshal err: %v", err)
@@ -119,7 +119,7 @@ func (h *HysteriaApi) OnlineUsers(secret string) (map[string]int64, error) {
 		}
 	}()
 	if err != nil || resp.StatusCode != http.StatusOK {
-		logrus.Errorf("Hysteria OnlineUsers err: %v", err)
+		logrus.Errorf("Hysteria OnlineUsers http resp err: %v", err)
 		return nil, fmt.Errorf(constant.HttpError)
 	}
 	body, err := io.ReadAll(resp.Body)
