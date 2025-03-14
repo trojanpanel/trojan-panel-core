@@ -10,8 +10,9 @@ const (
 	XrayLogPath   = LogDir + "xray.log"
 	XrayConfigExt = ".json"
 
-	SingBoxConfigDir = BinDir + "sing-box/"
-	SingBoxLogPath   = LogDir + "sing-box.log"
+	SingBoxConfigDir = BinDir + "singbox/"
+	SingBoxLogPath   = LogDir + "singbox.log"
+	SingBoxConfigExt = ".json"
 
 	HysteriaConfigDir = BinDir + "hysteria/"
 	HysteriaLogPath   = LogDir + "hysteria.log"

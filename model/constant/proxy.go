@@ -2,7 +2,7 @@ package constant
 
 const (
 	ProtocolXray       = "xray"
-	ProtocolSingBox    = "sing-box"
+	ProtocolSingBox    = "singbox"
 	ProtocolHysteria   = "hysteria"
 	ProtocolNaiveProxy = "naiveproxy"
 )
