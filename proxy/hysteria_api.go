@@ -1,7 +1,6 @@
 package proxy
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -61,75 +60,4 @@ func (h *HysteriaApi) ListUsers(clear bool, secret string) (map[string]bo.Hyster
 		return nil, fmt.Errorf(constant.SysError)
 	}
 	return users, nil
-}
-
-// KickUsers 踢下线
-func (h *HysteriaApi) KickUsers(keys []string, secret string) error {
-	if !NewHysteriaInstance(h.apiPort).IsRunning() {
-		return nil
-	}
-	usernamesByte, err := json.Marshal(keys)
-	if err != nil {
-		logrus.Errorf("Hysteria KickUsers Marshal err: %v", err)
-		return fmt.Errorf(constant.SysError)
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	url := fmt.Sprintf("http://127.0.0.1:%s/kick", h.apiPort)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url,
-		bytes.NewBuffer(usernamesByte))
-	if err != nil {
-		logrus.Errorf("Hysteria KickUsers NewRequest err: %v", err)
-		return fmt.Errorf(constant.SysError)
-	}
-	req.Header.Set("Authorization", secret)
-	req.Header.Set("Content-Type", "application/json")
-	resp, err := http.DefaultClient.Do(req)
-	defer func() {
-		if resp != nil {
-			resp.Body.Close()
-		}
-	}()
-	if err != nil || resp.StatusCode != http.StatusOK {
-		logrus.Errorf("Hysteria KickUsers err: %v", err)
-		return fmt.Errorf(constant.HttpError)
-	}
-	return nil
-}
-
-// OnlineUsers 在线用户
-func (h *HysteriaApi) OnlineUsers(secret string) (map[string]int64, error) {
-	var onlineUsers map[string]int64
-	if !NewHysteriaInstance(h.apiPort).IsRunning() {
-		return onlineUsers, nil
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	url := fmt.Sprintf("http://127.0.0.1:%s/online", h.apiPort)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		logrus.Errorf("Hysteria OnlineUsers NewRequest err: %v", err)
-		return nil, fmt.Errorf(constant.SysError)
-	}
-	req.Header.Set("Authorization", secret)
-	resp, err := http.DefaultClient.Do(req)
-	defer func() {
-		if resp != nil {
-			_ = resp.Body.Close()
-		}
-	}()
-	if err != nil || resp.StatusCode != http.StatusOK {
-		logrus.Errorf("Hysteria OnlineUsers http resp err: %v", err)
-		return nil, fmt.Errorf(constant.HttpError)
-	}
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		logrus.Errorf("Hysteria io read err: %v", err)
-		return nil, fmt.Errorf(constant.HttpError)
-	}
-	if err = json.Unmarshal(body, &onlineUsers); err != nil {
-		logrus.Errorf("Hysteria OnlineUsers Unmarshal err: %v", err)
-		return nil, fmt.Errorf(constant.SysError)
-	}
-	return onlineUsers, nil
 }

@@ -8,27 +8,12 @@ import (
 	"trojan-core/util"
 )
 
-func handleHysteriaAccountAuth(apiPort string) {
-	users, err := proxy.NewHysteriaApi(apiPort).OnlineUsers("")
+func HandleHysteriaAccountAuth(auth string) (bool, error) {
+	result, err := dao.RedisClient.LRange(context.Background(), constant.AccountAuth, 0, -1).Result()
 	if err != nil {
-		return
+		return false, err
 	}
-	if len(users) > 0 {
-		i := 0
-		usernames := make([]string, len(users))
-		for k := range users {
-			usernames[i] = k
-			i++
-		}
-		result, err := dao.RedisClient.LRange(context.Background(), constant.AccountAuth, 0, -1).Result()
-		if err != nil {
-			return
-		}
-		kickUsernames := util.Subtract(result, usernames)
-		if err = proxy.NewHysteriaApi(apiPort).KickUsers(kickUsernames, ""); err != nil {
-			return
-		}
-	}
+	return util.ArrContain(result, auth), nil
 }
 
 func handleHysteriaAccountTraffic(apiPort string) {

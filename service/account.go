@@ -19,7 +19,6 @@ func HandleAccount() {
 	})
 	go proxy.HysteriaCmdMap.Range(func(key, value any) bool {
 		handleHysteriaAccountTraffic(key.(string))
-		handleHysteriaAccountAuth(key.(string))
 		return true
 	})
 	go proxy.NaiveProxyCmdMap.Range(func(key, value any) bool {
