@@ -63,7 +63,7 @@ func (x *XrayApi) QueryStats(pattern string, reset bool) ([]bo.XrayStatsBo, erro
 	for _, stat := range stats {
 		xrayStatsVos = append(xrayStatsVos, bo.XrayStatsBo{
 			Name:  stat.Name,
-			Value: int(stat.GetValue()),
+			Value: stat.GetValue(),
 		})
 	}
 	return xrayStatsVos, nil

@@ -2,5 +2,5 @@ package bo
 
 type XrayStatsBo struct {
 	Name  string `json:"name"`
-	Value int    `json:"value"`
+	Value int64  `json:"value"`
 }

@@ -13,7 +13,7 @@ func HandleHysteriaAccountAuth(auth string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return util.ArrContain(result, auth), nil
+	return util.ArrContain(result, util.SHA224String(auth)), nil
 }
 
 func handleHysteriaAccountTraffic(apiPort string) {
