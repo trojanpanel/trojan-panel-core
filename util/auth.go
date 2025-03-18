@@ -20,7 +20,7 @@ func AuthRequest(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf(constant.UnauthorizedError)
 	}
-	if myClaims.AccountVo.Deleted == 1 || !IsAdmin(myClaims.AccountVo.Roles) {
+	if myClaims.AccountVo.Deleted == 1 || !ArrContain(myClaims.AccountVo.Roles, "admin") {
 		return fmt.Errorf(constant.ForbiddenError)
 	}
 	return nil
