@@ -18,18 +18,18 @@ func handleXrayAccountAuth(apiPort string) {
 	if err != nil {
 		return
 	}
-	var auths []string
+	var users []string
 	for _, stat := range stats {
 		subMatch := userLinkRegex.FindStringSubmatch(stat.Name)
 		if len(subMatch) == 3 {
-			auths = append(auths, util.SHA224String(subMatch[1]))
+			users = append(users, util.SHA224String(subMatch[1]))
 		}
 	}
 	result, err := dao.RedisClient.LRange(context.Background(), constant.AccountAuth, 0, -1).Result()
 	if err != nil {
 		return
 	}
-	deleteAuths := util.Subtract(result, auths)
+	deleteAuths := util.Subtract(result, users)
 	for _, item := range deleteAuths {
 		if err = xrayApi.DeleteUser(item); err != nil {
 			logrus.Errorf("xray DeleteUser err: %v", err)
@@ -47,12 +47,12 @@ func handleXrayAccountTraffic(apiPort string) {
 	for _, stat := range stats {
 		subMatch := userLinkRegex.FindStringSubmatch(stat.Name)
 		if len(subMatch) == 3 {
-			username := util.SHA224String(subMatch[1])
+			user := util.SHA224String(subMatch[1])
 			isDown := subMatch[2] == "downlink"
 			if isDown {
-				go XAddAccountTraffic(username, 0, stat.Value)
+				go XAddAccountTraffic(user, 0, stat.Value)
 			} else {
-				go XAddAccountTraffic(username, stat.Value, 0)
+				go XAddAccountTraffic(user, stat.Value, 0)
 			}
 		}
 	}
