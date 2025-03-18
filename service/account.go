@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/base64"
 	"github.com/avast/retry-go"
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
@@ -13,8 +14,7 @@ import (
 
 func HandleAccount() {
 	go proxy.XrayCmdMap.Range(func(key, value any) bool {
-		handleXrayAccountTraffic(key.(string))
-		handleXrayAccountAuth(key.(string))
+		handleXrayAccount(key.(string))
 		return true
 	})
 	go proxy.HysteriaCmdMap.Range(func(key, value any) bool {
@@ -22,7 +22,6 @@ func HandleAccount() {
 		return true
 	})
 	go proxy.NaiveProxyCmdMap.Range(func(key, value any) bool {
-		handleNaiveProxyAccountTraffic(key.(string))
 		handleNaiveProxyAccountAuth(key.(string))
 		return true
 	})
@@ -46,4 +45,20 @@ func XAddAccountTraffic(username string, tx int64, rx int64) {
 	}...); err != nil {
 		logrus.Errorf("xadd account traffic err: %v", err)
 	}
+}
+
+func ListAuthUsers() ([]string, error) {
+	result, err := dao.RedisClient.LRange(context.Background(), constant.AccountAuth, 0, -1).Result()
+	if err != nil {
+		return nil, err
+	}
+	var authUsers []string
+	for _, item := range result {
+		decodeUser, err := base64.StdEncoding.DecodeString(item)
+		if err != nil {
+			continue
+		}
+		authUsers = append(authUsers, string(decodeUser))
+	}
+	return authUsers, nil
 }
