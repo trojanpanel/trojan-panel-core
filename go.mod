@@ -1,6 +1,6 @@
 module trojan-core
 
-go 1.21
+go 1.23.5
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
