@@ -12,7 +12,7 @@ var userLinkRegex = regexp.MustCompile("user>>>([^>]+)>>>traffic>>>(downlink|upl
 
 func handleXrayAccount(apiPort string) {
 	xrayApi := proxy.NewXrayApi(apiPort)
-	stats, err := xrayApi.QueryStats("", false)
+	stats, err := xrayApi.QueryStats("", true)
 	if err != nil {
 		return
 	}
