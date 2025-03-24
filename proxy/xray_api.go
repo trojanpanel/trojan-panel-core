@@ -82,7 +82,7 @@ func (x *XrayApi) AddUser(password string, message *serial.TypedMessage) error {
 			User: &protocol.User{
 				Email:   password,
 				Level:   0,
-				Account: serial.ToTypedMessage(message),
+				Account: message,
 			},
 		}),
 	})
