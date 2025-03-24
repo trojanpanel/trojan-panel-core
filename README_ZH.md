@@ -30,7 +30,7 @@ CPU: x86_64/amd64 arm64/aarch64
 1. [xray](https://github.com/XTLS/Xray-core)
 2. [hysteria](https://github.com/apernet/hysteria)
 3. [naiveproxy](https://github.com/klzgrad/naiveproxy)
-4. [sing-box](https://github.com/SagerNet/sing-box)
+4. [sing-box](https://github.com/SagerNet/sing-box) [todo]
 
 ## 构建
 
