@@ -17,7 +17,7 @@ func TestDownloadXray(t *testing.T) {
 
 func TestXrayQueryStats(t *testing.T) {
 	xrayApi := proxy.NewXrayApi("18080")
-	stats, err := xrayApi.QueryStats("", true)
+	stats, err := xrayApi.QueryStats("", false)
 	if err != nil {
 		return
 	}
