@@ -39,7 +39,8 @@ func TestXrayAddUser(t *testing.T) {
 	xrayApi := proxy.NewXrayApi("18080")
 	if err := xrayApi.AddUser(password,
 		serial.ToTypedMessage(&vless.Account{
-			Id: util.GenerateUUID(password),
+			Id:         util.GenerateUUID(password),
+			Encryption: "none",
 		}),
 	); err != nil {
 		return
