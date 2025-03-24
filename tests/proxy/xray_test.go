@@ -1,7 +1,7 @@
 package proxy
 
 import (
-	"encoding/json"
+	"fmt"
 	"testing"
 	"trojan-core/proxy"
 )
@@ -18,5 +18,7 @@ func TestXrayQueryStats(t *testing.T) {
 	if err != nil {
 		return
 	}
-	println(json.Marshal(stats))
+	for _, stat := range stats {
+		println(fmt.Sprintf("%s -> %d", stat.Name, stat.Value))
+	}
 }
