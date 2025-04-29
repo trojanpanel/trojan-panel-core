@@ -11,7 +11,7 @@ func HandleHysteriaAccountAuth(auth string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return util.ArrContain(authUsers, base64.StdEncoding.EncodeToString([]byte(auth))), nil
+	return util.ArrContain(authUsers, auth), nil
 }
 
 func handleHysteriaAccountTraffic(apiPort string) {
