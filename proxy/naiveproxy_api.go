@@ -3,7 +3,6 @@ package proxy
 import (
 	"bytes"
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -67,7 +66,7 @@ func (n *NaiveProxyApi) ListUsers() ([]string, error) {
 }
 
 // HandleUser add or delete user on node
-func (n *NaiveProxyApi) HandleUser(authCredentials []string, add bool) error {
+func (n *NaiveProxyApi) HandleUser(authCredentials string, add bool) error {
 	if !NewHysteriaInstance(n.apiPort).IsRunning() {
 		return nil
 	}
@@ -100,8 +99,4 @@ func (n *NaiveProxyApi) HandleUser(authCredentials []string, add bool) error {
 		return fmt.Errorf(constant.HttpError)
 	}
 	return nil
-}
-
-func handleNaiveProxyAuthCredential(user, pass string) string {
-	return base64.StdEncoding.EncodeToString([]byte(base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", user, pass)))))
 }

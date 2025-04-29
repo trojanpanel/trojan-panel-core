@@ -1,6 +1,8 @@
 package util
 
-import "encoding/base64"
+import (
+	"encoding/base64"
+)
 
 // Base64Decode2 解密两次
 func Base64Decode2(s string) (string, error) {
@@ -13,4 +15,9 @@ func Base64Decode2(s string) (string, error) {
 		return "", err
 	}
 	return string(decodeString), nil
+}
+
+// Base64Encode2 加密两次
+func Base64Encode2(s string) string {
+	return base64.StdEncoding.EncodeToString([]byte(base64.StdEncoding.EncodeToString([]byte(s))))
 }
