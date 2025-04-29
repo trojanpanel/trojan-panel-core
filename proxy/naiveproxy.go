@@ -67,6 +67,9 @@ func GetNaiveProxyConfigPath(key string) string {
 
 func DownloadNaiveProxy(version string) error {
 	naiveProxyFileName := fmt.Sprintf("naive-%s-%s", runtime.GOOS, runtime.GOARCH)
+	if runtime.GOOS == "windows" {
+		naiveProxyFileName = naiveProxyFileName + ".exe"
+	}
 	naiveProxyBinPath := constant.BinDir + naiveProxyFileName
 	if err := util.DownloadFromGithub(naiveProxyFileName, naiveProxyBinPath, "jonssonyan", "naive", version); err != nil {
 		return err
