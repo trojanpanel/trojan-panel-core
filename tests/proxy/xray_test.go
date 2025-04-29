@@ -3,10 +3,9 @@ package proxy
 import (
 	"fmt"
 	"github.com/xtls/xray-core/common/serial"
-	"github.com/xtls/xray-core/proxy/vless"
+	"github.com/xtls/xray-core/proxy/trojan"
 	"testing"
 	"trojan-core/proxy"
-	"trojan-core/util"
 )
 
 func TestDownloadXray(t *testing.T) {
@@ -35,12 +34,11 @@ func TestXrayDeleteUser(t *testing.T) {
 }
 
 func TestXrayAddUser(t *testing.T) {
-	password := "love@example.com"
+	password := "123456"
 	xrayApi := proxy.NewXrayApi("18080")
 	if err := xrayApi.AddUser(password,
-		serial.ToTypedMessage(&vless.Account{
-			Id:         util.GenerateUUID(password),
-			Encryption: "none",
+		serial.ToTypedMessage(&trojan.Account{
+			Password: password,
 		}),
 	); err != nil {
 		return
