@@ -26,7 +26,7 @@ func TestXrayQueryStats(t *testing.T) {
 }
 
 func TestXrayDeleteUser(t *testing.T) {
-	password := "love@example.com"
+	password := "123456"
 	xrayApi := proxy.NewXrayApi("18080")
 	if err := xrayApi.DeleteUser(password); err != nil {
 		return
