@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"io"
 	"net/http"
+	"os"
 	"time"
 	"trojan-core/model/bo"
 	"trojan-core/model/constant"
@@ -23,7 +24,7 @@ func NewHysteriaApi(apiPort string) *HysteriaApi {
 }
 
 // ListUsers 每个用户的流量信息
-func (h *HysteriaApi) ListUsers(clear bool, secret string) (map[string]bo.HysteriaUserTraffic, error) {
+func (h *HysteriaApi) ListUsers(clear bool) (map[string]bo.HysteriaUserTraffic, error) {
 	var users map[string]bo.HysteriaUserTraffic
 	if !NewHysteriaInstance(h.apiPort).IsRunning() {
 		return users, nil
@@ -39,7 +40,7 @@ func (h *HysteriaApi) ListUsers(clear bool, secret string) (map[string]bo.Hyster
 		logrus.Errorf("Hysteria ListUsers NewRequest err: %v", err)
 		return nil, fmt.Errorf(constant.SysError)
 	}
-	req.Header.Set("Authorization", secret)
+	req.Header.Set("Authorization", os.Getenv(constant.HysteriaAuthSecret))
 	resp, err := http.DefaultClient.Do(req)
 	defer func() {
 		if resp != nil {

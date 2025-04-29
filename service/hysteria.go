@@ -15,7 +15,7 @@ func HandleHysteriaAccountAuth(auth string) (bool, error) {
 }
 
 func handleHysteriaAccountTraffic(apiPort string) {
-	users, err := proxy.NewHysteriaApi(apiPort).ListUsers(true, "")
+	users, err := proxy.NewHysteriaApi(apiPort).ListUsers(true)
 	if err != nil {
 		return
 	}
