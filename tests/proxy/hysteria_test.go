@@ -13,7 +13,7 @@ func TestDownloadHysteria(t *testing.T) {
 }
 
 func TestHysteriaListUsers(t *testing.T) {
-	users, err := proxy.NewHysteriaApi(":9999").ListUsers(true, "83A0F409D7956BCFEC23")
+	users, err := proxy.NewHysteriaApi("9999").ListUsers(true, "83A0F409D7956BCFEC23")
 	if err != nil {
 		return
 	}
