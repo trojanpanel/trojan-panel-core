@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"time"
 	"trojan-core/model/constant"
+	"trojan-core/util"
 )
 
 type NaiveProxyApi struct {
@@ -55,6 +56,12 @@ func (n *NaiveProxyApi) ListUsers() ([]string, error) {
 	if err = json.Unmarshal(body, &authCredentials); err != nil {
 		logrus.Errorf("NaiveProxy ListUsers Unmarshal err: %v", err)
 		return nil, fmt.Errorf(constant.SysError)
+	}
+	for i, item := range authCredentials {
+		authCredentials[i], err = util.Base64Decode2(item)
+		if err != nil {
+			continue
+		}
 	}
 	return authCredentials, nil
 }
