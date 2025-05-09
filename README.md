@@ -2,7 +2,7 @@
 
 Trojan Panel Core
 
-## Supported node types
+## Supported Proxy
 
 1. Xray
 2. Trojan Go
@@ -46,6 +46,8 @@ create table trojan_panel_db.account
 [Release Notes](https://github.com/trojanpanel/install-script/blob/main/README_ARCHIVE_ZH.md#%E5%8F%91%E8%A1%8C%E8%AF%B4%E6%98%8E)
 
 ## Prevent circular dependencies
+
+router->api->middleware->app->service/dao->core
 
 ## Build
 

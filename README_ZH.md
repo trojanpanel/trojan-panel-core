@@ -50,7 +50,9 @@ router->api->middleware->app->service/dao->core
 
 ## 构建
 
-[compile.bat](compile.bat)
+Windows: [build.bat](build.bat)
+
+Linux: [build.sh](build.sh)
 
 ## 其他
 
