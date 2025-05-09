@@ -49,17 +49,20 @@ create table trojan_panel_db.account
 
 router->api->middleware->app->service/dao->core
 
-## Compile
+## Build
 
 [compile.bat](compile.bat)
 
-## Telegram
+## Other
 
-Telegram Channel: https://t.me/TrojanPanel
+Telegram Channel: https://t.me/jonssonyan_channel
 
-## Thanks
+You can subscribe to my channel on YouTube: https://www.youtube.com/@jonssonyan
 
-- [trojan-gfw](https://github.com/trojan-gfw/trojan)
+## Support
+
+- [trojan](https://github.com/trojan-gfw/trojan)
 - [trojan-go](https://github.com/p4gefau1t/trojan-go)
+- [Xray-core](https://github.com/XTLS/Xray-core)
 - [hysteria](https://github.com/HyNetwork/hysteria)
 - [naiveproxy](https://github.com/klzgrad/naiveproxy)
